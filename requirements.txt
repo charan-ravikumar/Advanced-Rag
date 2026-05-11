@@ -1,0 +1,16 @@
+pymupdf
+unstructured
+python-docx
+beautifulsoup4
+markdown-it-py
+lxml
+pandas
+openpyxl
+langchain
+tiktoken
+sentence-transformers
+numpy
+python-dotenv
+tqdm
+sentence-transformers
+scikit-learn
