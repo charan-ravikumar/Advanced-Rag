@@ -21,6 +21,77 @@ from query import (
 )
 
 
+
+
+import phoenix as px
+
+from openinference.instrumentation.openai import (
+    OpenAIInstrumentor
+)
+
+# session = px.launch_app()
+
+OpenAIInstrumentor().instrument()
+
+
+from opentelemetry import trace
+
+from opentelemetry.sdk.trace import (
+    TracerProvider
+)
+
+from opentelemetry.sdk.trace.export import (
+    BatchSpanProcessor
+)
+
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import (
+    OTLPSpanExporter
+)
+
+from openinference.instrumentation.openai import (
+    OpenAIInstrumentor
+)
+
+
+# ============================================
+# OPENTELEMETRY SETUP
+# ============================================
+
+trace.set_tracer_provider(
+
+    TracerProvider()
+)
+
+tracer_provider = (
+    trace.get_tracer_provider()
+)
+
+span_processor = (
+
+    BatchSpanProcessor(
+
+        OTLPSpanExporter(
+
+            endpoint=
+            "http://127.0.0.1:4317",
+
+            insecure=True
+        )
+    )
+)
+
+tracer_provider.add_span_processor(
+    span_processor
+)
+
+
+# ============================================
+# OPENINFERENCE
+# ============================================
+
+OpenAIInstrumentor().instrument()
+
+
 # ============================================
 # FASTAPI INIT
 # ============================================

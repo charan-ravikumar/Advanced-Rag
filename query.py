@@ -25,11 +25,8 @@ from context_builder import (
 )
 
 from schemas import (
-
     QueryResponse,
-
     SourceDocument,
-
     RagasMetrics
 )
 
@@ -40,6 +37,14 @@ from langchain_huggingface import (
 from logger_config import (
     get_logger
 )
+
+# ============================================
+# PHOENIX / OPENTELEMETRY
+# ============================================
+
+from opentelemetry import trace
+
+tracer = trace.get_tracer(__name__)
 
 
 # ============================================
@@ -67,14 +72,11 @@ if ENABLE_RAGAS:
     from ragas import evaluate
 
     from ragas.metrics import (
-
         faithfulness,
-
         answer_relevancy
     )
 
     from langchain_google_genai import (
-
         ChatGoogleGenerativeAI
     )
 
@@ -309,51 +311,55 @@ def generate_answer_stream(
 
     try:
 
-        response = (
+        with tracer.start_as_current_span(
+            "llm_generation"
+        ):
 
-            groq_client.chat.completions.create(
+            response = (
 
-                model=PRIMARY_MODEL,
+                groq_client.chat.completions.create(
 
-                messages=[
+                    model=PRIMARY_MODEL,
 
-                    {
-                        "role": "user",
+                    messages=[
 
-                        "content": prompt
-                    }
-                ],
+                        {
+                            "role": "user",
 
-                temperature=0,
+                            "content": prompt
+                        }
+                    ],
 
-                stream=True
-            )
-        )
+                    temperature=0,
 
-        total_tokens = 0
-
-        for chunk in response:
-
-            try:
-
-                delta = (
-
-                    chunk.choices[0]
-                    .delta
-                    .content
+                    stream=True
                 )
+            )
 
-                if delta:
+            total_tokens = 0
 
-                    total_tokens += len(
-                        delta.split()
+            for chunk in response:
+
+                try:
+
+                    delta = (
+
+                        chunk.choices[0]
+                        .delta
+                        .content
                     )
 
-                    yield delta
+                    if delta:
 
-            except Exception:
+                        total_tokens += len(
+                            delta.split()
+                        )
 
-                continue
+                        yield delta
+
+                except Exception:
+
+                    continue
 
         generation_latency = (
             time.time()
@@ -382,12 +388,16 @@ def generate_answer_stream(
 
         try:
 
-            gemini_answer = (
+            with tracer.start_as_current_span(
+                "gemini_fallback_generation"
+            ):
 
-                generate_gemini_answer(
-                    prompt
+                gemini_answer = (
+
+                    generate_gemini_answer(
+                        prompt
+                    )
                 )
-            )
 
             yield gemini_answer
 
@@ -653,14 +663,18 @@ def retrieve_and_build_context(
 
     vector_start = time.time()
 
-    vector_results = collection.query(
+    with tracer.start_as_current_span(
+        "vector_retrieval"
+    ):
 
-        query_embeddings=[
-            query_embedding
-        ],
+        vector_results = collection.query(
 
-        n_results=candidate_k
-    )
+            query_embeddings=[
+                query_embedding
+            ],
+
+            n_results=candidate_k
+        )
 
     vector_latency = (
         time.time()
@@ -727,9 +741,13 @@ def retrieve_and_build_context(
 
     tokenized_query = query.lower().split()
 
-    bm25_scores = bm25.get_scores(
-        tokenized_query
-    )
+    with tracer.start_as_current_span(
+        "bm25_retrieval"
+    ):
+
+        bm25_scores = bm25.get_scores(
+            tokenized_query
+        )
 
     bm25_latency = (
         time.time()
@@ -874,9 +892,13 @@ def retrieve_and_build_context(
 
     rerank_start = time.time()
 
-    rerank_scores = reranker.predict(
-        rerank_inputs
-    )
+    with tracer.start_as_current_span(
+        "reranking"
+    ):
+
+        rerank_scores = reranker.predict(
+            rerank_inputs
+        )
 
     rerank_latency = (
         time.time()
@@ -921,12 +943,16 @@ def retrieve_and_build_context(
 
     context_start = time.time()
 
-    context = build_context(
+    with tracer.start_as_current_span(
+        "context_engineering"
+    ):
 
-        final_results[:top_k],
+        context = build_context(
 
-        max_tokens=1500
-    )
+            final_results[:top_k],
+
+            max_tokens=1500
+        )
 
     context_latency = (
         time.time()

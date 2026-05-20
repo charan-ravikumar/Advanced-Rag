@@ -38,6 +38,17 @@ Resume Signal
 
 That line alone is strong.
 
+ill go in this order,
+| Priority | Tool               |
+| -------- | ------------------ |
+| 1        | Structured Logging |
+| 2        | Phoenix            |
+| 3        | OpenTelemetry      |
+| 4        | Prometheus         |
+| 5        | Grafana            |
+| 6        | LangSmith          |
+teach me to create a new branch, implement logging and join that branch to main
+
 
 
 

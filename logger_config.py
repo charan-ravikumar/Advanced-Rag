@@ -35,3 +35,7 @@ def get_logger(
 ):
 
     return logging.getLogger(name)
+
+logging.getLogger(
+    "opentelemetry"
+).setLevel(logging.ERROR)
