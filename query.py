@@ -3,6 +3,7 @@
 # ============================================
 
 import os
+import time
 
 from dotenv import load_dotenv
 
@@ -35,6 +36,17 @@ from schemas import (
 from langchain_huggingface import (
     HuggingFaceEmbeddings
 )
+
+from logger_config import (
+    get_logger
+)
+
+
+# ============================================
+# LOGGER
+# ============================================
+
+logger = get_logger(__name__)
 
 
 # ============================================
@@ -99,7 +111,9 @@ FALLBACK_MODEL = (
 # INIT GROQ CLIENT
 # ============================================
 
-print("\nInitializing Groq client...\n")
+logger.info(
+    "Initializing Groq client..."
+)
 
 groq_client = OpenAI(
 
@@ -109,53 +123,69 @@ groq_client = OpenAI(
     "https://api.groq.com/openai/v1"
 )
 
-print("Groq client initialized.\n")
+logger.info(
+    "Groq client initialized."
+)
 
 
 # ============================================
 # INIT GEMINI CLIENT
 # ============================================
 
-print("Initializing Gemini client...\n")
+logger.info(
+    "Initializing Gemini client..."
+)
 
 gemini_client = genai.Client(
     api_key=GEMINI_API_KEY
 )
 
-print("Gemini client initialized.\n")
+logger.info(
+    "Gemini client initialized."
+)
 
 
 # ============================================
 # LOAD EMBEDDING MODEL
 # ============================================
 
-print("\nLoading embedding model...")
+logger.info(
+    "Loading embedding model..."
+)
 
 embedding_model = SentenceTransformer(
     "all-MiniLM-L6-v2"
 )
 
-print("Embedding model loaded.\n")
+logger.info(
+    "Embedding model loaded."
+)
 
 
 # ============================================
 # LOAD RERANKER
 # ============================================
 
-print("Loading reranker model...")
+logger.info(
+    "Loading reranker model..."
+)
 
 reranker = CrossEncoder(
     "BAAI/bge-reranker-base"
 )
 
-print("Reranker loaded.\n")
+logger.info(
+    "Reranker loaded."
+)
 
 
 # ============================================
 # LOAD DOCUMENTS
 # ============================================
 
-print("Loading documents from ChromaDB...\n")
+logger.info(
+    "Loading documents from ChromaDB..."
+)
 
 all_data = collection.get(
     include=["documents", "metadatas"]
@@ -164,8 +194,8 @@ all_data = collection.get(
 all_documents = all_data["documents"]
 all_metadatas = all_data["metadatas"]
 
-print(
-    f"Loaded {len(all_documents)} documents.\n"
+logger.info(
+    f"Loaded {len(all_documents)} documents."
 )
 
 
@@ -180,7 +210,9 @@ tokenized_corpus = [
 
 bm25 = BM25Okapi(tokenized_corpus)
 
-print("BM25 initialized.\n")
+logger.info(
+    "BM25 initialized."
+)
 
 
 # ============================================
@@ -236,8 +268,8 @@ def generate_gemini_answer(
     prompt
 ):
 
-    print(
-        "\nUsing Gemini fallback model...\n"
+    logger.info(
+        "Using Gemini fallback model."
     )
 
     response = (
@@ -262,8 +294,8 @@ def generate_answer_stream(
     context
 ):
 
-    print(
-        "\nGenerating streaming answer...\n"
+    logger.info(
+        "Generating streaming answer..."
     )
 
     prompt = build_prompt(
@@ -272,6 +304,8 @@ def generate_answer_stream(
 
         context=context
     )
+
+    generation_start = time.time()
 
     try:
 
@@ -296,6 +330,8 @@ def generate_answer_stream(
             )
         )
 
+        total_tokens = 0
+
         for chunk in response:
 
             try:
@@ -309,23 +345,40 @@ def generate_answer_stream(
 
                 if delta:
 
+                    total_tokens += len(
+                        delta.split()
+                    )
+
                     yield delta
 
             except Exception:
 
                 continue
 
-    except Exception as e:
-
-        print(
-            "\nGroq streaming failed.\n"
+        generation_latency = (
+            time.time()
+            - generation_start
         )
 
-        print(str(e))
+        logger.info(
+            f"Generation latency: "
+            f"{generation_latency:.2f}s"
+        )
 
-        # ------------------------------------
+        logger.info(
+            f"Approx streamed tokens: "
+            f"{total_tokens}"
+        )
+
+    except Exception as e:
+
+        logger.exception(
+            "Groq streaming failed."
+        )
+
+        # ====================================
         # GEMINI FALLBACK
-        # ------------------------------------
+        # ====================================
 
         try:
 
@@ -340,11 +393,9 @@ def generate_answer_stream(
 
         except Exception as fallback_error:
 
-            print(
-                "\nGemini fallback failed.\n"
+            logger.exception(
+                "Gemini fallback failed."
             )
-
-            print(str(fallback_error))
 
             yield (
                 "\n\nGeneration failed on both "
@@ -366,9 +417,9 @@ def run_ragas_evaluation(
     if not ENABLE_RAGAS:
         return None
 
-    print("\n===================================")
-    print("RUNNING RAGAS EVALUATION")
-    print("===================================\n")
+    logger.info(
+        "Running RAGAS evaluation."
+    )
 
     try:
 
@@ -447,7 +498,9 @@ def run_ragas_evaluation(
 
         except Exception:
 
-            pass
+            logger.exception(
+                "Faithfulness parsing failed."
+            )
 
         try:
 
@@ -474,7 +527,19 @@ def run_ragas_evaluation(
 
         except Exception:
 
-            pass
+            logger.exception(
+                "Answer relevancy parsing failed."
+            )
+
+        logger.info(
+            f"Faithfulness Score: "
+            f"{faithfulness_score}"
+        )
+
+        logger.info(
+            f"Answer Relevancy Score: "
+            f"{answer_relevancy_score}"
+        )
 
         return RagasMetrics(
 
@@ -485,11 +550,11 @@ def run_ragas_evaluation(
             answer_relevancy_score
         )
 
-    except Exception as e:
+    except Exception:
 
-        print("\nRAGAS FAILED\n")
-
-        print(str(e))
+        logger.exception(
+            "RAGAS evaluation failed."
+        )
 
         return None
 
@@ -506,7 +571,9 @@ def weighted_rrf(
     k=60
 ):
 
-    print("\nApplying Weighted RRF...\n")
+    logger.info(
+        "Applying Weighted RRF."
+    )
 
     rrf_scores = {}
 
@@ -562,23 +629,29 @@ def retrieve_and_build_context(
     bm25_weight=0.7
 ):
 
-    print("\n===================================")
-    print("ADVANCED RAG PIPELINE")
-    print("===================================\n")
+    logger.info(
+        f"Query received: {query}"
+    )
 
-    print(f"Query: {query}")
+    retrieval_pipeline_start = time.time()
 
     # ========================================
     # VECTOR SEARCH
     # ========================================
 
-    print("\nGenerating query embedding...\n")
+    logger.info(
+        "Generating query embedding."
+    )
 
     query_embedding = embedding_model.encode(
         query
     ).tolist()
 
-    print("Running dense retrieval...\n")
+    logger.info(
+        "Running dense retrieval."
+    )
+
+    vector_start = time.time()
 
     vector_results = collection.query(
 
@@ -587,6 +660,16 @@ def retrieve_and_build_context(
         ],
 
         n_results=candidate_k
+    )
+
+    vector_latency = (
+        time.time()
+        - vector_start
+    )
+
+    logger.info(
+        f"Vector retrieval latency: "
+        f"{vector_latency:.2f}s"
     )
 
     vector_docs = vector_results[
@@ -631,14 +714,31 @@ def retrieve_and_build_context(
                 similarity
         }
 
+    logger.info(
+        f"Vector candidates kept: "
+        f"{len(vector_rankings)}"
+    )
+
     # ========================================
     # BM25 SEARCH
     # ========================================
+
+    bm25_start = time.time()
 
     tokenized_query = query.lower().split()
 
     bm25_scores = bm25.get_scores(
         tokenized_query
+    )
+
+    bm25_latency = (
+        time.time()
+        - bm25_start
+    )
+
+    logger.info(
+        f"BM25 latency: "
+        f"{bm25_latency:.2f}s"
     )
 
     max_bm25 = max(bm25_scores)
@@ -665,6 +765,11 @@ def retrieve_and_build_context(
 
         bm25_rankings.append(doc_id)
 
+    logger.info(
+        f"BM25 candidates kept: "
+        f"{len(bm25_rankings)}"
+    )
+
     # ========================================
     # WEIGHTED RRF
     # ========================================
@@ -684,10 +789,6 @@ def retrieve_and_build_context(
             bm25_weight
     )
 
-    # ========================================
-    # SORT RESULTS
-    # ========================================
-
     ranked_results = sorted(
 
         rrf_scores.items(),
@@ -695,6 +796,11 @@ def retrieve_and_build_context(
         key=lambda x: x[1],
 
         reverse=True
+    )
+
+    logger.info(
+        f"Candidates after RRF: "
+        f"{len(ranked_results)}"
     )
 
     # ========================================
@@ -766,8 +872,20 @@ def retrieve_and_build_context(
     # RERANKING
     # ========================================
 
+    rerank_start = time.time()
+
     rerank_scores = reranker.predict(
         rerank_inputs
+    )
+
+    rerank_latency = (
+        time.time()
+        - rerank_start
+    )
+
+    logger.info(
+        f"Reranker latency: "
+        f"{rerank_latency:.2f}s"
     )
 
     for idx, score in enumerate(
@@ -777,10 +895,6 @@ def retrieve_and_build_context(
         rerank_metadata[idx][
             "rerank_score"
         ] = float(score)
-
-    # ========================================
-    # FINAL SORT
-    # ========================================
 
     final_results = sorted(
 
@@ -792,15 +906,36 @@ def retrieve_and_build_context(
         reverse=True
     )
 
+    top_score = final_results[
+        0
+    ]["rerank_score"]
+
+    logger.info(
+        f"Top rerank score: "
+        f"{top_score:.4f}"
+    )
+
     # ========================================
     # CONTEXT ENGINEERING
     # ========================================
+
+    context_start = time.time()
 
     context = build_context(
 
         final_results[:top_k],
 
         max_tokens=1500
+    )
+
+    context_latency = (
+        time.time()
+        - context_start
+    )
+
+    logger.info(
+        f"Context engineering latency: "
+        f"{context_latency:.2f}s"
     )
 
     # ========================================
@@ -837,6 +972,16 @@ def retrieve_and_build_context(
                 )
             )
         )
+
+    total_latency = (
+        time.time()
+        - retrieval_pipeline_start
+    )
+
+    logger.info(
+        f"Total retrieval pipeline latency: "
+        f"{total_latency:.2f}s"
+    )
 
     return {
 
