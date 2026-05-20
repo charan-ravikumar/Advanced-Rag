@@ -8,6 +8,8 @@ from dotenv import load_dotenv
 
 from google import genai
 
+from openai import OpenAI
+
 from sentence_transformers import (
     SentenceTransformer,
     CrossEncoder
@@ -21,6 +23,49 @@ from context_builder import (
     build_context
 )
 
+from schemas import (
+
+    QueryResponse,
+
+    SourceDocument,
+
+    RagasMetrics
+)
+
+from langchain_huggingface import (
+    HuggingFaceEmbeddings
+)
+
+
+# ============================================
+# RAGAS TOGGLE
+# ============================================
+
+ENABLE_RAGAS = False
+
+
+# ============================================
+# OPTIONAL RAGAS IMPORTS
+# ============================================
+
+if ENABLE_RAGAS:
+
+    from datasets import Dataset
+
+    from ragas import evaluate
+
+    from ragas.metrics import (
+
+        faithfulness,
+
+        answer_relevancy
+    )
+
+    from langchain_google_genai import (
+
+        ChatGoogleGenerativeAI
+    )
+
 
 # ============================================
 # LOAD ENV
@@ -28,16 +73,50 @@ from context_builder import (
 
 load_dotenv()
 
+GROQ_API_KEY = os.getenv(
+    "GROQ_API_KEY"
+)
+
 GEMINI_API_KEY = os.getenv(
     "GEMINI_API_KEY"
 )
 
 
 # ============================================
+# MODELS
+# ============================================
+
+PRIMARY_MODEL = (
+    "llama-3.1-8b-instant"
+)
+
+FALLBACK_MODEL = (
+    "gemini-2.0-flash-lite"
+)
+
+
+# ============================================
+# INIT GROQ CLIENT
+# ============================================
+
+print("\nInitializing Groq client...\n")
+
+groq_client = OpenAI(
+
+    api_key=GROQ_API_KEY,
+
+    base_url=
+    "https://api.groq.com/openai/v1"
+)
+
+print("Groq client initialized.\n")
+
+
+# ============================================
 # INIT GEMINI CLIENT
 # ============================================
 
-print("\nInitializing Gemini client...\n")
+print("Initializing Gemini client...\n")
 
 gemini_client = genai.Client(
     api_key=GEMINI_API_KEY
@@ -47,7 +126,7 @@ print("Gemini client initialized.\n")
 
 
 # ============================================
-# MODELS
+# LOAD EMBEDDING MODEL
 # ============================================
 
 print("\nLoading embedding model...")
@@ -58,6 +137,10 @@ embedding_model = SentenceTransformer(
 
 print("Embedding model loaded.\n")
 
+
+# ============================================
+# LOAD RERANKER
+# ============================================
 
 print("Loading reranker model...")
 
@@ -112,6 +195,8 @@ def build_prompt(
     system_prompt = """
 You are an advanced enterprise RAG assistant.
 
+Answer the user's question directly and concisely.
+
 Answer ONLY using the retrieved context.
 
 If the answer is not found in the context,
@@ -122,6 +207,8 @@ say:
 Do not hallucinate.
 
 Cite sources whenever possible.
+
+Do not include unrelated supporting information.
 """
 
     prompt = f"""
@@ -142,31 +229,269 @@ ANSWER:
 
 
 # ============================================
-# GENERATE ANSWER
+# GEMINI FALLBACK
 # ============================================
 
-def generate_answer(
+def generate_gemini_answer(
+    prompt
+):
+
+    print(
+        "\nUsing Gemini fallback model...\n"
+    )
+
+    response = (
+
+        gemini_client.models.generate_content(
+
+            model=FALLBACK_MODEL,
+
+            contents=prompt
+        )
+    )
+
+    return response.text
+
+
+# ============================================
+# STREAMING GENERATION
+# ============================================
+
+def generate_answer_stream(
     query,
     context
 ):
 
-    print("\nGenerating final answer...\n")
+    print(
+        "\nGenerating streaming answer...\n"
+    )
 
     prompt = build_prompt(
+
         query=query,
+
         context=context
     )
 
-    response = gemini_client.models.generate_content(
+    try:
 
-        model="gemini-2.5-flash",
+        response = (
 
-        contents=prompt
-    )
+            groq_client.chat.completions.create(
 
-    answer = response.text
+                model=PRIMARY_MODEL,
 
-    return answer
+                messages=[
+
+                    {
+                        "role": "user",
+
+                        "content": prompt
+                    }
+                ],
+
+                temperature=0,
+
+                stream=True
+            )
+        )
+
+        for chunk in response:
+
+            try:
+
+                delta = (
+
+                    chunk.choices[0]
+                    .delta
+                    .content
+                )
+
+                if delta:
+
+                    yield delta
+
+            except Exception:
+
+                continue
+
+    except Exception as e:
+
+        print(
+            "\nGroq streaming failed.\n"
+        )
+
+        print(str(e))
+
+        # ------------------------------------
+        # GEMINI FALLBACK
+        # ------------------------------------
+
+        try:
+
+            gemini_answer = (
+
+                generate_gemini_answer(
+                    prompt
+                )
+            )
+
+            yield gemini_answer
+
+        except Exception as fallback_error:
+
+            print(
+                "\nGemini fallback failed.\n"
+            )
+
+            print(str(fallback_error))
+
+            yield (
+                "\n\nGeneration failed on both "
+                "Groq and Gemini."
+            )
+
+
+# ============================================
+# OPTIONAL RAGAS
+# ============================================
+
+def run_ragas_evaluation(
+
+    query,
+    answer,
+    contexts
+):
+
+    if not ENABLE_RAGAS:
+        return None
+
+    print("\n===================================")
+    print("RUNNING RAGAS EVALUATION")
+    print("===================================\n")
+
+    try:
+
+        evaluator_llm = ChatGoogleGenerativeAI(
+
+            model="gemini-2.0-flash-lite",
+
+            google_api_key=GEMINI_API_KEY,
+
+            temperature=0
+        )
+
+        evaluator_embeddings = (
+
+            HuggingFaceEmbeddings(
+
+                model_name=
+                "sentence-transformers/all-MiniLM-L6-v2"
+            )
+        )
+
+        sample = {
+
+            "question": query,
+
+            "answer": answer,
+
+            "contexts": contexts
+        }
+
+        dataset = Dataset.from_list(
+            [sample]
+        )
+
+        results = evaluate(
+
+            dataset,
+
+            metrics=[
+
+                faithfulness,
+
+                answer_relevancy
+            ],
+
+            llm=evaluator_llm,
+
+            embeddings=evaluator_embeddings
+        )
+
+        faithfulness_score = None
+        answer_relevancy_score = None
+
+        try:
+
+            raw_faithfulness = results[
+                "faithfulness"
+            ]
+
+            if isinstance(
+                raw_faithfulness,
+                list
+            ):
+
+                if len(raw_faithfulness) > 0:
+
+                    faithfulness_score = float(
+                        raw_faithfulness[0]
+                    )
+
+            elif raw_faithfulness is not None:
+
+                faithfulness_score = float(
+                    raw_faithfulness
+                )
+
+        except Exception:
+
+            pass
+
+        try:
+
+            raw_relevancy = results[
+                "answer_relevancy"
+            ]
+
+            if isinstance(
+                raw_relevancy,
+                list
+            ):
+
+                if len(raw_relevancy) > 0:
+
+                    answer_relevancy_score = float(
+                        raw_relevancy[0]
+                    )
+
+            elif raw_relevancy is not None:
+
+                answer_relevancy_score = float(
+                    raw_relevancy
+                )
+
+        except Exception:
+
+            pass
+
+        return RagasMetrics(
+
+            faithfulness=
+            faithfulness_score,
+
+            answer_relevancy=
+            answer_relevancy_score
+        )
+
+    except Exception as e:
+
+        print("\nRAGAS FAILED\n")
+
+        print(str(e))
+
+        return None
 
 
 # ============================================
@@ -217,14 +542,14 @@ def weighted_rrf(
 
 
 # ============================================
-# HYBRID SEARCH
+# RETRIEVAL + CONTEXT
 # ============================================
 
-def hybrid_search(
+def retrieve_and_build_context(
 
     query,
 
-    top_k=3,
+    top_k=2,
 
     candidate_k=20,
 
@@ -276,12 +601,6 @@ def hybrid_search(
         "distances"
     ][0]
 
-    # ========================================
-    # VECTOR THRESHOLDING
-    # ========================================
-
-    print("Applying vector thresholding...\n")
-
     vector_rankings = []
 
     vector_doc_map = {}
@@ -294,17 +613,7 @@ def hybrid_search(
             1 + vector_distances[idx]
         )
 
-        print(
-            f"Vector Similarity: "
-            f"{similarity:.4f}"
-        )
-
         if similarity < vector_threshold:
-
-            print(
-                "→ Below vector threshold."
-            )
-
             continue
 
         doc_id = hash(doc)
@@ -322,16 +631,9 @@ def hybrid_search(
                 similarity
         }
 
-    print(
-        f"\nVector candidates kept: "
-        f"{len(vector_rankings)}"
-    )
-
     # ========================================
     # BM25 SEARCH
     # ========================================
-
-    print("\nRunning BM25 retrieval...\n")
 
     tokenized_query = query.lower().split()
 
@@ -363,11 +665,6 @@ def hybrid_search(
 
         bm25_rankings.append(doc_id)
 
-    print(
-        f"BM25 candidates kept: "
-        f"{len(bm25_rankings)}"
-    )
-
     # ========================================
     # WEIGHTED RRF
     # ========================================
@@ -388,7 +685,7 @@ def hybrid_search(
     )
 
     # ========================================
-    # SORT RRF RESULTS
+    # SORT RESULTS
     # ========================================
 
     ranked_results = sorted(
@@ -400,16 +697,9 @@ def hybrid_search(
         reverse=True
     )
 
-    print(
-        f"\nCandidates after RRF: "
-        f"{len(ranked_results)}"
-    )
-
     # ========================================
     # PREPARE RERANKING
     # ========================================
-
-    print("\nPreparing reranker inputs...\n")
 
     rerank_inputs = []
 
@@ -476,8 +766,6 @@ def hybrid_search(
     # RERANKING
     # ========================================
 
-    print("\nRunning cross-encoder reranking...\n")
-
     rerank_scores = reranker.predict(
         rerank_inputs
     )
@@ -505,57 +793,8 @@ def hybrid_search(
     )
 
     # ========================================
-    # DISPLAY RETRIEVAL
-    # ========================================
-
-    print("===================================")
-    print("FINAL RERANKED RESULTS")
-    print("===================================\n")
-
-    for idx, result in enumerate(
-        final_results[:top_k]
-    ):
-
-        print(f"RESULT {idx + 1}\n")
-
-        print(
-            f"Rerank Score: "
-            f"{result['rerank_score']:.4f}"
-        )
-
-        print(
-            f"RRF Score: "
-            f"{result['rrf_score']:.6f}"
-        )
-
-        print(
-            f"Vector Score: "
-            f"{result['vector_score']:.4f}"
-        )
-
-        print("\nMetadata:\n")
-
-        for key, value in result[
-            "metadata"
-        ].items():
-
-            print(f"{key}: {value}")
-
-        print("\nContent:\n")
-
-        print(
-            result["document"][:1000]
-        )
-
-        print(
-            "\n-----------------------------------\n"
-        )
-
-    # ========================================
     # CONTEXT ENGINEERING
     # ========================================
-
-    print("\nBuilding optimized context...\n")
 
     context = build_context(
 
@@ -565,60 +804,43 @@ def hybrid_search(
     )
 
     # ========================================
-    # GENERATION
+    # SOURCES
     # ========================================
 
-    answer = generate_answer(
-        query=query,
-        context=context
-    )
+    sources = []
 
-    # ========================================
-    # FINAL ANSWER
-    # ========================================
+    for result in final_results[:top_k]:
 
-    print("\n===================================")
-    print("FINAL GENERATED ANSWER")
-    print("===================================\n")
+        metadata = result["metadata"]
 
-    print(answer)
+        sources.append(
 
-    print("\n===================================")
-    print("PIPELINE COMPLETE")
-    print("===================================\n")
+            SourceDocument(
 
+                source=metadata.get(
+                    "source"
+                ),
 
-# ============================================
-# INTERACTIVE LOOP
-# ============================================
+                section_title=metadata.get(
+                    "section_title"
+                ),
 
-def interactive_search():
+                content=result[
+                    "document"
+                ],
 
-    print("\n===================================")
-    print("ADVANCED RAG SYSTEM")
-    print("===================================\n")
+                rerank_score=float(
 
-    print("Type 'exit' to quit.\n")
-
-    while True:
-
-        query = input("Enter Query: ")
-
-        if query.lower() == "exit":
-
-            print("\nExiting.\n")
-
-            break
-
-        hybrid_search(
-            query=query
+                    result[
+                        "rerank_score"
+                    ]
+                )
+            )
         )
 
+    return {
 
-# ============================================
-# MAIN
-# ============================================
+        "context": context,
 
-if __name__ == "__main__":
-
-    interactive_search()
+        "sources": sources
+    }

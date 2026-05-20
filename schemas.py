@@ -1,22 +1,57 @@
-from dataclasses import dataclass, field
-from typing import Dict, List, Optional
+# ============================================
+# IMPORTS
+# ============================================
+
+from typing import List, Optional
+
+from pydantic import BaseModel
 
 
-@dataclass
-class Section:
-    content: str
+# ============================================
+# QUERY REQUEST
+# ============================================
+
+class QueryRequest(BaseModel):
+
+    query: str
+
+
+# ============================================
+# SOURCE MODEL
+# ============================================
+
+class SourceDocument(BaseModel):
+
+    source: Optional[str] = None
+
     section_title: Optional[str] = None
-    metadata: Dict = field(default_factory=dict)
 
-
-@dataclass
-class Document:
     content: str
-    metadata: Dict = field(default_factory=dict)
-    sections: List[Section] = field(default_factory=list)
+
+    rerank_score: float
 
 
-@dataclass
-class Chunk:
-    content: str
-    metadata: Dict = field(default_factory=dict)
+# ============================================
+# RAGAS RESPONSE
+# ============================================
+
+class RagasMetrics(BaseModel):
+
+    faithfulness: Optional[float] = None
+
+    answer_relevancy: Optional[float] = None
+
+
+# ============================================
+# QUERY RESPONSE
+# ============================================
+
+class QueryResponse(BaseModel):
+
+    query: str
+
+    answer: str
+
+    sources: List[SourceDocument]
+
+    ragas: Optional[RagasMetrics] = None
