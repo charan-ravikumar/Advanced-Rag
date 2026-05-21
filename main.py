@@ -53,6 +53,21 @@ from openinference.instrumentation.openai import (
 )
 
 
+from prometheus_client import (
+
+    generate_latest
+)
+
+from fastapi.responses import (
+    Response
+)
+
+from metrics import (
+    REQUEST_COUNT
+)
+
+
+
 # ============================================
 # OPENTELEMETRY SETUP
 # ============================================
@@ -120,6 +135,21 @@ def home():
 
 
 # ============================================
+# PROMETHEUS METRICS
+# ============================================
+
+@app.get("/metrics")
+
+def metrics():
+
+    return Response(
+
+        generate_latest(),
+
+        media_type="text/plain"
+    )
+
+# ============================================
 # STREAMING QUERY ENDPOINT
 # ============================================
 
@@ -135,6 +165,8 @@ def query_rag_stream(
     print("===================================\n")
 
     print(f"Query: {request.query}")
+
+    REQUEST_COUNT.inc()
 
     # ========================================
     # RETRIEVAL + CONTEXT

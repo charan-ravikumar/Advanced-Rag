@@ -47,6 +47,17 @@ from opentelemetry import trace
 tracer = trace.get_tracer(__name__)
 
 
+from metrics import (
+
+    RETRIEVAL_LATENCY,
+
+    RERANK_LATENCY,
+
+    GENERATION_LATENCY,
+
+    GENERATION_FAILURES
+)
+
 # ============================================
 # LOGGER
 # ============================================
@@ -371,6 +382,10 @@ def generate_answer_stream(
             f"{generation_latency:.2f}s"
         )
 
+        GENERATION_LATENCY.observe(
+        generation_latency
+        )
+
         logger.info(
             f"Approx streamed tokens: "
             f"{total_tokens}"
@@ -381,6 +396,8 @@ def generate_answer_stream(
         logger.exception(
             "Groq streaming failed."
         )
+
+        GENERATION_FAILURES.inc()
 
         # ====================================
         # GEMINI FALLBACK
@@ -910,6 +927,10 @@ def retrieve_and_build_context(
         f"{rerank_latency:.2f}s"
     )
 
+    RERANK_LATENCY.observe(
+    rerank_latency
+    )
+
     for idx, score in enumerate(
         rerank_scores
     ):
@@ -1008,6 +1029,12 @@ def retrieve_and_build_context(
         f"Total retrieval pipeline latency: "
         f"{total_latency:.2f}s"
     )
+
+
+    RETRIEVAL_LATENCY.observe(
+    total_latency
+    )
+    
 
     return {
 
