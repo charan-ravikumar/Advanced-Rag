@@ -9,9 +9,8 @@ from prometheus_client import (
     Histogram
 )
 
-
 # ============================================
-# REQUEST COUNTER
+# REQUESTS
 # ============================================
 
 REQUEST_COUNT = Counter(
@@ -21,9 +20,8 @@ REQUEST_COUNT = Counter(
     "Total RAG requests"
 )
 
-
 # ============================================
-# FAILURE COUNTER
+# FAILURES
 # ============================================
 
 GENERATION_FAILURES = Counter(
@@ -33,9 +31,8 @@ GENERATION_FAILURES = Counter(
     "Total failed generations"
 )
 
-
 # ============================================
-# LATENCY HISTOGRAMS
+# LATENCIES
 # ============================================
 
 RETRIEVAL_LATENCY = Histogram(
@@ -57,4 +54,36 @@ GENERATION_LATENCY = Histogram(
     "generation_latency_seconds",
 
     "Generation latency"
+)
+
+# ============================================
+# CACHE METRICS
+# ============================================
+
+CACHE_HITS = Counter(
+
+    "cache_hits_total",
+
+    "Total cache hits"
+)
+
+CACHE_MISSES = Counter(
+
+    "cache_misses_total",
+
+    "Total cache misses"
+)
+
+TOKENS_SAVED = Counter(
+
+    "tokens_saved_total",
+
+    "Total tokens saved via caching"
+)
+
+LATENCY_SAVED = Counter(
+
+    "latency_saved_seconds_total",
+
+    "Total latency saved via caching"
 )
