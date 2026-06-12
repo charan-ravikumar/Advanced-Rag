@@ -87,3 +87,14 @@ LATENCY_SAVED = Counter(
 
     "Total latency saved via caching"
 )
+
+# ============================================
+# CACHE HIT LATENCY
+# ============================================
+
+CACHE_HIT_LATENCY = Histogram(
+
+    "cache_hit_latency_seconds",
+
+    "Time taken to serve a cache hit response"
+)

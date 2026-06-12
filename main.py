@@ -5,7 +5,7 @@
 import json
 import time
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 
 from fastapi.responses import (
 
@@ -29,7 +29,13 @@ from cache import (
 
     get_cached_response,
 
-    set_cached_response
+    set_cached_response,
+
+    flush_cache,
+
+    cache_size,
+
+    ping_redis
 )
 
 from metrics import (
@@ -42,7 +48,9 @@ from metrics import (
 
     TOKENS_SAVED,
 
-    LATENCY_SAVED
+    LATENCY_SAVED,
+
+    CACHE_HIT_LATENCY
 )
 
 # ============================================
@@ -130,10 +138,15 @@ app = FastAPI(
 
 def home():
 
+    redis_ok = ping_redis()
+
     return {
 
         "message":
-        "Advanced RAG API Running"
+        "Advanced RAG API Running",
+
+        "redis_status":
+        "ok" if redis_ok else "unavailable"
     }
 
 # ============================================
@@ -150,6 +163,82 @@ def metrics():
 
         media_type="text/plain"
     )
+
+# ============================================
+# CACHE STATS
+# ============================================
+
+@app.get("/cache/stats")
+
+def cache_stats():
+    """
+    Returns a snapshot of cache activity:
+    active key count plus Prometheus counters.
+    The Prometheus counters are cumulative since
+    process start (reset on restart).
+    """
+
+    from prometheus_client import (
+        REGISTRY
+    )
+
+    def _counter_value(name):
+
+        try:
+
+            samples = REGISTRY.get_sample_value(
+                name
+            )
+
+            return float(samples) if samples is not None else 0.0
+
+        except Exception:
+
+            return 0.0
+
+    return {
+
+        "redis_status":
+        "ok" if ping_redis() else "unavailable",
+
+        "active_cache_keys":
+        cache_size(),
+
+        "cache_hits_total":
+        _counter_value("cache_hits_total"),
+
+        "cache_misses_total":
+        _counter_value("cache_misses_total"),
+
+        "tokens_saved_total":
+        _counter_value("tokens_saved_total"),
+
+        "latency_saved_seconds_total":
+        _counter_value(
+            "latency_saved_seconds_total"
+        )
+    }
+
+# ============================================
+# CACHE FLUSH
+# ============================================
+
+@app.post("/cache/flush")
+
+def cache_flush():
+    """
+    Deletes all rag:cache:* keys from Redis.
+    Returns the number of keys deleted.
+    """
+
+    deleted = flush_cache()
+
+    return {
+
+        "status": "ok",
+
+        "keys_deleted": deleted
+    }
 
 # ============================================
 # STREAMING QUERY ENDPOINT
@@ -186,12 +275,20 @@ def query_rag_stream(
 
         CACHE_HITS.inc()
 
+        cache_hit_latency = (
+            time.time()
+            - request_start_time
+        )
+
+        CACHE_HIT_LATENCY.observe(
+            cache_hit_latency
+        )
+
         # ====================================
-        # REAL TOKEN SAVINGS
+        # TOKEN SAVINGS
         # ====================================
 
         cached_tokens = len(
-
             cached_response.split()
         )
 
@@ -201,12 +298,14 @@ def query_rag_stream(
 
         # ====================================
         # REAL LATENCY SAVINGS
+        # Estimated as: avg miss latency
+        # minus the time taken for this hit.
+        # We use a conservative 6s baseline
+        # for an average uncached pipeline run.
         # ====================================
 
-        estimated_saved_latency = 8.0
-
         LATENCY_SAVED.inc(
-            estimated_saved_latency
+            max(0.0, 6.0 - cache_hit_latency)
         )
 
         def cached_generator():
@@ -271,7 +370,7 @@ def query_rag_stream(
         )
 
         # ====================================
-        # REAL LATENCY SAVED BASELINE
+        # REAL REQUEST LATENCY BASELINE
         # ====================================
 
         total_request_latency = (

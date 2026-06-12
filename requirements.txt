@@ -162,6 +162,7 @@ pyxnat==1.6.4
 PyYAML==6.0.3
 ragas==0.4.3
 rank-bm25==0.2.2
+redis>=5.0.0
 RapidFuzz==3.14.5
 rdflib==7.6.0
 referencing==0.37.0
