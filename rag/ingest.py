@@ -1,11 +1,10 @@
 import os
 
-from loaders import load_document
-from chunkers import CHUNKER_MAP
-from embeddings import embedding_pipeline
+from rag.loaders import load_document
+from rag.chunkers import CHUNKER_MAP
+from rag.embeddings import embedding_pipeline
 
-
-from vectordb import push_to_chromadb
+from db.vectordb import push_to_chromadb
 
 # ============================================
 # CONFIG
@@ -26,6 +25,7 @@ CHUNKING_MAP = {
 # ============================================
 # INGESTION
 # ============================================
+
 def ingest_folder(folder_path):
 
     all_chunks = []
@@ -57,15 +57,6 @@ def ingest_folder(folder_path):
                 file_type = document.metadata.get(
                     "file_type"
                 )
-
-                CHUNKING_MAP = {
-                    ".pdf": "layout",
-                    ".docx": "layout",
-                    ".html": "layout",
-                    ".md": "layout",
-                    ".txt": "semantic",
-                    ".xlsx": "layout"
-                }
 
                 strategy = CHUNKING_MAP.get(
                     file_type,
@@ -105,8 +96,6 @@ def ingest_folder(folder_path):
 if __name__ == "__main__":
 
     chunks = ingest_folder(DATA_FOLDER)
-
-    
 
     embedded_chunks = embedding_pipeline(
         chunks

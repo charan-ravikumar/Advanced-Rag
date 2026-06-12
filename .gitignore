@@ -1,5 +1,6 @@
 venv/
 __pycache__/
+**/__pycache__/
 
 .env
 
@@ -8,7 +9,7 @@ __pycache__/
 embedded_chunks.json
 chroma_db/
 
-Data/
+data/
 
 *.pyc
 *.pyo

@@ -18,9 +18,9 @@ from sentence_transformers import (
 
 from rank_bm25 import BM25Okapi
 
-from vectordb import collection
+from db.vectordb import collection
 
-from context_builder import (
+from rag.context_builder import (
     build_context
 )
 
@@ -34,7 +34,7 @@ from langchain_huggingface import (
     HuggingFaceEmbeddings
 )
 
-from logger_config import (
+from observability.logger_config import (
     get_logger
 )
 
@@ -47,7 +47,7 @@ from opentelemetry import trace
 tracer = trace.get_tracer(__name__)
 
 
-from metrics import (
+from observability.metrics import (
 
     RETRIEVAL_LATENCY,
 
@@ -1030,11 +1030,9 @@ def retrieve_and_build_context(
         f"{total_latency:.2f}s"
     )
 
-
     RETRIEVAL_LATENCY.observe(
     total_latency
     )
-    
 
     return {
 

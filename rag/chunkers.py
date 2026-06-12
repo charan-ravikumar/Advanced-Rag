@@ -1,3 +1,5 @@
+import re
+
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
@@ -63,14 +65,6 @@ def layout_chunk(document):
         )
 
     return chunks
-
-
-import re
-
-from sentence_transformers import SentenceTransformer
-from sklearn.metrics.pairwise import cosine_similarity
-
-from schemas import Chunk
 
 
 # ============================================

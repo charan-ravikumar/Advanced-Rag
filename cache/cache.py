@@ -11,7 +11,7 @@ import redis
 
 from dotenv import load_dotenv
 
-from logger_config import get_logger
+from observability.logger_config import get_logger
 
 
 # ============================================

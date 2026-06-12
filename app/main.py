@@ -18,14 +18,14 @@ from schemas import (
     QueryRequest
 )
 
-from query import (
+from rag.query import (
 
     retrieve_and_build_context,
 
     generate_answer_stream
 )
 
-from cache import (
+from cache.cache import (
 
     get_cached_response,
 
@@ -38,7 +38,7 @@ from cache import (
     ping_redis
 )
 
-from metrics import (
+from observability.metrics import (
 
     REQUEST_COUNT,
 
