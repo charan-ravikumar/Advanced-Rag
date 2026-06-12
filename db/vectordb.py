@@ -150,3 +150,66 @@ def push_to_chromadb(embedded_chunks):
         f"Collection Count: "
         f"{collection.count()}"
     )
+
+
+# ============================================
+# CLEAR COLLECTION
+# ============================================
+
+def clear_collection():
+    """
+    Deletes and recreates the collection,
+    giving a completely empty slate.
+    Returns the number of documents that
+    were deleted.
+    """
+
+    global collection
+
+    print("\n===================================")
+    print("CLEARING CHROMADB COLLECTION")
+    print("===================================\n")
+
+    count_before = collection.count()
+
+    print(
+        f"Documents before clear: "
+        f"{count_before}\n"
+    )
+
+    client.delete_collection(
+        name=COLLECTION_NAME
+    )
+
+    collection = client.get_or_create_collection(
+        name=COLLECTION_NAME,
+        metadata={
+            "description":
+            "Advanced RAG chunk embeddings"
+        }
+    )
+
+    print(
+        f"Collection '{COLLECTION_NAME}' "
+        f"cleared and recreated.\n"
+    )
+
+    print("===================================\n")
+
+    return count_before
+
+
+# ============================================
+# LIVE COLLECTION COUNT
+# ============================================
+
+def get_collection_count() -> int:
+    """
+    Returns the current document count using the
+    live module-level collection reference.
+    Safe to call after clear_collection() because
+    it always reads the current global, not a
+    stale import-time binding.
+    """
+
+    return collection.count()

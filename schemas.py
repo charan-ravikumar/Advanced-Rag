@@ -2,9 +2,46 @@
 # IMPORTS
 # ============================================
 
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+
+
+# ============================================
+# INGESTION MODELS
+# ============================================
+
+class Section(BaseModel):
+
+    content: str
+
+    section_title: str = ""
+
+    metadata: Dict[str, Any] = Field(
+        default_factory=dict
+    )
+
+
+class Document(BaseModel):
+
+    content: str
+
+    metadata: Dict[str, Any] = Field(
+        default_factory=dict
+    )
+
+    sections: List[Section] = Field(
+        default_factory=list
+    )
+
+
+class Chunk(BaseModel):
+
+    content: str
+
+    metadata: Dict[str, Any] = Field(
+        default_factory=dict
+    )
 
 
 # ============================================
