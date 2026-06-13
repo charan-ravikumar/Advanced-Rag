@@ -68,6 +68,7 @@ logger = get_logger(__name__)
 # ============================================================
 
 EVAL_DIR        = ROOT / "evaluation"
+CHECKPOINT_DIR  = EVAL_DIR / "checkpoints"
 QASPER_CACHE    = ROOT / ".cache" / "qasper" / "qasper-train-v0.3.json"
 CHROMA_CACHE    = ROOT / ".cache" / "chroma_docs_cache.json"
 
@@ -76,6 +77,7 @@ N_QUESTIONS     = 100
 CANDIDATE_K     = 20
 MATCH_THRESHOLD = 0.25   # unigram token-F1 for "chunk is relevant"
 RRF_K           = 60
+GROQ_SLEEP      = 1.5    # seconds between Groq calls (rate limit + port pressure)
 
 EMBEDDING_MODEL = "all-MiniLM-L6-v2"
 RERANKER_MODEL  = "BAAI/bge-reranker-base"
@@ -104,6 +106,79 @@ class RetrievedResult:
     context:           str
     retrieval_latency: float
     reranker_latency:  float = 0.0
+
+
+# ============================================================
+# CHECKPOINT HELPERS
+# ============================================================
+
+def _cp_path(name: str) -> Path:
+    CHECKPOINT_DIR.mkdir(parents=True, exist_ok=True)
+    return CHECKPOINT_DIR / f"{name}.jsonl"
+
+
+def _load_checkpoint(name: str) -> dict:
+    """Returns {question_text: row_dict} for all completed questions."""
+    p = _cp_path(name)
+    if not p.exists():
+        return {}
+    completed = {}
+    with open(p) as f:
+        for line in f:
+            line = line.strip()
+            if line:
+                try:
+                    item = json.loads(line)
+                    completed[item["question"]] = item
+                except json.JSONDecodeError:
+                    pass
+    return completed
+
+
+def _append_checkpoint(name: str, row: dict) -> None:
+    with open(_cp_path(name), "a") as f:
+        f.write(json.dumps(row) + "\n")
+
+
+def clear_checkpoints() -> None:
+    import shutil
+    if CHECKPOINT_DIR.exists():
+        shutil.rmtree(CHECKPOINT_DIR)
+        logger.info(f"Cleared checkpoints: {CHECKPOINT_DIR}")
+
+
+# ============================================================
+# CHROMADB QUERY WITH RETRY
+# ============================================================
+
+def _chromadb_query(
+    query_emb: list,
+    n_results: int,
+    where: Optional[dict] = None,
+    max_retries: int = 6,
+) -> dict:
+    """
+    Wraps collection.query() with exponential-backoff retry.
+    Handles transient network errors (port exhaustion, timeouts, etc.).
+    """
+    for attempt in range(max_retries):
+        try:
+            return collection.query(
+                query_embeddings=[query_emb],
+                n_results=n_results,
+                where=where,
+            )
+        except Exception as e:
+            if attempt < max_retries - 1:
+                wait = min(2 ** attempt, 60)
+                logger.warning(
+                    f"ChromaDB query failed (attempt {attempt + 1}/{max_retries}): "
+                    f"{type(e).__name__}: {e}. Retrying in {wait}s..."
+                )
+                time.sleep(wait)
+            else:
+                logger.error("ChromaDB query failed after all retries.")
+                raise
 
 
 # ============================================================
@@ -309,8 +384,8 @@ class RAGRetriever:
 
         n_results = min(candidate_k, max(len(self.docs), 1))
 
-        vec_res = collection.query(
-            query_embeddings=[query_emb],
+        vec_res = _chromadb_query(
+            query_emb=query_emb,
             n_results=n_results,
             where=where,
         )
@@ -573,7 +648,25 @@ def run_chunking_eval(
         faith_list, rel_list = [], []
         ret_lats, rerank_lats, total_lats = [], [], []
 
+        cp_name = f"eval1_{strategy}"
+        completed = _load_checkpoint(cp_name)
+        if completed:
+            logger.info(f"  Resuming {strategy}: {len(completed)} questions already done")
+
         for i, qa in enumerate(subset):
+            # ── Resume from checkpoint ──────────────────────
+            if qa.question in completed:
+                cp = completed[qa.question]
+                r5_list.append(cp["r5"])
+                r10_list.append(cp["r10"])
+                mrr_list.append(cp["mrr"])
+                faith_list.append(cp["faith"])
+                rel_list.append(cp["rel"])
+                ret_lats.append(cp["ret_lat"])
+                rerank_lats.append(cp["rerank_lat"])
+                total_lats.append(cp["total_lat"])
+                continue
+
             logger.info(f"  [{i+1}/{len(subset)}] {qa.question[:65]}...")
 
             result = retriever.retrieve(
@@ -581,9 +674,12 @@ def run_chunking_eval(
                 use_bm25=True, use_rrf=True, use_reranker=True,
             )
 
-            r5_list.append(recall_at_k(qa.gold_evidence, result.chunks, 5))
-            r10_list.append(recall_at_k(qa.gold_evidence, result.chunks, 10))
-            mrr_list.append(mrr_score(qa.gold_evidence, result.chunks))
+            r5   = recall_at_k(qa.gold_evidence, result.chunks, 5)
+            r10  = recall_at_k(qa.gold_evidence, result.chunks, 10)
+            mrr  = mrr_score(qa.gold_evidence, result.chunks)
+            r5_list.append(r5)
+            r10_list.append(r10)
+            mrr_list.append(mrr)
             ret_lats.append(result.retrieval_latency)
             rerank_lats.append(result.reranker_latency)
 
@@ -594,11 +690,22 @@ def run_chunking_eval(
                 answer, gen_lat = generate_answer(qa.question, result.context)
                 faith = score_faithfulness(result.context, answer)
                 rel   = score_relevancy(qa.question, answer)
-                time.sleep(0.3)   # Groq rate limit
+                time.sleep(GROQ_SLEEP)
 
             faith_list.append(faith)
             rel_list.append(rel)
-            total_lats.append(result.retrieval_latency + result.reranker_latency + gen_lat)
+            tot = result.retrieval_latency + result.reranker_latency + gen_lat
+            total_lats.append(tot)
+
+            # ── Save per-question checkpoint ────────────────
+            _append_checkpoint(cp_name, {
+                "question": qa.question,
+                "r5": r5, "r10": r10, "mrr": mrr,
+                "faith": faith, "rel": rel,
+                "ret_lat": result.retrieval_latency,
+                "rerank_lat": result.reranker_latency,
+                "total_lat": tot,
+            })
 
         all_latencies[strategy] = {
             "retrieval": ret_lats,
@@ -672,7 +779,25 @@ def run_ablation_eval(
         faith_list, rel_list = [], []
         ret_lats, rerank_lats, total_lats = [], [], []
 
+        cp_name = f"eval2_{cfg['name'].replace(' ', '_').replace('(', '').replace(')', '').replace('+', 'plus')}"
+        completed = _load_checkpoint(cp_name)
+        if completed:
+            logger.info(f"  Resuming {cfg['name']}: {len(completed)} questions already done")
+
         for i, qa in enumerate(subset):
+            # ── Resume from checkpoint ──────────────────────
+            if qa.question in completed:
+                cp = completed[qa.question]
+                r5_list.append(cp["r5"])
+                r10_list.append(cp["r10"])
+                mrr_list.append(cp["mrr"])
+                faith_list.append(cp["faith"])
+                rel_list.append(cp["rel"])
+                ret_lats.append(cp["ret_lat"])
+                rerank_lats.append(cp["rerank_lat"])
+                total_lats.append(cp["total_lat"])
+                continue
+
             logger.info(f"  [{i+1}/{len(subset)}] {qa.question[:65]}...")
 
             result = retriever.retrieve(
@@ -682,9 +807,12 @@ def run_ablation_eval(
                 use_reranker=cfg["use_reranker"],
             )
 
-            r5_list.append(recall_at_k(qa.gold_evidence, result.chunks, 5))
-            r10_list.append(recall_at_k(qa.gold_evidence, result.chunks, 10))
-            mrr_list.append(mrr_score(qa.gold_evidence, result.chunks))
+            r5   = recall_at_k(qa.gold_evidence, result.chunks, 5)
+            r10  = recall_at_k(qa.gold_evidence, result.chunks, 10)
+            mrr  = mrr_score(qa.gold_evidence, result.chunks)
+            r5_list.append(r5)
+            r10_list.append(r10)
+            mrr_list.append(mrr)
             ret_lats.append(result.retrieval_latency)
             rerank_lats.append(result.reranker_latency)
 
@@ -695,11 +823,22 @@ def run_ablation_eval(
                 answer, gen_lat = generate_answer(qa.question, result.context)
                 faith = score_faithfulness(result.context, answer)
                 rel   = score_relevancy(qa.question, answer)
-                time.sleep(0.3)
+                time.sleep(GROQ_SLEEP)
 
             faith_list.append(faith)
             rel_list.append(rel)
-            total_lats.append(result.retrieval_latency + result.reranker_latency + gen_lat)
+            tot = result.retrieval_latency + result.reranker_latency + gen_lat
+            total_lats.append(tot)
+
+            # ── Save per-question checkpoint ────────────────
+            _append_checkpoint(cp_name, {
+                "question": qa.question,
+                "r5": r5, "r10": r10, "mrr": mrr,
+                "faith": faith, "rel": rel,
+                "ret_lat": result.retrieval_latency,
+                "rerank_lat": result.reranker_latency,
+                "total_lat": tot,
+            })
 
         all_latencies_ablation[cfg["name"]] = {
             "retrieval": ret_lats,
@@ -929,7 +1068,10 @@ def build_summary(
     prod     = ablation_rows[-1]
 
     def pct(a, b):
-        return round((a - b) / (b + 1e-9) * 100, 1)
+        """Percentage improvement; returns 0 when baseline is near-zero."""
+        if abs(b) < 1e-6:
+            return 0.0
+        return round((a - b) / b * 100, 1)
 
     r5_overall     = pct(prod["recall_at_5"],   baseline["recall_at_5"])
     mrr_overall    = pct(prod["mrr"],            baseline["mrr"])
@@ -1059,11 +1201,13 @@ def update_readme(
     prod     = ablation_rows[-1]
 
     def pct(a, b):
-        return round((a - b) / (b + 1e-9) * 100, 1)
+        if abs(b) < 1e-6:
+            return 0.0
+        return round((a - b) / b * 100, 1)
 
-    r5_overall    = pct(prod["recall_at_5"],  baseline["recall_at_5"])
     mrr_overall   = pct(prod["mrr"],           baseline["mrr"])
     faith_overall = pct(prod["faithfulness"], baseline["faithfulness"])
+    r5_overall    = pct(prod["recall_at_5"],  baseline["recall_at_5"])
     hybrid_r5     = pct(hybrid["recall_at_5"], baseline["recall_at_5"])
     rrf_mrr       = pct(rrf_row["mrr"],        hybrid["mrr"])
     rerank_faith  = pct(prod["faithfulness"],  rrf_row["faithfulness"])
@@ -1142,7 +1286,9 @@ def _print_summary(
 ) -> None:
 
     def pct(a, b):
-        return round((a - b) / (b + 1e-9) * 100, 1)
+        if abs(b) < 1e-6:
+            return 0.0
+        return round((a - b) / b * 100, 1)
 
     best_c   = next(r for r in chunking_rows if r["strategy"] == best_strategy)
     baseline = ablation_rows[0]
@@ -1197,11 +1343,16 @@ def main():
                         help=f"Limit to N questions (default {N_QUESTIONS})")
     parser.add_argument("--clear-cache", action="store_true",
                         help="Force re-download of ChromaDB docs cache")
+    parser.add_argument("--clear-checkpoints", action="store_true",
+                        help="Delete saved per-question checkpoints and start fresh")
     args = parser.parse_args()
 
     if args.clear_cache and CHROMA_CACHE.exists():
         CHROMA_CACHE.unlink()
         logger.info("ChromaDB cache cleared.")
+
+    if args.clear_checkpoints:
+        clear_checkpoints()
 
     EVAL_DIR.mkdir(parents=True, exist_ok=True)
 
