@@ -76,9 +76,9 @@ logger = get_logger(__name__)
 # CONFIG
 # ============================================
 
-MAX_PAPERS = int(
-    os.getenv("QASPER_MAX_PAPERS", 30)
-)
+# None = ingest all papers; set QASPER_MAX_PAPERS=N to limit
+_max_env = os.getenv("QASPER_MAX_PAPERS", "")
+MAX_PAPERS: int | None = int(_max_env) if _max_env.strip().isdigit() else None
 
 SPLIT = os.getenv(
     "QASPER_SPLIT", "train"
@@ -294,10 +294,11 @@ def paper_to_document(paper: dict) -> Document:
     return Document(
         content=full_content,
         metadata={
-            "source":    title,
-            "paper_id":  paper_id,
-            "title":     title,
-            "file_type": "qasper"
+            "source":      title,
+            "paper_id":    paper_id,
+            "title":       title,
+            "paper_title": title,
+            "file_type":   "qasper"
         },
         sections=sections
     )
@@ -351,7 +352,7 @@ def main():
     print("===================================\n")
 
     print(f"Split:      {SPLIT}")
-    print(f"Max papers: {MAX_PAPERS}")
+    print(f"Max papers: {MAX_PAPERS if MAX_PAPERS else 'ALL'}")
     print(f"Strategies: {STRATEGIES}\n")
 
     # ----------------------------------------
@@ -369,7 +370,9 @@ def main():
     # 2. LOAD QASPER
     # ----------------------------------------
 
-    papers = load_qasper_split(SPLIT)[:MAX_PAPERS]
+    papers = load_qasper_split(SPLIT)
+    if MAX_PAPERS is not None:
+        papers = papers[:MAX_PAPERS]
 
     logger.info(
         f"Loaded {len(papers)} papers."
