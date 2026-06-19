@@ -1,0 +1,993 @@
+{
+  "seed": 42,
+  "n_questions": 100,
+  "created_at": "2026-06-14T06:26:18.948823",
+  "questions": [
+    {
+      "paper_id": "1712.00609",
+      "paper_title": "Improving Visually Grounded Sentence Representations with Self-Attention",
+      "question": "How much better performing is the proposed method over the baselines?",
+      "gold_answer": "original models were better in some tasks (CR, MPQA, MRPC) utilizing self-attentive sentence representation further improves performances in 5 out of 8 tasks",
+      "gold_evidence": [
+        "Results are shown in Table TABREF11 . Results show that incorporating self-attention mechanism in the encoder is beneficial for most tasks. However, original models were better in some tasks (CR, MPQA, MRPC), suggesting that self-attention mechanism could sometimes introduce noise in sentence features. Overall, utilizing self-attentive sentence representation further improves performances in 5 out of 8 tasks. Considering that models with self-attention employ smaller LSTM cells (1024) than those without (2048) (Section SECREF6 ), the performance improvements are significant. Results on COCO5K image and caption retrieval tasks (not included in the paper due to limited space) show comparable performances to other more specialized methods BIBREF10 , BIBREF39 ."
+      ]
+    },
+    {
+      "paper_id": "1702.06378",
+      "paper_title": "Multitask Learning with CTC and Segmental CRF for Speech Recognition",
+      "question": "Can SCRF be used to pretrain the model?",
+      "gold_answer": "no",
+      "gold_evidence": [
+        "One of the major drawbacks of SCRF models is their high computational cost. In our experiments, the CTC model is around 3\u20134 times faster than the SRNN model that uses the same RNN encoder. The joint model by multitask learning is slightly more expensive than the stand-alone SRNN model. To cut down the computational cost, we investigated if CTC can be used to pretrain the RNN encoder to speed up the training of the joint model. This is analogous to sequence training of HMM acoustic models, where the network is usually pretrained by the frame-level CE criterion. Figure 2 shows the convergence curves of the joint model with and without CTC pretraining, and we see pretraining indeed improves the convergence speed of the joint model."
+      ]
+    },
+    {
+      "paper_id": "1712.09127",
+      "paper_title": "Generative Adversarial Nets for Multiple Text Corpora",
+      "question": "Which GAN do they use?",
+      "gold_answer": "We construct a GAN model which combines different sets of word embeddings INLINEFORM4 , INLINEFORM5 , into a single set of word embeddings INLINEFORM6 . ",
+      "gold_evidence": [
+        "We assume that for each corpora INLINEFORM0 , we are given word embeddings for each word INLINEFORM1 , where INLINEFORM2 is the dimension of each word embedding. We are also given a classification task on documents that is represented by a parametric model INLINEFORM3 taking document embeddings as feature vectors. We construct a GAN model which combines different sets of word embeddings INLINEFORM4 , INLINEFORM5 , into a single set of word embeddings INLINEFORM6 . Note that INLINEFORM7 are given but INLINEFORM8 is trained. Here we consider INLINEFORM9 as the generator, and the goal of the discriminator is to distinguish documents represented by the original embeddings INLINEFORM10 and the same documents represented by the new embeddings INLINEFORM11 ."
+      ]
+    },
+    {
+      "paper_id": "1911.11951",
+      "paper_title": "Taking a Stance on Fake News: Towards Automatic Disinformation Assessment via Deep Bidirectional Transformer Language Models for Stance Detection",
+      "question": "What are the state-of-the-art models for the task?",
+      "gold_answer": "To the best of our knowledge, our method achieves state-of-the-art results in weighted-accuracy and standard accuracy on the dataset",
+      "gold_evidence": [
+        "FLOAT SELECTED: Table 2: Performance of various methods on the FNC-I benchmark. The first and second groups are methods introduced during and after the challenge period, respectively. Best results are in bold.",
+        "Results of our proposed method, the top three methods in the original Fake News Challenge, and the best-performing methods since the challenge's conclusion on the FNC-I test set are displayed in Table TABREF12. A confusion matrix for our method is presented in the Appendix. To the best of our knowledge, our method achieves state-of-the-art results in weighted-accuracy and standard accuracy on the dataset. Notably, since the conclusion of the Fake News Challenge in 2017, the weighted-accuracy error-rate has decreased by 8%, signifying improved performance of NLP models and innovations in the domain of stance detection, as well as a continued interest in combating the spread of disinformation."
+      ]
+    },
+    {
+      "paper_id": "1710.07395",
+      "paper_title": "Detecting Online Hate Speech Using Context Aware Models",
+      "question": "What is their definition of hate speech?",
+      "gold_answer": "language which explicitly or implicitly threatens or demeans a person or a group based upon a facet of their identity such as gender, ethnicity, or sexual orientation",
+      "gold_evidence": [
+        "Our annotation guidelines are similar to the guidelines used by BIBREF9 . We define hateful speech to be the language which explicitly or implicitly threatens or demeans a person or a group based upon a facet of their identity such as gender, ethnicity, or sexual orientation. The labeling of hateful speech in our corpus is binary. A comment will be labeled as hateful or non-hateful."
+      ]
+    },
+    {
+      "paper_id": "1904.07342",
+      "paper_title": "Learning Twitter User Sentiments on Climate Change with Limited Labeled Data",
+      "question": "Do the authors mention any confounds to their study?",
+      "gold_answer": "no",
+      "gold_evidence": [
+        "There are several caveats in our work: first, tweet sentiment is rarely binary (this work could be extended to a multinomial or continuous model). Second, our results are constrained to Twitter users, who are known to be more negative than the general U.S. population BIBREF9 . Third, we do not take into account the aggregate effects of continued natural disasters over time. Going forward, there is clear demand in discovering whether social networks can indicate environmental metrics in a \u201cnowcasting\" fashion. As climate change becomes more extreme, it remains to be seen what degree of predictive power exists in our current model regarding climate change sentiments with regards to natural disasters."
+      ]
+    },
+    {
+      "paper_id": "1907.01413",
+      "paper_title": "Speaker-independent classification of phonetic segments from raw ultrasound in child speech",
+      "question": "How many speakers do they have in the dataset?",
+      "gold_answer": "58",
+      "gold_evidence": [
+        "We use the Ultrax Typically Developing dataset (UXTD) from the publicly available UltraSuite repository BIBREF19 . This dataset contains synchronized acoustic and ultrasound data from 58 typically developing children, aged 5-12 years old (31 female, 27 male). The data was aligned at the phone-level, according to the methods described in BIBREF19 , BIBREF25 . For this work, we discarded the acoustic data and focused only on the B-Mode ultrasound images capturing a midsaggital view of the tongue. The data was recorded using an Ultrasonix SonixRP machine using Articulate Assistant Advanced (AAA) software at INLINEFORM0 121fps with a 135 field of view. A single ultrasound frame consists of 412 echo returns from each of the 63 scan lines (63x412 raw frames). For this work, we only use UXTD type A (semantically unrelated words, such as pack, tap, peak, tea, oak, toe) and type B (non-words designed to elicit the articulation of target phones, such as apa, eepee, opo) utterances."
+      ]
+    },
+    {
+      "paper_id": "1706.08032",
+      "paper_title": "A Deep Neural Architecture for Sentence-level Sentiment Classification in Twitter Social Networking",
+      "question": "What was the baseline?",
+      "gold_answer": "We compare our model performance with the approaches of BIBREF0 BIBREF5 on STS Corpus. BIBREF0 reported the results of Maximum Entropy (MaxEnt), NB, SVM on STS Corpus having good performance in previous time. The model of BIBREF5 is a state-of-the-art so far by using a CharSCNN. we compare results with the model of BIBREF14 that used a ensemble of multiple base classifiers (ENS) such as NB, Random Forest (RF), SVM and Logistic Regression (LR). The ENS model is combined with bag-of-words (BoW), feature hashing (FH) and lexicons. The model of BIBREF14 is a state-of-the-art on Sanders and HCR datasets. ",
+      "gold_evidence": [
+        "Table IV shows the result of our model for sentiment classification against other models. We compare our model performance with the approaches of BIBREF0 BIBREF5 on STS Corpus. BIBREF0 reported the results of Maximum Entropy (MaxEnt), NB, SVM on STS Corpus having good performance in previous time. The model of BIBREF5 is a state-of-the-art so far by using a CharSCNN. As can be seen, 86.63 is the best prediction accuracy of our model so far for the STS Corpus.",
+        "For Sanders and HCR datasets, we compare results with the model of BIBREF14 that used a ensemble of multiple base classifiers (ENS) such as NB, Random Forest (RF), SVM and Logistic Regression (LR). The ENS model is combined with bag-of-words (BoW), feature hashing (FH) and lexicons. The model of BIBREF14 is a state-of-the-art on Sanders and HCR datasets. Our models outperform the model of BIBREF14 for the Sanders dataset and HCR dataset."
+      ]
+    },
+    {
+      "paper_id": "1911.05960",
+      "paper_title": "Contextual Recurrent Units for Cloze-style Reading Comprehension",
+      "question": "What supports the claim that injected CNN into recurent units will enhance ability of the model to catch local context and reduce ambiguities?",
+      "gold_answer": "word embeddings to generate a new feature, i.e., summarizing a local context",
+      "gold_evidence": [
+        "The embedding-wise convolution is to apply a convolution filter w $\\in \\mathbb {R}^{\\mathcal {\\\\}k*d}$ to a window of $k$ word embeddings to generate a new feature, i.e., summarizing a local context of $k$ words. This can be formulated as",
+        "By applying the convolutional filter to all possible windows in the sentence, a feature map $c$ will be generated. In this paper, we apply a same-length convolution (length of the sentence does not change), i.e. $c \\in \\mathbb {R}^{\\mathcal {\\\\}n*1}$. Then we apply $d$ filters with the same window size to obtain multiple feature maps. So the final output of CNN has the shape of $C \\in \\mathbb {R}^{\\mathcal {\\\\}n*d}$, which is exactly the same size as $n$ word embeddings, which enables us to do exact word-level attention in various tasks."
+      ]
+    },
+    {
+      "paper_id": "1704.05572",
+      "paper_title": "Answering Complex Questions Using Open Information Extraction",
+      "question": "Can the method answer multi-hop questions?",
+      "gold_answer": "yes",
+      "gold_evidence": [
+        "Its worth mentioning that TupleInf only combines parallel evidence i.e. each tuple must connect words in the question to the answer choice. For reliable multi-hop reasoning using OpenIE tuples, we can add inter-tuple connections to the support graph search, controlled by a small number of rules over the OpenIE predicates. Learning such rules for the Science domain is an open problem and potential avenue of future work."
+      ]
+    },
+    {
+      "paper_id": "1908.04531",
+      "paper_title": "Offensive Language and Hate Speech Detection for Danish",
+      "question": "How large was the dataset of Danish comments?",
+      "gold_answer": "3600 user-generated comments",
+      "gold_evidence": [
+        "We published a survey on Reddit asking Danish speaking users to suggest offensive, sexist, and racist terms for a lexicon. Language and user behaviour varies between platforms, so the goal is to capture platform-specific terms. This gave 113 offensive and hateful terms which were used to find offensive comments. The remainder of comments in the corpus were shuffled and a subset of this corpus was then used to fill the remainder of the final dataset. The resulting dataset contains 3600 user-generated comments, 800 from Ekstra Bladet on Facebook, 1400 from r/DANMAG and 1400 from r/Denmark. In light of the General Data Protection Regulations in Europe (GDPR) and the increased concern for online privacy, we applied some necessary pre-processing steps on our dataset to ensure the privacy of the authors of the comments that were used. Personally identifying content (such as the names of individuals, not including celebrity names) was removed. This was handled by replacing each name of an individual (i.e. author or subject) with @USER, as presented in both BIBREF0 and BIBREF2 . All comments containing any sensitive information were removed. We classify sensitive information as any information that can be used to uniquely identify someone by the following characteristics; racial or ethnic origin, political opinions, religious or philosophical beliefs, trade union membership, genetic data, and bio-metric data."
+      ]
+    },
+    {
+      "paper_id": "2002.01861",
+      "paper_title": "Rapid Adaptation of BERT for Information Extraction on Domain-Specific Business Documents",
+      "question": "What evaluation metric were used for presenting results?",
+      "gold_answer": "F$_1$, precision, and recall",
+      "gold_evidence": [
+        "Our main results are presented in Table TABREF6 on the test set of the regulatory filings and in Table TABREF7 on the test set of the property lease agreements; F$_1$, precision, and recall are computed in the manner described above. We show metrics across all content elements (micro-averaged) as well as broken down by types. For the property lease agreements, we show results on all documents (left) and only over those with unseen templates (right). Examining these results, we see that although there is some degradation in effectiveness between all documents and only unseen templates, it appears that BERT is able to generalize to previously-unseen expressions of the content elements. Specifically, it is not the case that the model is simply memorizing fixed patterns or key phrases\u2014otherwise, we could just craft a bunch of regular expression patterns for this task. This is a nice result that shows off the power of modern neural NLP models."
+      ]
+    },
+    {
+      "paper_id": "1811.01734",
+      "paper_title": "Transductive Learning with String Kernels for Cross-Domain Text Classification",
+      "question": "What machine learning algorithms are used?",
+      "gold_answer": "string kernels SST KE-Meta SFA CORAL TR-TrAdaBoost Transductive string kernels transductive kernel classifier",
+      "gold_evidence": [
+        "Baselines. We compare our approach with several methods BIBREF1 , BIBREF31 , BIBREF11 , BIBREF8 , BIBREF10 , BIBREF39 in two cross-domain settings. Using string kernels, Gim\u00e9nez-P\u00e9rez et al. BIBREF10 reported better performance than SST BIBREF31 and KE-Meta BIBREF11 in the multi-source domain setting. In addition, we compare our approach with SFA BIBREF1 , CORAL BIBREF8 and TR-TrAdaBoost BIBREF39 in the single-source setting.",
+        "Transductive string kernels. We present a simple and straightforward approach to produce a transductive similarity measure suitable for strings. We take the following steps to derive transductive string kernels. For a given kernel (similarity) function INLINEFORM0 , we first build the full kernel matrix INLINEFORM1 , by including the pairwise similarities of samples from both the train and the test sets. For a training set INLINEFORM2 of INLINEFORM3 samples and a test set INLINEFORM4 of INLINEFORM5 samples, such that INLINEFORM6 , each component in the full kernel matrix is defined as follows: DISPLAYFORM0",
+        "We next present a simple yet effective approach for adapting a one-versus-all kernel classifier trained on a source domain to a different target domain. Our transductive kernel classifier (TKC) approach is composed of two learning iterations. Our entire framework is formally described in Algorithm SECREF3 ."
+      ]
+    },
+    {
+      "paper_id": "1611.01400",
+      "paper_title": "Learning to Rank Scientific Documents from the Crowd",
+      "question": "what crowdsourcing platform is used?",
+      "gold_answer": "asked the authors to rank by closeness five citations we selected from their paper",
+      "gold_evidence": [
+        "Given the full text of a scientific publication, we want to rank its citations according to the author's judgments. We collected recent publications from the open-access PLoS journals and asked the authors to rank by closeness five citations we selected from their paper. PLoS articles were selected because its journals cover a wide array of topics and the full text articles are available in XML format. We selected the most recent publications as previous work in crowd-sourcing annotation shows that authors' willingness to participate in an unpaid annotation task declines with the age of publication ( BIBREF23 ). We then extracted the abstract, citations, full text, authors, and corresponding author email address from each document. The titles and abstracts of the citations were retrieved from PubMed, and the cosine similarity between the PLoS abstract and the citation's abstract was calculated. We selected the top five most similar abstracts using TF*IDF weighted cosine similarity, shuffled their order, and emailed them to the corresponding author for annotation. We believe that ranking five articles (rather than the entire collection of the references) is a more manageable task for an author compared to asking them to rank all references. Because the documents to be annotated were selected based on text similarity, they also represent a challenging baseline for models based on text-similarity features. In total 416 authors were contacted, and 92 responded (22% response rate). Two responses were removed from the dataset for incomplete annotation."
+      ]
+    },
+    {
+      "paper_id": "1812.02802",
+      "paper_title": "End-to-End Streaming Keyword Spotting",
+      "question": "How do they measure the quality of detection?",
+      "gold_answer": "We evaluate the false-reject (FR) and false-accept (FA) tradeoff across several end-to-end models of distinct sizes and computational complexities.",
+      "gold_evidence": [
+        "Our goal is to compare the efectiviness of the proposed approach against the baseline system described in BIBREF13 . We evaluate the false-reject (FR) and false-accept (FA) tradeoff across several end-to-end models of distinct sizes and computational complexities. As can be seen in the Receiver Operating Characteristic (ROC) curves in Figure FIGREF14 , the 2 largest end-to-end models, with 2-stage training, significantly outperform the recognition quality of the much larger and complex Baseline_1850K system. More specifically, E2E_318K_2stage and E2E_700K_2stage show up to 60% relative FR rate reduction over Baseline_1850K in most test conditions. Moreover, E2E_318K_2stage uses only about 26% of the computations that Baseline_1850K uses (once normalizing their execution rates over time), but still shows significant improvements. We also explore end-to-end models at a size that, as described in BIBREF7 , is small enough, in both size and computation, to be executed continuously with very little power consumption. These 2 models, E2E_40K_1stage and E2E_40K_2stage, also explore the capacity of end-to-end training (1stage) versus encoder+decoder training (2stage). As can be appreciated in the ROC curves, 1stage training outperforms 2stage training on all conditions, but particularly on both \"clean\" environments where it gets fairly close to the performance of the baseline setup. That is a significant achievement considering E2E_40K_1stage has 2.3% the parameters and performs 3.2% the computations of Baseline_1850K. Table TABREF13 compares the recognition quality of all setups by fixing on a very low false-accept rate of 0.1 FA per hour on a dataset containing only negative (i.e. non-keyword) utterances. Thus the table shows the false-reject rates at that operating point. Here we can appreciate similar trends as those described above: the 2 largest end-to-end models outperforms the baseline across all datasets, reducing FR rate about 40% on the clean conditions and 40%-20% on the other 2 sets depending on the model size. This table also shows how 1stage outperforms 2stage for small size models, and presents similar FR rates as Baseline_1850K on clean conditions."
+      ]
+    },
+    {
+      "paper_id": "2003.00639",
+      "paper_title": "Learning from Easy to Complex: Adaptive Multi-curricula Learning for Neural Dialogue Generation",
+      "question": "What five dialogue attributes were analyzed?",
+      "gold_answer": "Model Confidence Continuity Query-relatedness Repetitiveness Specificity",
+      "gold_evidence": [
+        "Curriculum Plausibility ::: Conversational Attributes ::: Specificity",
+        "A notorious problem for neural dialogue generation model is that the model is prone to generate generic responses. The most unspecific responses are easy to learn, but are short and meaningless, while the most specific responses, consisting of too many rare words, are too difficult to learn, especially at the initial learning stage. Following BIBREF11, we measure the specificity of the response in terms of each word $w$ using Normalized Inverse Document Frequency (NIDF, ranging from 0 to 1):",
+        "Curriculum Plausibility ::: Conversational Attributes ::: Repetitiveness",
+        "Repetitive responses are easy to generate in current auto-regressive response decoding, where response generation loops frequently, whereas diverse and informative responses are much more complicated for neural dialogue generation. We measure the repetitiveness of a response $r$ as:",
+        "Curriculum Plausibility ::: Conversational Attributes ::: Continuity",
+        "A coherent response not only responds to the given query, but also triggers the next utterance. An interactive conversation is carried out for multiple rounds and a response in the current turn also acts as the query in the next turn. As such, we introduce the continuity metric, which is similar to the query-relatedness metric, to assess the continuity of a response $r$ with respect to the subsequent utterance $u$, by measuring the cosine similarities between them.",
+        "Curriculum Plausibility ::: Conversational Attributes ::: Model Confidence",
+        "Despite the heuristic dialogue attributes, we further introduce the model confidence as an attribute, which distinguishes the easy-learnt samples from the under-learnt samples in terms of the model learning ability. A pretrained neural dialogue generation model assigns a relatively higher confidence probability for the easy-learnt samples than the under-learnt samples. Inspired by BIBREF16, BIBREF17, we employ the negative loss value of a dialogue sample under the pretrained model as the model confidence measure, indicating whether a sampled response is easy to be generated. Here we choose the attention-based sequence-to-sequence architecture with a cross-entropy objective as the underlying dialogue model.",
+        "Curriculum Plausibility ::: Conversational Attributes ::: Query-relatedness",
+        "A conversation is considered to be coherent if the response correlates well with the given query. For example, given a query \u201cI like to paint\u201d, the response \u201cWhat kind of things do you paint?\u201d is more relevant and easier to learn than another loosely-coupled response \u201cDo you have any pets?\u201d. Following previous work BIBREF14, we measure the query-relatedness using the cosine similarities between the query and its corresponding response in the embedding space: $\\textit {cos\\_sim}(\\textit {sent\\_emb}(c), \\textit {sent\\_emb}(r))$, where $c$ is the query and $r$ is the response. The sentence embedding is computed by taking the average word embedding weighted by the smooth inverse frequency $\\textit {sent\\_emb}(e)=\\frac{1}{|e|}\\sum _{w\\in {}e}\\frac{0.001}{0.001 + p(w)}emb(w)$ of words BIBREF15, where $emb(w)$ and $p(w)$ are the embedding and the probability of word $w$ respectively."
+      ]
+    },
+    {
+      "paper_id": "1809.08731",
+      "paper_title": "Sentence-Level Fluency Evaluation: References Help, But Can Be Spared!",
+      "question": "what language models do they use?",
+      "gold_answer": "LSTM LMs",
+      "gold_evidence": [
+        "We calculate the probability of a sentence with a long-short term memory (LSTM, hochreiter1997long) LM, i.e., a special type of RNN LM, which has been trained on a large corpus. More details on LSTM LMs can be found, e.g., in sundermeyer2012lstm. The unigram probabilities for SLOR are estimated using the same corpus.",
+        "We train our LSTM LMs on the English Gigaword corpus BIBREF15 , which consists of news data."
+      ]
+    },
+    {
+      "paper_id": "1910.03042",
+      "paper_title": "Gunrock: A Social Bot for Complex and Engaging Long Conversations",
+      "question": "Do they gather explicit user satisfaction data on Gunrock?",
+      "gold_answer": "yes",
+      "gold_evidence": [
+        "From January 5, 2019 to March 5, 2019, we collected conversational data for Gunrock. During this time, no other code updates occurred. We analyzed conversations for Gunrock with at least 3 user turns to avoid conversations triggered by accident. Overall, this resulted in a total of 34,432 user conversations. Together, these users gave Gunrock an average rating of 3.65 (median: 4.0), which was elicited at the end of the conversation (\u201cOn a scale from 1 to 5 stars, how do you feel about talking to this socialbot again?\"). Users engaged with Gunrock for an average of 20.92 overall turns (median 13.0), with an average of 6.98 words per utterance, and had an average conversation time of 7.33 minutes (median: 2.87 min.). We conducted three principal analyses: users' response depth (wordcount), backstory queries (backstorypersona), and interleaving of personal and factual responses (pets)."
+      ]
+    },
+    {
+      "paper_id": "1910.04601",
+      "paper_title": "RC-QED: Evaluating Natural Language Derivations in Multi-Hop Reading Comprehension",
+      "question": "How was the dataset annotated?",
+      "gold_answer": "True, Likely (i.e. Answerable), or Unsure (i.e. Unanswerable) why they are unsure from two choices (\u201cNot stated in the article\u201d or \u201cOther\u201d) The \u201csummary\u201d text boxes",
+      "gold_evidence": [
+        "Given a statement and articles, workers are asked to judge whether the statement can be derived from the articles at three grades: True, Likely (i.e. Answerable), or Unsure (i.e. Unanswerable). If a worker selects Unsure, we ask workers to tell us why they are unsure from two choices (\u201cNot stated in the article\u201d or \u201cOther\u201d).",
+        "If a worker selects True or Likely in the judgement task, we first ask which sentences in the given articles are justification explanations for a given statement, similarly to HotpotQA BIBREF2. The \u201csummary\u201d text boxes (i.e. NLDs) are then initialized with these selected sentences. We give a \u00a26 bonus to those workers who select True or Likely. To encourage an abstraction of selected sentences, we also introduce a gamification scheme to give a bonus to those who provide shorter NLDs. Specifically, we probabilistically give another \u00a214 bonus to workers according to a score they gain. The score is always shown on top of the screen, and changes according to the length of NLDs they write in real time. To discourage noisy annotations, we also warn crowdworkers that their work would be rejected for noisy submissions. We periodically run simple filtering to exclude noisy crowdworkers (e.g. workers who give more than 50 submissions with the same answers)."
+      ]
+    },
+    {
+      "paper_id": "1803.03664",
+      "paper_title": "Automating Reading Comprehension by Generating Question and Answer Pairs",
+      "question": "Which datasets are used to train this model?",
+      "gold_answer": "SQUAD",
+      "gold_evidence": [
+        "We evaluate performance of our models on the SQUAD BIBREF16 dataset (denoted $\\mathcal {S}$ ). We use the same split as that of BIBREF4 , where a random subset of 70,484 instances from $\\mathcal {S}\\ $ are used for training ( ${\\mathcal {S}}^{tr}$ ), 10,570 instances for validation ( ${\\mathcal {S}}^{val}$ ), and 11,877 instances for testing ( ${\\mathcal {S}}^{te}$ )."
+      ]
+    },
+    {
+      "paper_id": "1911.09483",
+      "paper_title": "MUSE: Parallel Multi-Scale Attention for Sequence to Sequence Learning",
+      "question": "What datasets are used?",
+      "gold_answer": "WMT14 En-Fr and En-De datasets IWSLT De-En and En-Vi datasets",
+      "gold_evidence": [
+        "WMT14 En-Fr and En-De datasets The WMT 2014 English-French translation dataset, consisting of $36M$ sentence pairs, is adopted as a big dataset to test our model. We use the standard split of development set and test set. We use newstest2014 as the test set and use newstest2012 +newstest2013 as the development set. Following BIBREF11, we also adopt a joint source and target BPE factorization with the vocabulary size of $40K$. For medium dataset, we borrow the setup of BIBREF0 and adopt the WMT 2014 English-German translation dataset which consists of $4.5M$ sentence pairs, the BPE vocabulary size is set to $32K$. The test and validation datasets we used are the same as BIBREF0.",
+        "IWSLT De-En and En-Vi datasets Besides, we perform experiments on two small IWSLT datasets to test the small version of MUSE with other comparable models. The IWSLT 2014 German-English translation dataset consists of $160k$ sentence pairs. We also adopt a joint source and target BPE factorization with the vocabulary size of $32K$. The IWSLT 2015 English-Vietnamese translation dataset consists of $133K$ training sentence pairs. For the En-Vi task, we build a dictionary including all source and target tokens. The vocabulary size for English is $17.2K$, and the vocabulary size for the Vietnamese is $6.8K$."
+      ]
+    },
+    {
+      "paper_id": "1909.09268",
+      "paper_title": "Towards Neural Language Evaluators",
+      "question": "What are the three limitations?",
+      "gold_answer": "High scores to semantically opposite translations/summaries, Low scores to semantically related translations/summaries and High scores to unintelligible translations/summaries.",
+      "gold_evidence": [
+        "In this part, we discuss three significant limitations of BLEU and ROUGE. These metrics can assign: High scores to semantically opposite translations/summaries, Low scores to semantically related translations/summaries and High scores to unintelligible translations/summaries.",
+        "Challenges with BLEU and ROUGE ::: High score, opposite meanings",
+        "Suppose that we have a reference summary s1. By adding a few negation terms to s1, one can create a summary s2 which is semantically opposite to s1 but yet has a high BLEU/ROUGE score.",
+        "Challenges with BLEU and ROUGE ::: Low score, similar meanings",
+        "In addition not to be sensitive to negation, BLEU and ROUGE score can give low scores to sentences with equivalent meaning. If s2 is a paraphrase of s1, the meaning will be the same ;however, the overlap between words in s1 and s2 will not necessarily be significant.",
+        "Challenges with BLEU and ROUGE ::: High score, unintelligible sentences",
+        "A third weakness of BLEU and ROUGE is that in their simplest implementations, they are insensitive to word permutation and can give very high scores to unintelligible sentences. Let s1 be \"On a morning, I saw a man running in the street.\" and s2 be \u201cOn morning a, I saw the running a man street\u201d. s2 is not an intelligible sentence. The unigram version of ROUGE and BLEU will give these 2 sentences a score of 1."
+      ]
+    },
+    {
+      "paper_id": "1901.09755",
+      "paper_title": "Language Independent Sequence Labelling for Opinion Target Extraction",
+      "question": "Which six languages are experimented with?",
+      "gold_answer": "Dutch French Russian Spanish  Turkish English ",
+      "gold_evidence": [
+        "In this section we report on the experiments performed using the system and data described above. First we will present the English results for the three ABSA editions as well as a comparison with previous work. After that we will do the same for 5 additional languages included in the ABSA 2016 edition: Dutch, French, Russian, Spanish and Turkish. The local and clustering features, as described in Section SECREF11 , are the same for every language and evaluation setting. The only change is the clustering lexicons used for the different languages. As stated in section SECREF11 , the best cluster combination is chosen via 5-fold cross validation (CV) on the training data. We first try every permutation with the Clark and Word2vec clusters. Once the best combination is obtained, we then try with the Brown clusters obtaining thus the final model for each language and dataset."
+      ]
+    },
+    {
+      "paper_id": "2001.00137",
+      "paper_title": "Stacked DeBERT: All Attention in Incomplete Data for Text Classification",
+      "question": "Do they report results only on English datasets?",
+      "gold_answer": "yes",
+      "gold_evidence": [
+        "Even though this corpus has incorrect sentences and their emotional labels, they lack their respective corrected sentences, necessary for the training of our model. In order to obtain this missing information, we outsource native English speakers from an unbiased and anonymous platform, called Amazon Mechanical Turk (MTurk) BIBREF19, which is a paid marketplace for Human Intelligence Tasks (HITs). We use this platform to create tasks for native English speakers to format the original incorrect tweets into correct sentences. Some examples are shown in Table TABREF12.",
+        "The dataset used to evaluate the models' performance is the Chatbot Natural Language Unerstanding (NLU) Evaluation Corpus, introduced by Braun et al. BIBREF20 to test NLU services. It is a publicly available benchmark and is composed of sentences obtained from a German Telegram chatbot used to answer questions about public transport connections. The dataset has two intents, namely Departure Time and Find Connection with 100 train and 106 test samples, shown in Table TABREF18. Even though English is the main language of the benchmark, this dataset contains a few German station and street names."
+      ]
+    },
+    {
+      "paper_id": "1904.12087",
+      "paper_title": "Experiments in Cuneiform Language Identification",
+      "question": "Which language is divided into six dialects in the task mentioned in the paper?",
+      "gold_answer": "Akkadian.",
+      "gold_evidence": [
+        "The focus of the aforementioned language and dialect identification competitions was diatopic variation and thus the data made available in these competitions was synchronic contemporary corpora. In the 2019 edition of the workshop, for the first time, a task including historical languages was organized. The CLI shared task provided participants with a dataset containing languages and dialects written in cuneiform script: Sumerian and Akkadian. Akkadian is divided into six dialects in the dataset: Old Babylonian, Middle Babylonian peripheral, Standard Babylonian, Neo Babylonian, Late Babylonian, and Neo Assyrian BIBREF14 ."
+      ]
+    },
+    {
+      "paper_id": "1910.12618",
+      "paper_title": "Textual Data for Time Series Forecasting",
+      "question": "Is there any example where geometric property is visible for context similarity between words?",
+      "gold_answer": "yes",
+      "gold_evidence": [
+        "The initial analyses of the embedding matrices for both the UK and France revealed that in general, words were grouped by context or influence on the electricity consumption. For instance, we observed that winter words were together and far away from summer ones. Week days were grouped as well and far from week-end days. However considering the vocabulary was reduced to $V^* = 52$ words, those results lacked of consistency. Therefore for both languages we decided to re-train the RNNs using the same architecture, but with a larger vocabulary of the $V=300$ most relevant words (still in the RF sense) and on all the available data (i.e. everything is used as training) to compensate for the increased size of the vocabulary. We then calculated the distance of a few prominent words to the others. The analysis of the average cosine distance over $B=10$ runs for three major words is given by tables TABREF38 and TABREF39, and three other examples are given in the appendix tables TABREF57 and TABREF58. The first row corresponds to the reference word vector $\\overrightarrow{w_1}$ used to calculate the distance from (thus the distance is always zero), while the following ones are the 9 closest to it. The two last rows correspond to words we deemed important to check the distance with (an antagonistic one or relevant one not in the top 9 for instance)."
+      ]
+    },
+    {
+      "paper_id": "1912.00159",
+      "paper_title": "Automatic Creation of Text Corpora for Low-Resource Languages from the Internet: The Case of Swiss German",
+      "question": "How is language modelling evaluated?",
+      "gold_answer": "perplexity of the models",
+      "gold_evidence": [
+        "Table TABREF32 shows the perplexity of the models on each of the test sets. As expected, each model performs better on the test set they have been trained on. When applied to a different test set, both see an increase in perplexity. However, the Leipzig model seems to have more trouble generalizing: its perplexity nearly doubles on the SwissCrawl test set and raises by twenty on the combined test set."
+      ]
+    },
+    {
+      "paper_id": "1908.07822",
+      "paper_title": "A Multi-level Neural Network for Implicit Causality Detection in Web Texts",
+      "question": "What was previous state-of-the-art approach?",
+      "gold_answer": "TextCNN, TextRNN, SASE, DPCNN, and BERT $LS \\cup KLD \\cup CONN$ and $KLD \\cup LS \\cup LS_{inter}$ are the best systems with the highest recall and F1-score respectively",
+      "gold_evidence": [
+        "The first five methods are the most common class (MCC), $KLD$, $LS \\cup KLD$, $LS \\cup KLD \\cup CONN$, and $KLD \\cup LS \\cup LS_{inter}$. $KLD$, $LS$, and $CONN$ represent KL-divergence score, lexical semantic feature, and categorical feature respectively. These methods are used as baselines in Hidey et al.'s work. $KLD$ and $LS \\cup KLD$ acquire the best accuracy and precision on the Training set. $LS \\cup KLD \\cup CONN$ and $KLD \\cup LS \\cup LS_{inter}$ are the best systems with the highest recall and F1-score respectively. The next five are the most commonly used methods in text classification. They are TextCNN, TextRNN, SASE, DPCNN, and BERT. In our experiment, we reproduced all of them except BERT. For BERT, we use the public released pre-trained language model (base). and fine-tuned it on each dataset. The detailed information about these baselines is listed as follows:"
+      ]
+    },
+    {
+      "paper_id": "1906.10551",
+      "paper_title": "Assessing the Applicability of Authorship Verification Methods",
+      "question": "What size are the corpora?",
+      "gold_answer": "80 excerpts from scientific works collection of 1,645 chat conversations collection of 200 aggregated postings",
+      "gold_evidence": [
+        "As a first corpus, we compiled INLINEFORM0 that represents a collection of 80 excerpts from scientific works including papers, dissertations, book chapters and technical reports, which we have chosen from the well-known Digital Bibliography & Library Project (DBLP) platform. Overall, the documents were written by 40 researchers, where for each author INLINEFORM1 , there are exactly two documents. Given the 80 documents, we constructed for each author INLINEFORM2 two verification problems INLINEFORM3 (a Y-case) and INLINEFORM4 (an N-case). For INLINEFORM5 we set INLINEFORM6 's first document as INLINEFORM7 and the second document as INLINEFORM8 . For INLINEFORM9 we reuse INLINEFORM10 from INLINEFORM11 as the known document and selected a text from another (random) author as the unknown document. The result of this procedure is a set of 80 verification problems, which we split into a training and test set based on a 40/60% ratio. Where possible, we tried to restrict the content of each text to the abstract and conclusion of the original work. However, since in many cases these sections were too short, we also considered other parts of the original works such as introduction or discussion sections. To ensure that the extracted text portions are appropriate for the AV task, each original work was preprocessed manually. More precisely, we removed tables, formulas, citations, quotes and sentences that include non-language content such as mathematical constructs or specific names of researchers, systems or algorithms. The average time span between both documents of an author is 15.6 years. The minimum and maximum time span are 6 and 40 years, respectively. Besides the temporal aspect of INLINEFORM12 , another challenge of this corpus is the formal (scientific) language, where the usage of stylistic devices is more restricted, in contrast to other genres such as novels or poems.",
+        "As a second corpus, we compiled INLINEFORM0 , which represents a collection of 1,645 chat conversations of 550 sex offenders crawled from the Perverted-Justice portal. The chat conversations stem from a variety of sources including emails and instant messengers (e. g., MSN, AOL or Yahoo), where for each conversation, we ensured that only chat lines from the offender were extracted. We applied the same problem construction procedure as for the corpus INLINEFORM1 , which resulted in 1,100 verification problems that again were split into a training and test set given a 40/60% ratio. In contrast to the corpus INLINEFORM2 , we only performed slight preprocessing. Essentially, we removed user names, time-stamps, URLs, multiple blanks as well as annotations that were not part of the original conversations from all chat lines. Moreover, we did not normalize words (for example, shorten words such as \u201cnooooo\u201d to \u201cno\u201d) as we believe that these represent important style markers. Furthermore, we did not remove newlines between the chat lines, as the positions of specific words might play an important role regarding the individual's writing style.",
+        "As a third corpus, we compiled INLINEFORM0 , which is a collection of 200 aggregated postings crawled from the Reddit platform. Overall, the postings were written by 100 Reddit users and stem from a variety of subreddits. In order to construct the Y-cases, we selected exactly two postings from disjoint subreddits for each user such that both the known and unknown document INLINEFORM1 and INLINEFORM2 differ in their topic. Regarding the N-cases, we applied the opposite strategy such that INLINEFORM3 and INLINEFORM4 belong to the same topic. The rationale behind this is to figure out to which extent AV methods can be fooled in cases, where the topic matches but not the authorship and vice versa. Since for this specific corpus we have to control the topics of the documents, we did not perform the same procedure applied for INLINEFORM5 and INLINEFORM6 to construct the training and test sets. Instead, we used for the resulting 100 verification problems a 40/60% hold-out split, where both training and test set are entirely disjoint."
+      ]
+    },
+    {
+      "paper_id": "1912.05238",
+      "paper_title": "BERT has a Moral Compass: Improvements of ethical and moral values of machines",
+      "question": "How do the authors define deontological ethical reasoning?",
+      "gold_answer": "These ask which choices are morally required, forbidden, or permitted norms are understood as universal rules of what to do and what not to do",
+      "gold_evidence": [
+        "With regards to complexity and intangibility of ethics and morals, we restrict ourselves to a rather basic implementation of this construct, following the theories of deontological ethics. These ask which choices are morally required, forbidden, or permitted instead of asking which kind of a person we should be or which consequences of our actions are to be preferred. Thus, norms are understood as universal rules of what to do and what not to do. Therefore, we focus on the valuation of social acceptance in single verbs and single verbs with surrounding context information \u2014e.g. trust my friend or trust a machine\u2014 to figure out which of them represent a Do and which tend to be a Don't. Because we specifically chose templates in the first person, i.e., asking \u201cshould I\u201d and not asking \u201cshould one\u201d, we address the moral dimension of \u201cright\u201d or \u201cwrong\u201d decisions, and not only their ethical dimension. This is the reason why we will often use the term \u201cmoral\u201d, although we actually touch upon \u201cethics\u201d and \u201cmoral\u201d. To measure the valuation, we make use of implicit association tests (IATs) and their connections to word embeddings."
+      ]
+    },
+    {
+      "paper_id": "1902.09087",
+      "paper_title": "Lattice CNNs for Matching Based Chinese Question Answering",
+      "question": "Which dataset(s) do they evaluate on?",
+      "gold_answer": "DBQA KBRE",
+      "gold_evidence": [
+        "Datasets",
+        "We conduct experiments on two Chinese question answering datasets from NLPCC-2016 evaluation task BIBREF13 .",
+        "DBQA is a document based question answering dataset. There are 8.8k questions with 182k question-sentence pairs for training and 6k questions with 123k question-sentence pairs in the test set. In average, each question has 20.6 candidate sentences and 1.04 golden answers. The average length for questions is 15.9 characters, and each candidate sentence has averagely 38.4 characters. Both questions and sentences are natural language sentences, possibly sharing more similar word choices and expressions compared to the KBQA case. But the candidate sentences are extracted from web pages, and are often much longer than the questions, with many irrelevant clauses.",
+        "KBRE is a knowledge based relation extraction dataset. We follow the same preprocess as BIBREF14 to clean the dataset and replace entity mentions in questions to a special token. There are 14.3k questions with 273k question-predicate pairs in the training set and 9.4k questions with 156k question-predicate pairs for testing. Each question contains only one golden predicate. Each question averagely has 18.1 candidate predicates and 8.1 characters in length, while a KB predicate is only 3.4 characters long on average. Note that a KB predicate is usually a concise phrase, with quite different word choices compared to the natural language questions, which poses different challenges to solve."
+      ]
+    },
+    {
+      "paper_id": "1808.03986",
+      "paper_title": "Multimodal Differential Network for Visual Question Generation",
+      "question": "How do the authors define exemplars?",
+      "gold_answer": "Exemplars aim to provide appropriate context. joint image-caption embedding for the supporting exemplar are closer to that of the target image-caption",
+      "gold_evidence": [
+        "Exemplars aim to provide appropriate context. To better understand the context, we experimented by analysing the questions generated through an exemplar. We observed that indeed a supporting exemplar could identify relevant tags (cows in Figure FIGREF3 ) for generating questions.",
+        "We improve use of exemplars by using a triplet network. This network ensures that the joint image-caption embedding for the supporting exemplar are closer to that of the target image-caption and vice-versa. We empirically evaluated whether an explicit approach that uses the differential set of tags as a one-hot encoding improves the question generation, or the implicit embedding obtained based on the triplet network. We observed that the implicit multimodal differential network empirically provided better context for generating questions. Our understanding of this phenomenon is that both target and supporting exemplars generate similar questions whereas contrasting exemplars generate very different questions from the target question. The triplet network that enhances the joint embedding thus aids to improve the generation of target question. These are observed to be better than the explicitly obtained context tags as can be seen in Figure FIGREF2 . We now explain our method in detail."
+      ]
+    },
+    {
+      "paper_id": "1907.11062",
+      "paper_title": "HireNet: a Hierarchical Attention Model for the Automatic Analysis of Asynchronous Video Job Interviews",
+      "question": "Is there any ethical consideration in the research?",
+      "gold_answer": "no",
+      "gold_evidence": [
+        "Last but not least, ethics and fairness are important considerations, that deserve to be studied. In that sense, detection of individual and global bias should be prioritized in order to give useful feedbacks to practitioners. Furthermore we are considering using adversarial learning as in BIBREF33 in order to ensure fairness during the training process."
+      ]
+    },
+    {
+      "paper_id": "1907.02636",
+      "paper_title": "Collecting Indicators of Compromise from Unstructured Text of Cybersecurity Articles using Neural-Based Sequence Labelling",
+      "question": "Where are the cybersecurity articles used in the model sourced from?",
+      "gold_answer": " from a collection of advanced persistent threats (APT) reports which are published from 2008 to 2018",
+      "gold_evidence": [
+        "For English dataset, we crawl 687 cybersecurity articles from a collection of advanced persistent threats (APT) reports which are published from 2008 to 2018. All of these cybersecurity articles are used to train the English word embedding. Afterwards, we randomly select 370 articles, and manually annotate the IOCs contained in the articles. Among the selected articles, we randomly select 70 articles as the validation set and 70 articles as the test set; the remaining articles are used for training."
+      ]
+    },
+    {
+      "paper_id": "1908.06606",
+      "paper_title": "Question Answering based Clinical Text Structuring Using Pre-trained Language Model",
+      "question": "What are the specific tasks being unified?",
+      "gold_answer": " three types of questions, namely tumor size, proximal resection margin and distal resection margin",
+      "gold_evidence": [
+        "To reduce the pipeline depth and break the barrier of non-uniform output formats, we present a question answering based clinical text structuring (QA-CTS) task (see Fig. FIGREF1). Unlike the traditional CTS task, our QA-CTS task aims to discover the most related text from original paragraph text. For some cases, it is already the final answer in deed (e.g., extracting sub-string). While for other cases, it needs several steps to obtain the final answer, such as entity names conversion and negative words recognition. Our presented QA-CTS task unifies the output format of the traditional CTS task and make the training data shareable, thus enriching the training data. The main contributions of this work can be summarized as follows.",
+        "Our dataset is annotated based on Chinese pathology reports provided by the Department of Gastrointestinal Surgery, Ruijin Hospital. It contains 17,833 sentences, 826,987 characters and 2,714 question-answer pairs. All question-answer pairs are annotated and reviewed by four clinicians with three types of questions, namely tumor size, proximal resection margin and distal resection margin. These annotated instances have been partitioned into 1,899 training instances (12,412 sentences) and 815 test instances (5,421 sentences). Each instance has one or several sentences. Detailed statistics of different types of entities are listed in Table TABREF20.",
+        "In this paper, we present a question answering based clinical text structuring (QA-CTS) task, which unifies different clinical text structuring tasks and utilize different datasets. A novel model is also proposed to integrate named entity information into a pre-trained language model and adapt it to QA-CTS task. Initially, sequential results of named entity recognition on both paragraph and query texts are integrated together. Contextualized representation on both paragraph and query texts are transformed by a pre-trained language model. Then, the integrated named entity information and contextualized representation are integrated together and fed into a feed forward network for final prediction. Experimental results on real-world dataset demonstrate that our proposed model competes favorably with strong baseline models in all three specific tasks. The shared task and shared model introduced by QA-CTS task has also been proved to be useful for improving the performance on most of the task-specific datasets. In conclusion, the best way to achieve the best performance for a specific dataset is to pre-train the model in multiple datasets and then fine tune it on the specific dataset."
+      ]
+    },
+    {
+      "paper_id": "1906.05963",
+      "paper_title": "Image Captioning: Transforming Objects into Words",
+      "question": "What are the common captioning metrics?",
+      "gold_answer": "the CIDEr-D BIBREF22 , SPICE BIBREF23 , BLEU BIBREF24 , METEOR BIBREF25 , and ROUGE-L BIBREF26 metrics",
+      "gold_evidence": [
+        "We trained and evaluated our algorithm on the Microsoft COCO (MS-COCO) 2014 Captions dataset BIBREF21 . We report results on the Karpathy validation and test splits BIBREF8 , which are commonly used in other image captioning publications. The dataset contains 113K training images with 5 human annotated captions for each image. The Karpathy test and validation sets contain 5K images each. We evaluate our models using the CIDEr-D BIBREF22 , SPICE BIBREF23 , BLEU BIBREF24 , METEOR BIBREF25 , and ROUGE-L BIBREF26 metrics. While it has been shown experimentally that BLEU and ROUGE have lower correlation with human judgments than the other metrics BIBREF23 , BIBREF22 , the common practice in the image captioning literature is to report all the mentioned metrics."
+      ]
+    },
+    {
+      "paper_id": "1910.02789",
+      "paper_title": "Natural Language State Representation for Reinforcement Learning",
+      "question": "How is state to learn and complete tasks represented via natural language?",
+      "gold_answer": " represent the state using natural language",
+      "gold_evidence": [
+        "The term representation is used differently in different contexts. For the purpose of this paper we define a semantic representation of a state as one that reflects its meaning as it is understood by an expert. The semantic representation of a state should thus be paired with a reliable and computationally efficient method for extracting information from it. Previous success in RL has mainly focused on representing the state in its raw form (e.g., visual input in Atari-based games BIBREF2). This approach stems from the belief that neural networks (specifically convolutional networks) can extract meaningful features from complex inputs. In this work, we challenge current representation techniques and suggest to represent the state using natural language, similar to the way we, as humans, summarize and transfer information efficiently from one to the other BIBREF5."
+      ]
+    },
+    {
+      "paper_id": "1911.02821",
+      "paper_title": "Enhancing Pre-trained Chinese Character Representation with Word-aligned Attention",
+      "question": "How does the fusion method work?",
+      "gold_answer": "ttention vector sequence is segmented into several subsequences and each subsequence represents the attention of one word we devise an appropriate aggregation module to fuse the inner-word character attention",
+      "gold_evidence": [
+        "In this way, an attention vector sequence is segmented into several subsequences and each subsequence represents the attention of one word. Then, motivated by the psycholinguistic finding that readers are likely to pay approximate attention to each character in one Chinese word, we devise an appropriate aggregation module to fuse the inner-word character attention. Concretely, we first transform $\\lbrace \\textbf {a}_c^s,..., \\textbf {a}_c^{s+l-1}\\rbrace $ into one attention vector $\\textbf {a}_w^i$ for $w_i$ with the mixed pooling strategy BIBREF11. Then we execute the piecewise up- mpling operation over each $\\textbf {a}_w^i$ to keep input and output dimensions unchanged for the sake of plug and play. The detailed process can be summarized as follows:"
+      ]
+    },
+    {
+      "paper_id": "2003.00639",
+      "paper_title": "Learning from Easy to Complex: Adaptive Multi-curricula Learning for Neural Dialogue Generation",
+      "question": "What three publicly available coropora are used?",
+      "gold_answer": "PersonaChat BIBREF12 DailyDialog BIBREF13 OpenSubtitles BIBREF7",
+      "gold_evidence": [
+        "Intuitively, a well-organized curriculum should provide the model learning with easy dialogues first, and then gradually increase the curriculum difficulty. However, currently, there is no unified approach for dialogue complexity evaluation, where the complexity involves multiple aspects of attributes. In this paper, we prepare the syllabus for dialogue learning with respect to five dialogue attributes. To ensure the universality and general applicability of the curriculum, we perform an in-depth investigation on three publicly available conversation corpora, PersonaChat BIBREF12, DailyDialog BIBREF13 and OpenSubtitles BIBREF7, consisting of 140 248, 66 594 and 358 668 real-life conversation samples, respectively."
+      ]
+    },
+    {
+      "paper_id": "1904.11942",
+      "paper_title": "Contextualized Word Embeddings Enhanced Event Temporal Relation Extraction for Story Understanding",
+      "question": "What were the traditional linguistic feature-based models?",
+      "gold_answer": "CAEVO",
+      "gold_evidence": [
+        "The series of TempEval competitions BIBREF21 , BIBREF22 , BIBREF23 have attracted many research interests in predicting event temporal relations. Early attempts by BIBREF24 , BIBREF21 , BIBREF25 , BIBREF26 only use pair-wise classification models. State-of-the-art local methods, such as ClearTK BIBREF27 , UTTime BIBREF28 , and NavyTime BIBREF29 improve on earlier work by feature engineering with linguistic and syntactic rules. As we mention in the Section 2, CAEVO is the current state-of-the-art system for feature-based temporal event relation extraction BIBREF10 . It's widely used as the baseline for evaluating TB-Dense data. We adopt it as our baseline for evaluating CaTeRS and RED datasets. Additionally, several models BramsenDLB2006, ChambersJ2008, DoLuRo12, NingWuRo18, P18-1212 have successfully incorporated global inference to impose global prediction consistency such as temporal transitivity."
+      ]
+    },
+    {
+      "paper_id": "1902.06843",
+      "paper_title": "Fusing Visual, Textual and Connectivity Clues for Studying Mental Health",
+      "question": "What types of features are used from each data type?",
+      "gold_answer": "facial presence Facial Expression General Image Features  textual content analytical thinking clout authenticity emotional tone Sixltr  informal language markers 1st person singular pronouns",
+      "gold_evidence": [
+        "For capturing facial presence, we rely on BIBREF56 's approach that uses multilevel convolutional coarse-to-fine network cascade to tackle facial landmark localization. We identify facial presentation, emotion from facial expression, and demographic features from profile/posted images . Table TABREF21 illustrates facial presentation differences in both profile and posted images (media) for depressed and control users in INLINEFORM0 . With control class showing significantly higher in both profile and media (8%, 9% respectively) compared to that for the depressed class. In contrast with age and gender disclosure, vulnerable users are less likely to disclose their facial identity, possibly due to lack of confidence or fear of stigma.",
+        "Facial Expression:",
+        "Following BIBREF8 's approach, we adopt Ekman's model of six emotions: anger, disgust, fear, joy, sadness and surprise, and use the Face++ API to automatically capture them from the shared images. Positive emotions are joy and surprise, and negative emotions are anger, disgust, fear, and sadness. In general, for each user u in INLINEFORM0 , we process profile/shared images for both the depressed and the control groups with at least one face from the shared images (Table TABREF23 ). For the photos that contain multiple faces, we measure the average emotion.",
+        "General Image Features:",
+        "The importance of interpretable computational aesthetic features for studying users' online behavior has been highlighted by several efforts BIBREF55 , BIBREF8 , BIBREF57 . Color, as a pillar of the human vision system, has a strong association with conceptual ideas like emotion BIBREF58 , BIBREF59 . We measured the normalized red, green, blue and the mean of original colors, and brightness and contrast relative to variations of luminance. We represent images in Hue-Saturation-Value color space that seems intuitive for humans, and measure mean and variance for saturation and hue. Saturation is defined as the difference in the intensities of the different light wavelengths that compose the color. Although hue is not interpretable, high saturation indicates vividness and chromatic purity which are more appealing to the human eye BIBREF8 . Colorfulness is measured as a difference against gray background BIBREF60 . Naturalness is a measure of the degree of correspondence between images and the human perception of reality BIBREF60 . In color reproduction, naturalness is measured from the mental recollection of the colors of familiar objects. Additionally, there is a tendency among vulnerable users to share sentimental quotes bearing negative emotions. We performed optical character recognition (OCR) with python-tesseract to extract text and their sentiment score. As illustrated in Table TABREF26 , vulnerable users tend to use less colorful (higher grayscale) profile as well as shared images to convey their negative feelings, and share images that are less natural (Figure FIGREF15 ). With respect to the aesthetic quality of images (saturation, brightness, and hue), depressed users use images that are less appealing to the human eye. We employ independent t-test, while adopting Bonferroni Correction as a conservative approach to adjust the confidence intervals. Overall, we have 223 features, and choose Bonferroni-corrected INLINEFORM0 level of INLINEFORM1 (*** INLINEFORM2 , ** INLINEFORM3 ).",
+        "Qualitative Language Analysis: The recent LIWC version summarizes textual content in terms of language variables such as analytical thinking, clout, authenticity, and emotional tone. It also measures other linguistic dimensions such as descriptors categories (e.g., percent of target words gleaned by dictionary, or longer than six letters - Sixltr) and informal language markers (e.g., swear words, netspeak), and other linguistic aspects (e.g., 1st person singular pronouns.)"
+      ]
+    },
+    {
+      "paper_id": "1911.00523",
+      "paper_title": "What Gets Echoed? Understanding the\"Pointers\"in Explanations of Persuasive Arguments",
+      "question": "What non-contextual properties do they refer to?",
+      "gold_answer": "These features are derived directly from the word and capture the general tendency of a word being echoed in explanations.",
+      "gold_evidence": [
+        "Non-contextual properties of a word. These features are derived directly from the word and capture the general tendency of a word being echoed in explanations."
+      ]
+    },
+    {
+      "paper_id": "1811.04604",
+      "paper_title": "Learning Personalized End-to-End Goal-Oriented Dialog",
+      "question": "What datasets did they use?",
+      "gold_answer": "the personalized bAbI dialog dataset",
+      "gold_evidence": [
+        "Our experiments on a goal-oriented dialog corpus, the personalized bAbI dialog dataset, show that leveraging personal information can significantly improve the performance of dialog systems. The Personalized MemN2N outperforms current state-of-the-art methods with over 7% improvement in terms of per-response accuracy. A test with real human users also illustrates that the proposed model leads to better outcomes, including higher task completion rate and user satisfaction."
+      ]
+    },
+    {
+      "paper_id": "1909.08191",
+      "paper_title": "Exploring Scholarly Data by Semantic Query on Knowledge Graph Embedding Space",
+      "question": "What new interesting tasks can be solved based on the uncanny semantic structures of the embedding space?",
+      "gold_answer": " analogy query analogy browsing",
+      "gold_evidence": [
+        "Based on our theoretical results, we design a general framework for data exploration on scholarly data by semantic queries on knowledge graph embedding space. The main component in this framework is the conversion between the data exploration tasks and the semantic queries. We first outline the semantic query solutions to some traditional data exploration tasks, such as similar paper prediction and similar author prediction. We then propose a group of new interesting tasks, such as analogy query and analogy browsing, and discuss how they can be used in modern digital libraries."
+      ]
+    },
+    {
+      "paper_id": "1910.04601",
+      "paper_title": "RC-QED: Evaluating Natural Language Derivations in Multi-Hop Reading Comprehension",
+      "question": "What dataset was used in the experiment?",
+      "gold_answer": "WikiHop",
+      "gold_evidence": [
+        "Our study uses WikiHop BIBREF0, as it is an entity-based multi-hop QA dataset and has been actively used. We randomly sampled 10,000 instances from 43,738 training instances and 2,000 instances from 5,129 validation instances (i.e. 36,000 annotation tasks were published on AMT). We manually converted structured WikiHop question-answer pairs (e.g. locatedIn(Macchu Picchu, Peru)) into natural language statements (Macchu Picchu is located in Peru) using a simple conversion dictionary."
+      ]
+    },
+    {
+      "paper_id": "1910.13890",
+      "paper_title": "A Latent Morphology Model for Open-Vocabulary Neural Machine Translation",
+      "question": "What are the three languages studied in the paper?",
+      "gold_answer": "Arabic, Czech and Turkish",
+      "gold_evidence": [
+        "In this paper, we explore the benefit of explicitly modeling variations in the surface forms of words using methods from deep latent variable modeling in order to improve the translation accuracy in low-resource and morphologically-rich languages. Latent variable models allow us to inject inductive biases relevant to the task, which, in our case, is word formation, and we believe that follows a certain hierarchical procedure. Our model translates words one character at a time based on word representations learned compositionally from sub-lexical components, which are parameterized by a hierarchical latent variable model mimicking the process of morphological inflection, consisting of a continuous-space dense vector capturing the lexical semantics, and a set of (approximately) discrete features, representing the morphosyntactic role of the word in a given sentence. Each word representation during decoding is reformulated based on the shared latent morphological features, aiding in learning more reliable representations of words under sparse settings by generalizing across their different surface forms. We evaluate our method in translating English into three morphologically-rich languages each with a distinct morphological typology: Arabic, Czech and Turkish, and show that our model is able to obtain better translation accuracy and generalization capacity than conventional approaches to open-vocabulary NMT."
+      ]
+    },
+    {
+      "paper_id": "1910.03891",
+      "paper_title": "Learning High-order Structural and Attribute information by Knowledge Graph Attention Networks for Enhancing Knowledge Graph Embedding",
+      "question": "What three datasets are used to measure performance?",
+      "gold_answer": "FB24K DBP24K Game30K",
+      "gold_evidence": [
+        "In this study, we evaluate our model on three real KG including two typical large-scale knowledge graph: Freebase BIBREF0, DBpedia BIBREF1 and a self-construction game knowledge graph. First, we adapt a dataset extracted from Freebase, i.e., FB24K, which used by BIBREF26. Then, we collect extra entities and relations that from DBpedia which that they should have at least 100 mentions BIBREF7 and they could link to the entities in the FB24K by the sameAs triples. Finally, we build a datasets named as DBP24K. In addition, we build a game datasets from our game knowledge graph, named as Game30K. The statistics of datasets are listed in Table TABREF24."
+      ]
+    },
+    {
+      "paper_id": "1905.10810",
+      "paper_title": "Evaluation of basic modules for isolated spelling error correction in Polish texts",
+      "question": "What methods are tested in PIEWi?",
+      "gold_answer": "Levenshtein distance metric BIBREF8 diacritical swapping Levenshtein distance is used in a weighted sum to cosine distance between word vectors ELMo-augmented LSTM",
+      "gold_evidence": [
+        "The methods that we evaluated are baselines are the ones we consider to be basic and with moderate potential of yielding particularly good results. Probably the most straightforward approach to error correction is selecting known words from a dictionary that are within the smallest edit distance from the error. We used the Levenshtein distance metric BIBREF8 implemented in Apache Lucene library BIBREF9 . It is a version of edit distance that treats deletions, insertions and replacements as adding one unit distance, without giving a special treatment to character swaps. The SGJP \u2013 Grammatical Dictionary of Polish BIBREF10 was used as the reference vocabulary.",
+        "Another simple approach is the aforementioned diacritical swapping, which is a term that we introduce here for referring to a solution inspired by the work of BIBREF4 . Namely, from the incorrect form we try to produce all strings obtainable by either adding or removing diacritical marks from characters. We then exclude options that are not present in SGJP, and select as the correction the one within the smallest edit distance from the error. It is possible for the number of such diacritically-swapped options to become very big. For example, the token Modlin-Zegrze-Pultusk-R\u00f3\u017can-Ostro\u0142\u0119ka-\u0141om\u017ca-Osowiec (taken from PlEWi corpus of spelling errors, see below) can yield over INLINEFORM0 states with this method, such as M\u00f3d\u0142i\u0144-\u017b\u0119grz\u0119-Pu\u0142tu\u015bk-Ro\u017a\u0105\u0144-\u00d3\u015btr\u00f3lek\u0105-L\u00f3mz\u0105-\u00d3\u015b\u00f3wi\u0119\u0107. The actual correction here is just fixing the \u0142 in Pu\u0142tusk. Hence we only try to correct in this way tokens that are shorter than 17 characters.",
+        "A promising method, adapted from work on correcting texts by English language learners BIBREF11 , expands on the concept of selecting a correction nearest to the spelling error according to some notion of distance. Here, the Levenshtein distance is used in a weighted sum to cosine distance between word vectors. This is based on the observation that trained vectors models of distributional semantics contain also representations of spelling errors, if they were not pruned. Their representations tend to be similar to those of their correct counterparts. For example, the token enginir will appear in similar contexts as engineer, and therefore will be assigned a similar vector embedding.",
+        "(applied cellwise) in order to obtain the initial setting of parameters for the main LSTM. Our ELMo-augmented LSTM is bidirectional."
+      ]
+    },
+    {
+      "paper_id": "1911.13087",
+      "paper_title": "Kurdish (Sorani) Speech to Text: Presenting an Experimental Dataset",
+      "question": "How long is the dataset?",
+      "gold_answer": "2000",
+      "gold_evidence": [
+        "The corpus includes 2000 sentences. Theses sentence are random renderings of 200 sentences, which we have taken from Sorani Kurdish books of the grades one to three of the primary school in the Kurdistan Region of Iraq. The reason that we have taken only 200 sentences is to have a smaller dictionary and also to increase the repetition of each word in the narrated speech. We transformed the corpus sentences, which are in Persian-Arabic script, into the format which complies with the suggested phones for the related Sorani letters (see Section SECREF6)."
+      ]
+    },
+    {
+      "paper_id": "1906.01910",
+      "paper_title": "Evaluation and Improvement of Chatbot Text Classification Data Quality Using Plausible Negative Examples",
+      "question": "did they compare with other evaluation metrics?",
+      "gold_answer": "yes",
+      "gold_evidence": [
+        "FLOAT SELECTED: Figure 5: Comparison of nex-cv and Human-Rater Accuracy. The six datasets from pseudonymous chatbots tested had a different number of questions (examples) and categories (classes), as shown in the bottom row. The human-rater estimate of accuracy (top left, blue) is consistently more lenient than any of the automated measures (top right). The (0; 0.15) setting (top right, blue) is not consistently more or less optimistic than the other settings."
+      ]
+    },
+    {
+      "paper_id": "1901.02534",
+      "paper_title": "Team Papelo: Transformer Networks at FEVER",
+      "question": "Which pre-trained transformer do they use?",
+      "gold_answer": "BIBREF5",
+      "gold_evidence": [
+        "Our approach to FEVER is to fix the most obvious shortcomings of the baseline approaches to retrieval and entailment, and to train a sharp entailment classifier that can be used to filter a broad set of retrieved potential evidence. For the entailment classifier we compare Decomposable Attention BIBREF2 , BIBREF3 as implemented in the official baseline, ESIM BIBREF4 , and a transformer network with pre-trained weights BIBREF5 . The transformer network naturally supports out-of-vocabulary words and gives substantially higher performance than the other methods."
+      ]
+    },
+    {
+      "paper_id": "1909.09491",
+      "paper_title": "A simple discriminative training method for machine translation with large-scale features",
+      "question": "What experiments with large-scale features are performed?",
+      "gold_answer": "Plackett-Luce Model for SMT Reranking",
+      "gold_evidence": [
+        "Evaluation ::: Plackett-Luce Model for SMT Reranking",
+        "After being de-duplicated, the N-best list has an average size of around 300, and with 7491 features. Refer to Formula DISPLAY_FORM9, this is ideal to use the Plackett-Luce model. Results are shown in Figure FIGREF12. We observe some interesting phenomena.",
+        "This experiment displays, in large-scale features, the Plackett-Luce model correlates with BLEU score very well, and alleviates overfitting in some degree."
+      ]
+    },
+    {
+      "paper_id": "1911.03681",
+      "paper_title": "BERT is Not a Knowledge Base (Yet): Factual Knowledge vs. Name-Based Reasoning in Unsupervised QA",
+      "question": "What are the two ways of ensembling BERT and E-BERT?",
+      "gold_answer": "mean-pooling their outputs (AVG) concatenating the entity and its name with a slash symbol (CONCAT)",
+      "gold_evidence": [
+        "We ensemble BERT and E-BERT by (a) mean-pooling their outputs (AVG) or (b) concatenating the entity and its name with a slash symbol (CONCAT), e.g.: Jean_Marais / Jean Mara ##is."
+      ]
+    },
+    {
+      "paper_id": "1602.01595",
+      "paper_title": "Many Languages, One Parser",
+      "question": "How does the model work if no treebank is available?",
+      "gold_answer": "train the parser on six other languages in the Google universal dependency treebanks version 2.0 (de, en, es, fr, it, pt, sv, excluding whichever is the target language), and we use gold coarse POS tags",
+      "gold_evidence": [
+        "mcdonald:11 established that, when no treebank annotations are available in the target language, training on multiple source languages outperforms training on one (i.e., multi-source model transfer outperforms single-source model transfer). In this section, we evaluate the performance of our parser in this setup. We use two strong baseline multi-source model transfer parsers with no supervision in the target language:",
+        "Following guo:16, for each target language, we train the parser on six other languages in the Google universal dependency treebanks version 2.0 (de, en, es, fr, it, pt, sv, excluding whichever is the target language), and we use gold coarse POS tags. Our parser uses the same word embeddings and word clusters used in guo:16, and does not use any typology information."
+      ]
+    },
+    {
+      "paper_id": "2002.05058",
+      "paper_title": "Learning to Compare for Better Training and Evaluation of Open Domain Natural Language Generation Models",
+      "question": "What previous automated evalution approaches authors mention?",
+      "gold_answer": "Text Overlap Metrics, including BLEU Perplexity Parameterized Metrics",
+      "gold_evidence": [
+        "Evaluation of NLG models has been a long-standing open problem. While human evaluation may be ideal, it is generally expensive to conduct and does not scale well. Various automated evaluation approaches are proposed to facilitate the development and evaluation of NLG models. We summarize these evaluation approaches below.",
+        "Text Overlap Metrics, including BLEU BIBREF5, METEOR BIBREF6 and ROUGE BIBREF7, are the most popular metrics employed in the evaluation of NLG models. They evaluate generated text by comparing the similarity between the generated text and human written references. While this works well in tasks where the diversity of acceptable output is limited, such as machine translation and text summarization, text overlap metrics are shown to have weak or no correlation with human judgments in open domain natural language generation tasks BIBREF8. There are two major drawbacks in these metrics. First, text overlap metrics can not distinguish minor variations in a generated text which may make the sentence not equally grammatically correct or semantically meaningful. Second, there may exist multiple equally good outputs for the given input and comparing against one gold reference can be erroneous.",
+        "Perplexity is commonly used to evaluate the quality of a language model. It measures how well a probability distribution predicts a sample and captures the degree of uncertainty in the model. It is used to evaluate models in open-domain NLG tasks such as story generation BIBREF2 and open domain dialogue systems. However, \u201chow likely a sentence is generated by a given model\u201d may not be comparable across different models and does not indicate the quality of the sentence.",
+        "Parameterized Metrics learn a parameterized model to evaluate generated text. Adversarial evaluation models BIBREF11, BIBREF12 assigns a score based on how easy it is to distinguish the dialogue model responses from human responses. However, training such a discriminator can be difficult as the binary classification task can be easily over-fitted and leads to poor generalizability BIBREF11. Moreover, the information we get from the discriminator accuracy is limited as we can not compare the quality of two generated sentences when they both succeed or fail in fooling the discriminator. Recent study shows that the discriminator accuracy does not correlate well with human preference BIBREF13. Automated Dialogue Evaluation Model (ADEM) BIBREF14 is another parameterized metric proposed for dialogue system evaluation. It learns to score a generated dialogue response based on the context and the human written reference. However, it requires human-annotated scores for generated sentences. It is generally hard to design appropriate questions for crowdsourcing these scores, which makes the annotation very expensive to get and the inter-annotator agreement score is only moderate BIBREF14. As a result, the training data is limited and noisy, which makes the scoring task even harder. It can be problematic when comparing models with similar quality. In addition, this model is designed only for evaluating dialogue response generation models. More recently, embedding similarity based metrics such as HUSE BIBREF15 and BERTScore BIBREF16. These metrics alleviate the first problem of text overlap metrics by modeling semantic similarity better. However, they can not address the response diversity problem and thus are only suitable for machine translation and text summarization."
+      ]
+    },
+    {
+      "paper_id": "1701.00185",
+      "paper_title": "Self-Taught Convolutional Neural Networks for Short Text Clustering",
+      "question": "What were the evaluation metrics used?",
+      "gold_answer": "accuracy normalized mutual information",
+      "gold_evidence": [
+        "The clustering performance is evaluated by comparing the clustering results of texts with the tags/labels provided by the text corpus. Two metrics, the accuracy (ACC) and the normalized mutual information metric (NMI), are used to measure the clustering performance BIBREF38 , BIBREF48 . Given a text INLINEFORM0 , let INLINEFORM1 and INLINEFORM2 be the obtained cluster label and the label provided by the corpus, respectively. Accuracy is defined as: DISPLAYFORM0"
+      ]
+    },
+    {
+      "paper_id": "1911.02711",
+      "paper_title": "Exploring Hierarchical Interaction Between Review and Summary for Better Sentiment Analysis",
+      "question": "Which review dataset do they use?",
+      "gold_answer": "SNAP (Stanford Network Analysis Project)",
+      "gold_evidence": [
+        "We evaluate our proposed model on the SNAP (Stanford Network Analysis Project) Amazon review datasets BIBREF8, which contain not only reviews and ratings, but also golden summaries. In scenarios where there is no user-written summary for a review, we use pointer-generator network BIBREF9 to generate abstractive summaries. Empirical results show that our model significantly outperforms all strong baselines, including joint modeling, separate encoder and joint encoder methods. In addition, our model achieves new state-of-the-art performance, attaining 2.1% (with generated summary) and 4.8% (with golden summary) absolutely improvements compared to the previous best method on SNAP Amazon review benchmark.",
+        "We empirically compare different methods using Amazon SNAP Review Dataset BIBREF20, which is a part of Stanford Network Analysis Project. The raw dataset consists of around 34 millions Amazon reviews in different domains, such as books, games, sports and movies. Each review mainly contains a product ID, a piece of user information, a plain text review, a review summary and an overall sentiment rating which ranges from 1 to 5. The statistics of our adopted dataset is shown in Table TABREF20. For fair comparison with previous work, we adopt the same partitions used by previous work BIBREF6, BIBREF7, which is, for each domain, the first 1000 samples are taken as the development set, the following 1000 samples as the test set, and the rest as the training set."
+      ]
+    },
+    {
+      "paper_id": "1910.11471",
+      "paper_title": "Machine Translation from Natural Language to Code using Long-Short Term Memory",
+      "question": "What additional techniques could be incorporated to further improve accuracy?",
+      "gold_answer": "phrase-based word embedding Abstract Syntax Tree(AST)",
+      "gold_evidence": [
+        "The main advantage of translating to a programming language is - it has a concrete and strict lexical and grammatical structure which human languages lack. The aim of this paper was to make the text-to-code framework work for general purpose programming language, primarily Python. In later phase, phrase-based word embedding can be incorporated for improved vocabulary mapping. To get more accurate target code for each line, Abstract Syntax Tree(AST) can be beneficial."
+      ]
+    },
+    {
+      "paper_id": "1704.02686",
+      "paper_title": "Word Embeddings via Tensor Factorization",
+      "question": "What dimensions of word embeddings do they produce using factorization?",
+      "gold_answer": "300-dimensional vectors",
+      "gold_evidence": [
+        "As is common in the literature BIBREF4 , BIBREF8 , we use 300-dimensional vectors for our embeddings and all word vectors are normalized to unit length prior to evaluation."
+      ]
+    },
+    {
+      "paper_id": "1708.08615",
+      "paper_title": "Comparing Human and Machine Errors in Conversational Speech Transcription",
+      "question": "what standard speech transcription pipeline was used?",
+      "gold_answer": "pipeline that is used at Microsoft for production data",
+      "gold_evidence": [
+        "The goal of reaching \u201chuman parity\u201d in automatic CTS transcription raises the question of what should be considered human accuracy on this task. We operationalized the question by submitting the chosen test data to the same vendor-based transcription pipeline that is used at Microsoft for production data (for model training and internal evaluation purposes), and then comparing the results to ASR system output under the NIST scoring protocol. Using this methodology, and incorporating state-of-the-art convolutional and recurrent network architectures for both acoustic modeling BIBREF9 , BIBREF10 , BIBREF7 , BIBREF11 , BIBREF12 , BIBREF13 , BIBREF14 and language modeling BIBREF15 , BIBREF16 , BIBREF17 , BIBREF18 with extensive use of model combination, we obtained a machine error rate that was very slightly below that of the human transcription process (5.8% versus 5.9% on Switchboard data, and 11.0% versus 11.3% on CallHome English data) BIBREF19 . Since then, Saon et al. have reported even better results, along with a separate transcription experiment that puts the human error rate, on the same test data, at a lower point than measured by us (5.1% for Switchboard, 6.8% for CallHome) BIBREF20 ."
+      ]
+    },
+    {
+      "paper_id": "1701.08118",
+      "paper_title": "Measuring the Reliability of Hate Speech Annotations: The Case of the European Refugee Crisis",
+      "question": "How were potentially hateful messages identified?",
+      "gold_answer": "10 hashtags that can be used in an insulting or offensive way",
+      "gold_evidence": [
+        "To find a large amount of hate speech on the refugee crisis, we used 10 hashtags that can be used in an insulting or offensive way. Using these hashtags we gathered 13 766 tweets in total, roughly dating from February to March 2016. However, these tweets contained a lot of non-textual content which we filtered out automatically by removing tweets consisting solely of links or images. We also only considered original tweets, as retweets or replies to other tweets might only be clearly understandable when reading both tweets together. In addition, we removed duplicates and near-duplicates by discarding tweets that had a normalised Levenshtein edit distance smaller than .85 to an aforementioned tweet. A first inspection of the remaining tweets indicated that not all search terms were equally suited for our needs. The search term #Pack (vermin or lowlife) found a potentially large amount of hate speech not directly linked to the refugee crisis. It was therefore discarded. As a last step, the remaining tweets were manually read to eliminate those which were difficult to understand or incomprehensible. After these filtering steps, our corpus consists of 541 tweets, none of which are duplicates, contain links or pictures, or are retweets or replies."
+      ]
+    },
+    {
+      "paper_id": "1606.08495",
+      "paper_title": "Network-Efficient Distributed Word2vec Training System for Large Vocabularies",
+      "question": "Do they perform any morphological tokenization?",
+      "gold_answer": "no",
+      "gold_evidence": [
+        "This step entails counting occurrences of all words in the training corpus and sorting them in order of decreasing occurrence. As mentioned, the vocabulary is taken to be the INLINEFORM0 most frequently occurring words, that occur at least some number INLINEFORM1 times. It is implemented in Spark as a straight-forward map-reduce job."
+      ]
+    },
+    {
+      "paper_id": "1910.07481",
+      "paper_title": "Using Whole Document Context in Neural Machine Translation",
+      "question": "Which datasets were used in the experiment?",
+      "gold_answer": "WMT 2019 parallel dataset a restricted dataset containing the full TED corpus from MUST-C BIBREF10 sampled sentences from WMT 2019 dataset",
+      "gold_evidence": [
+        "Contribution: We propose a preliminary study of a generic approach allowing any model to benefit from document-level information while translating sentence pairs. The core idea is to augment source data by adding document information to each sentence of a source corpus. This document information corresponds to the belonging document of a sentence and is computed prior to training, it takes every document word into account. Our approach focuses on pre-processing and consider whole documents as long as they have defined boundaries. We conduct experiments using the Transformer base model BIBREF1. For the English-German language pair we use the full WMT 2019 parallel dataset. For the English-French language pair we use a restricted dataset containing the full TED corpus from MUST-C BIBREF10 and sampled sentences from WMT 2019 dataset. We obtain important improvements over the baseline and present evidences that this approach helps to resolve cross-sentence ambiguities."
+      ]
+    },
+    {
+      "paper_id": "1702.06589",
+      "paper_title": "Neural Multi-Step Reasoning for Question Answering on Semi-Structured Tables",
+      "question": "What is the source of the paraphrases of the questions?",
+      "gold_answer": "WikiTableQuestions",
+      "gold_evidence": [
+        "We empirically test our approach on a series of experiments on WikiTableQuestions, to our knowledge the only dataset designed for this task. An ensemble of our best models reached state-of-the-art accuracy of 38.7% at the moment of publication.",
+        "In Algorithm 1 we describe how logical forms are transformed into interpretable textual representations called \"paraphrases\". We choose to embed paraphrases in low dimensional vectors and compare these against the question embedding. Working directly with paraphrases instead of logical forms is a design choice, justified by their interpretability, comprehensibility (understandability by non-technical users) and empirical accuracy gains. Our method recursively traverses the tree representation of the logical form starting at the root. For example, the correct candidate logical form for the question mentioned in section \"Candidate Logical Form Generation\" , namely How many people attended the last Rolling Stones concert?, is mapped to the paraphrase Attendance as number of last table row where act is Rolling Stones."
+      ]
+    },
+    {
+      "paper_id": "1807.05154",
+      "paper_title": "Deep Enhanced Representation for Implicit Discourse Relation Recognition",
+      "question": "Why does their model do better than prior models?",
+      "gold_answer": "better sentence pair representations",
+      "gold_evidence": [
+        "Without ELMo (the same setting as 4-th row in Table 3 ), our data settings is the same as qin-EtAl:2017:Long whose performance was state-of-the-art and will be compared directly. We see that even without the pre-trained ELMo encoder, our performance is better, which is mostly attributed to our better sentence pair representations."
+      ]
+    },
+    {
+      "paper_id": "1703.08098",
+      "paper_title": "An overview of embedding models of entities and relationships for knowledge base completion",
+      "question": "What models does this overview cover?",
+      "gold_answer": "This article presented a brief overview of embedding models of entity and relationships for KB completion. ",
+      "gold_evidence": [
+        "This intuition inspired the TransE model\u2014a well-known embedding model for KB completion or link prediction in KBs BIBREF2 .",
+        "Embedding models for KB completion have been proven to give state-of-the-art link prediction performances, in which entities are represented by latent feature vectors while relation types are represented by latent feature vectors and/or matrices and/or third-order tensors BIBREF24 , BIBREF25 , BIBREF2 , BIBREF26 , BIBREF27 , BIBREF28 , BIBREF29 , BIBREF19 , BIBREF30 , BIBREF3 , BIBREF31 , BIBREF32 , BIBREF33 . This article briefly overviews the embedding models for KB completion, and then summarizes up-to-date experimental results on two standard evaluation tasks: i) the entity prediction task\u2014which is also referred to as the link prediction task BIBREF2 \u2014and ii) the triple classification task BIBREF34 .",
+        "The Unstructured model BIBREF22 assumes that the head and tail entity vectors are similar. As the Unstructured model does not take the relationship into account, it cannot distinguish different relation types. The Structured Embedding (SE) model BIBREF35 assumes that the head and tail entities are similar only in a relation-dependent subspace, where each relation is represented by two different matrices. Furthermore, the SME model BIBREF22 uses four different matrices to project entity and relation vectors into a subspace. The TransE model BIBREF2 is inspired by models such as the Word2Vec Skip-gram model BIBREF0 where relationships between words often correspond to translations in latent feature space. TorusE BIBREF36 embeds entities and relations on a torus to handle TransE's regularization problem.",
+        "The TransH model BIBREF26 associates each relation with a relation-specific hyperplane and uses a projection vector to project entity vectors onto that hyperplane. TransD BIBREF37 and TransR/CTransR BIBREF28 extend the TransH model by using two projection vectors and a matrix to project entity vectors into a relation-specific space, respectively. Similar to TransR, TransR-FT BIBREF38 also uses a matrix to project head and tail entity vectors. TEKE_H BIBREF39 extends TransH to incorporate rich context information in an external text corpus. lppTransD BIBREF40 extends TransD to additionally use two projection vectors for representing each relation. STransE BIBREF41 and TranSparse BIBREF42 can be viewed as direct extensions of the TransR model, where head and tail entities are associated with their own projection matrices. Unlike STransE, the TranSparse model uses adaptive sparse matrices, whose sparse degrees are defined based on the number of entities linked by relations. TranSparse-DT BIBREF43 is an extension of TranSparse with a dynamic translation. ITransF BIBREF44 can be considered as a generalization of STransE, which allows sharing statistic regularities between relation projection matrices and alleviates data sparsity issue.",
+        "DISTMULT BIBREF45 is based on the Bilinear model BIBREF24 , BIBREF22 , BIBREF25 where each relation is represented by a diagonal rather than a full matrix. The neural tensor network (NTN) model BIBREF34 uses a bilinear tensor operator to represent each relation while ER-MLP BIBREF27 and ProjE BIBREF46 can be viewed as simplified versions of NTN. Such quadratic forms are also used to model entities and relations in KG2E BIBREF47 , TransG BIBREF48 , ComplEx BIBREF31 , TATEC BIBREF3 , RSTE BIBREF49 and ANALOGY BIBREF50 . In addition, the HolE model BIBREF33 uses circular correlation\u2013a compositional operator\u2013which can be interpreted as a compression of the tensor product.",
+        "ConvE BIBREF51 and ConvKB BIBREF52 are based on convolutional neural networks. ConvE uses a 2D convolutional layer directly over head-entity and relation vector embeddings while ConvKB applies a convolutional layer over embedding triples. Unlike ConvE and ConvKB, the IRN model BIBREF53 uses a shared memory and recurrent neural network-based controller to implicitly model multi-step structured relationships.",
+        "The Path Ranking Algorithm (PRA) BIBREF21 is a random walk inference technique which was proposed to predict a new relationship between two entities in KBs. BIBREF61 used PRA to estimate the probability of an unseen triple as a combination of weighted random walks that follow different paths linking the head entity and tail entity in the KB. BIBREF23 made use of an external text corpus to increase the connectivity of the KB used as the input to PRA. BIBREF62 improved PRA by proposing a subgraph feature extraction technique to make the generation of random walks in KBs more efficient and expressive, while BIBREF63 extended PRA to couple the path ranking of multiple relations. PRA can also be used in conjunction with first-order logic in the discriminative Gaifman model BIBREF64 . In addition, BIBREF65 used a recurrent neural network to learn vector representations of PRA-style relation paths between entities in the KB. Other random-walk based learning algorithms for KB completion can be also found in BIBREF66 , BIBREF67 , BIBREF68 and BIBREF69 . Recently, BIBREF70 have proposed a Neural Logic Programming (LP) framework to learning probabilistic first-order logical rules for KB reasoning, producing competitive link prediction performances. See other methods for learning from KBs and multi-relational data in BIBREF4 ."
+      ]
+    },
+    {
+      "paper_id": "1907.12108",
+      "paper_title": "CAiRE: An End-to-End Empathetic Chatbot",
+      "question": "What pretrained LM is used?",
+      "gold_answer": "Generative Pre-trained Transformer (GPT)",
+      "gold_evidence": [
+        "We apply the Generative Pre-trained Transformer (GPT) BIBREF2 as our pre-trained language model. GPT is a multi-layer Transformer decoder with a causal self-attention which is pre-trained, unsupervised, on the BooksCorpus dataset. BooksCorpus dataset contains over 7,000 unique unpublished books from a variety of genres. Pre-training on such large contiguous text corpus enables the model to capture long-range dialogue context information. Furthermore, as existing EmpatheticDialogue dataset BIBREF4 is relatively small, fine-tuning only on such dataset will limit the chitchat topic of the model. Hence, we first integrate persona into CAiRE, and pre-train the model on PersonaChat BIBREF3 , following a previous transfer-learning strategy BIBREF1 . This pre-training procedure allows CAiRE to have a more consistent persona, thus improving the engagement and consistency of the model. We refer interested readers to the code repository recently released by HuggingFace. Finally, in order to optimize empathy in CAiRE, we fine-tune this pre-trained model using EmpatheticDialogue dataset to help CAiRE understand users' feeling."
+      ]
+    },
+    {
+      "paper_id": "1909.12140",
+      "paper_title": "DisSim: A Discourse-Aware Syntactic Text Simplification Frameworkfor English and German",
+      "question": "What are the corpora used for the task?",
+      "gold_answer": "For the English version, we performed both a thorough manual analysis and automatic evaluation across three commonly used TS datasets from two different domains The evaluation of the German version is in progress.",
+      "gold_evidence": [
+        "For the English version, we performed both a thorough manual analysis and automatic evaluation across three commonly used TS datasets from two different domains in order to assess the performance of our framework with regard to the sentence splitting subtask. The results show that our proposed sentence splitting approach outperforms the state of the art in structural TS, returning fine-grained simplified sentences that achieve a high level of grammaticality and preserve the meaning of the input. The full evaluation methodology and detailed results are reported in niklaus-etal-2019-transforming. In addition, a comparative analysis with the annotations contained in the RST Discourse Treebank BIBREF6 demonstrates that we are able to capture the contextual hierarchy between the split sentences with a precision of almost 90% and reach an average precision of approximately 70% for the classification of the rhetorical relations that hold between them. The evaluation of the German version is in progress."
+      ]
+    },
+    {
+      "paper_id": "1707.06939",
+      "paper_title": "Autocompletion interfaces make crowd workers slower, but their use promotes response diversity",
+      "question": "How many responses did they obtain?",
+      "gold_answer": "1001",
+      "gold_evidence": [
+        "We recruited 176 AMT workers to participate in our conceptualization task. Of these workers, 90 were randomly assigned to the Control group and 86 to the AUI group. These workers completed 1001 tasks: 496 tasks in the control and 505 in the AUI. All responses were gathered within a single 24-hour period during April, 2017."
+      ]
+    },
+    {
+      "paper_id": "1810.09774",
+      "paper_title": "Testing the Generalization Power of Neural Network Models Across NLI Benchmarks",
+      "question": "Which model generalized the best?",
+      "gold_answer": "BERT",
+      "gold_evidence": [
+        "Also including a pretrained ELMo language model did not improve the results significantly. The overall performance of BERT was significantly better than the other models, having the lowest average difference in accuracy of 22.5 points. Our baselines for SNLI (90.4%) and SNLI + MultiNLI (90.6%) outperform the previous state-of-the-art accuracy for SNLI (90.1%) by BIBREF24 ."
+      ]
+    },
+    {
+      "paper_id": "1708.00077",
+      "paper_title": "Bayesian Sparsification of Recurrent Neural Networks",
+      "question": "What is binary variational dropout?",
+      "gold_answer": "the dropout technique of Gal & Ghahramani gal",
+      "gold_evidence": [
+        "We use the dropout technique of Gal & Ghahramani gal as a baseline because it is the most similar dropout technique to our approach and denote it VBD (variational binary dropout)."
+      ]
+    },
+    {
+      "paper_id": "1910.00458",
+      "paper_title": "MMM: Multi-stage Multi-task Learning for Multi-choice Reading Comprehension",
+      "question": "What out of domain datasets authors used for coarse-tuning stage?",
+      "gold_answer": "MultiNLI BIBREF15 and SNLI BIBREF16 ",
+      "gold_evidence": [
+        "We use four MCQA datasets as the target datasets: DREAM BIBREF6, MCTest BIBREF9, TOEFL BIBREF5, and SemEval-2018 Task 11 BIBREF14, which are summarized in Table TABREF11. For the first coarse-tuning stage with NLI tasks, we use MultiNLI BIBREF15 and SNLI BIBREF16 as the out-of-domain source datasets. For the second stage, we use the current largest MCQA dataset, i.e., RACE BIBREF7 as in-domain source dataset. For all datasets, we use the official train/dev/test splits."
+      ]
+    },
+    {
+      "paper_id": "1910.11471",
+      "paper_title": "Machine Translation from Natural Language to Code using Long-Short Term Memory",
+      "question": "What dataset is used to measure accuracy?",
+      "gold_answer": "validation data",
+      "gold_evidence": [
+        "Training parallel corpus had 18805 lines of annotated code in it. The training model is executed several times with different training parameters. During the final training process, 500 validation data is used to generate the recurrent neural model, which is 3% of the training data. We run the training with epoch value of 10 with a batch size of 64. After finishing the training, the accuracy of the generated model using validation data from the source corpus was 74.40% (Fig. FIGREF17)."
+      ]
+    },
+    {
+      "paper_id": "1704.05572",
+      "paper_title": "Answering Complex Questions Using Open Information Extraction",
+      "question": "Is an entity linking process used?",
+      "gold_answer": "no",
+      "gold_evidence": [
+        "Given a multiple-choice question $qa$ with question text $q$ and answer choices A= $\\lbrace a_i\\rbrace $ , we select the most relevant tuples from $T$ and $S$ as follows.",
+        "Selecting from Tuple KB: We use an inverted index to find the 1,000 tuples that have the most overlapping tokens with question tokens $tok(qa).$ . We also filter out any tuples that overlap only with $tok(q)$ as they do not support any answer. We compute the normalized TF-IDF score treating the question, $q$ as a query and each tuple, $t$ as a document: $ &\\textit {tf}(x, q)=1\\; \\textmd {if x} \\in q ; \\textit {idf}(x) = log(1 + N/n_x) \\\\ &\\textit {tf-idf}(t, q)=\\sum _{x \\in t\\cap q} idf(x) $"
+      ]
+    },
+    {
+      "paper_id": "1804.08094",
+      "paper_title": "IIIDYT at SemEval-2018 Task 3: Irony detection in English tweets",
+      "question": "What was the baseline model?",
+      "gold_answer": "a non-parameter optimized linear-kernel SVM that uses TF-IDF bag-of-word vectors as inputs",
+      "gold_evidence": [
+        "To compare our results, we use the provided baseline, which is a non-parameter optimized linear-kernel SVM that uses TF-IDF bag-of-word vectors as inputs. For pre-processing, in this case we do not preserve casing and delete English stopwords."
+      ]
+    },
+    {
+      "paper_id": "1702.01517",
+      "paper_title": "Opinion Recommendation using Neural Memory Model",
+      "question": "Does they focus on any specific product/service domain?",
+      "gold_answer": "local businesses (i.e. restaurants)",
+      "gold_evidence": [
+        "Our data are collected from the yelp academic dataset, provided by Yelp.com, a popular restaurant review website. The data set contains three types of objects: business, user, and review, where business objects contain basic information about local businesses (i.e. restaurants), review objects contain review texts and star rating, and user objects contain aggregate information about a single user across all of Yelp. Table TABREF31 illustrates the general statistics of the dataset."
+      ]
+    },
+    {
+      "paper_id": "1610.09516",
+      "paper_title": "Finding Street Gang Members on Twitter",
+      "question": "Do the authors provide evidence that 'most' street gang members use Twitter to intimidate others?",
+      "gold_answer": "no",
+      "gold_evidence": [
+        "Street gang members have established online presences coinciding with their physical occupation of neighborhoods. The National Gang Threat Assessment Report confirms that at least tens of thousands of gang members are using social networking websites such as Twitter and video sharing websites such as YouTube in their daily life BIBREF0 . They are very active online; the 2007 National Assessment Center's survey of gang members found that 25% of individuals in gangs use the Internet for at least 4 hours a week BIBREF4 . Gang members typically use social networking sites and social media to develop online respect for their street gang BIBREF5 and to post intimidating, threatening images or videos BIBREF6 . This \u201cCyber-\u201d or \u201cInternet banging\u201d BIBREF7 behavior is precipitated by the fact that an increasing number of young members of the society are joining gangs BIBREF8 , and these young members have become enamored with technology and with the notion of sharing information quickly and publicly through social media. Stronger police surveillance in the physical spaces where gangs congregate further encourages gang members to seek out virtual spaces such as social media to express their affiliation, to sell drugs, and to celebrate their illegal activities BIBREF9 ."
+      ]
+    },
+    {
+      "paper_id": "1909.00279",
+      "paper_title": "Generating Classical Chinese Poems from Vernacular Chinese",
+      "question": "What are some guidelines in writing input vernacular so model can generate",
+      "gold_answer": " if a vernacular paragraph contains more poetic images used in classical literature, its generated poem usually achieves higher score poems generated from descriptive paragraphs achieve higher scores than from logical or philosophical paragraphs",
+      "gold_evidence": [
+        "1) In classical Chinese poems, poetic images UTF8gbsn(\u610f\u8c61) were widely used to express emotions and to build artistic conception. A certain poetic image usually has some fixed implications. For example, autumn is usually used to imply sadness and loneliness. However, with the change of time, poetic images and their implications have also changed. According to our observation, if a vernacular paragraph contains more poetic images used in classical literature, its generated poem usually achieves higher score. As illustrated in Table TABREF12, both paragraph 2 and 3 are generated from pop song lyrics, paragraph 2 uses many poetic images from classical literature (e.g. pear flowers, makeup), while paragraph 3 uses modern poetic images (e.g. sparrows on the utility pole). Obviously, compared with poem 2, sentences in poem 3 seems more confusing, as the poetic images in modern times may not fit well into the language model of classical poems.",
+        "2) We also observed that poems generated from descriptive paragraphs achieve higher scores than from logical or philosophical paragraphs. For example, in Table TABREF12, both paragraph 4 (more descriptive) and paragraph 5 (more philosophical) were selected from famous modern prose. However, compared with poem 4, poem 5 seems semantically more confusing. We offer two explanations to the above phenomenon: i. Limited by the 28-character restriction, it is hard for quatrain poems to cover complex logical or philosophical explanation. ii. As vernacular paragraphs are more detailed and lengthy, some information in a vernacular paragraph may be lost when it is summarized into a classical poem. While losing some information may not change the general meaning of a descriptive paragraph, it could make a big difference in a logical or philosophical paragraph."
+      ]
+    },
+    {
+      "paper_id": "2001.06354",
+      "paper_title": "Modality-Balanced Models for Visual Dialogue",
+      "question": "Which method for integration peforms better ensemble or consensus dropout fusion with shared parameters?",
+      "gold_answer": "ensemble model",
+      "gold_evidence": [
+        "As shown in Table TABREF46, consensus dropout fusion improves the score of NDCG by around 1.0 from the score of the joint model while still yielding comparable scores for other metrics. Unlike ensemble way, consensus dropout fusion does not require much increase in the number of model parameters.",
+        "As also shown in Table TABREF46, the ensemble model seems to take the best results from each model. Specifically, the NDCG score of the ensemble model is comparable to that of the image-only model and the scores of other metrics are comparable to those of the image-history joint model. From this experiment, we can confirm that the two models are in complementary relation."
+      ]
+    },
+    {
+      "paper_id": "1707.02377",
+      "paper_title": "Efficient Vector Representation for Documents through Corruption",
+      "question": "Is their approach similar to making an averaged weighted sum of word vectors, where weights reflect word frequencies?",
+      "gold_answer": "Different from their work, we choose to corrupt the original document by randomly removing significant portion of words, and represent the document using only the embeddings of the words remained.",
+      "gold_evidence": [
+        "Similar to Word2Vec or Paragraph Vectors, Doc2VecC consists of an input layer, a projection layer as well as an output layer to predict the target word, \u201cceremony\u201d in this example. The embeddings of neighboring words (\u201copening\u201d, \u201cfor\u201d, \u201cthe\u201d) provide local context while the vector representation of the entire document (shown in grey) serves as the global context. In contrast to Paragraph Vectors, which directly learns a unique vector for each document, Doc2VecC represents each document as an average of the embeddings of words randomly sampled from the document (\u201cperformance\u201d at position INLINEFORM0 , \u201cpraised\u201d at position INLINEFORM1 , and \u201cbrazil\u201d at position INLINEFORM2 ). BIBREF25 also proposed the idea of using average of word embeddings to represent the global context of a document. Different from their work, we choose to corrupt the original document by randomly removing significant portion of words, and represent the document using only the embeddings of the words remained. This corruption mechanism offers us great speedup during training as it significantly reduces the number of parameters to update in back propagation. At the same time, as we are going to detail in the next section, it introduces a special form of regularization, which brings great performance improvement."
+      ]
+    },
+    {
+      "paper_id": "1809.10644",
+      "paper_title": "Predictive Embeddings for Hate Speech Detection on Twitter",
+      "question": "what was the baseline?",
+      "gold_answer": "logistic regression",
+      "gold_evidence": [
+        "All of our results are produced from 10-fold cross validation to allow comparison with previous results. We trained a logistic regression baseline model (line 1 in Table TABREF10 ) using character ngrams and word unigrams using TF*IDF weighting BIBREF13 , to provide a baseline since HAR has no reported results. For the SR and HATE datasets, the authors reported their trained best logistic regression model's results on their respective datasets."
+      ]
+    },
+    {
+      "paper_id": "1707.07554",
+      "paper_title": "Learning Rare Word Representations using Semantic Bridging",
+      "question": "What other embedding models are tested?",
+      "gold_answer": "GloVe embeddings trained by BIBREF10 on Wikipedia and Gigaword 5 (vocab: 400K, dim: 300) w2v-gn, Word2vec BIBREF5 trained on the Google News dataset (vocab: 3M, dim: 300) DeepWalk  node2vec",
+      "gold_evidence": [
+        "In our experiments, we used WordNet 3.0 BIBREF9 as our external knowledge base INLINEFORM0 . For word embeddings, we experimented with two popular models: (1) GloVe embeddings trained by BIBREF10 on Wikipedia and Gigaword 5 (vocab: 400K, dim: 300), and (2) w2v-gn, Word2vec BIBREF5 trained on the Google News dataset (vocab: 3M, dim: 300).",
+        "Our coverage enhancement starts by transforming the knowledge base INLINEFORM0 into a vector space representation that is comparable to that of the corpus-based space INLINEFORM1 . To this end, we use two techniques for learning low-dimensional feature spaces from knowledge graphs: DeepWalk and node2vec. DeepWalk uses a stream of short random walks in order to extract local information for a node from the graph. By treating these walks as short sentences and phrases in a special language, the approach learns latent representations for each node. Similarly, node2vec learns a mapping of nodes to continuous vectors that maximizes the likelihood of preserving network neighborhoods of nodes. Thanks to a flexible objective that is not tied to a particular sampling strategy, node2vec reports improvements over DeepWalk on multiple classification and link prediction datasets. For both these systems we used the default parameters and set the dimensionality of output representation to 100. Also, note than nodes in the semantic graph of WordNet represent synsets. Hence, a polysemous word would correspond to multiple nodes. In our experiments, we use the MaxSim assumption of BIBREF11 in order to map words to synsets."
+      ]
+    },
+    {
+      "paper_id": "1910.10408",
+      "paper_title": "Controlling the Output Length of Neural Machine Translation",
+      "question": "Which languages do they focus on?",
+      "gold_answer": "two translation directions (En-It and En-De)",
+      "gold_evidence": [
+        "We investigate both methods, either in isolation or combined, on two translation directions (En-It and En-De) for which the length of the target is on average longer than the length of the source. Our ultimate goal is to generate translations whose length is not longer than that of the source string (see example in Table FIGREF1). While generating translations that are just a few words shorter might appear as a simple task, it actually implies good control of the target language. As the reported examples show, the network has to implicitly apply strategies such as choosing shorter rephrasing, avoiding redundant adverbs and adjectives, using different verb tenses, etc. We report MT performance results under two training data conditions, small and large, which show limited degradation in BLEU score and n-gram precision as we vary the target length ratio of our models. We also run a manual evaluation which shows for the En-It task a slight quality degradation in exchange of a statistically significant reduction in the average length ratio, from 1.05 to 1.01."
+      ]
+    },
+    {
+      "paper_id": "1906.10551",
+      "paper_title": "Assessing the Applicability of Authorship Verification Methods",
+      "question": "What is a self-compiled corpus?",
+      "gold_answer": " restrict the content of each text to the abstract and conclusion of the original work considered other parts of the original works such as introduction or discussion sections extracted text portions are appropriate for the AV task, each original work was preprocessed manually removed tables, formulas, citations, quotes and sentences that include non-language content such as mathematical constructs or specific names of researchers, systems or algorithms",
+      "gold_evidence": [
+        "As a first corpus, we compiled INLINEFORM0 that represents a collection of 80 excerpts from scientific works including papers, dissertations, book chapters and technical reports, which we have chosen from the well-known Digital Bibliography & Library Project (DBLP) platform. Overall, the documents were written by 40 researchers, where for each author INLINEFORM1 , there are exactly two documents. Given the 80 documents, we constructed for each author INLINEFORM2 two verification problems INLINEFORM3 (a Y-case) and INLINEFORM4 (an N-case). For INLINEFORM5 we set INLINEFORM6 's first document as INLINEFORM7 and the second document as INLINEFORM8 . For INLINEFORM9 we reuse INLINEFORM10 from INLINEFORM11 as the known document and selected a text from another (random) author as the unknown document. The result of this procedure is a set of 80 verification problems, which we split into a training and test set based on a 40/60% ratio. Where possible, we tried to restrict the content of each text to the abstract and conclusion of the original work. However, since in many cases these sections were too short, we also considered other parts of the original works such as introduction or discussion sections. To ensure that the extracted text portions are appropriate for the AV task, each original work was preprocessed manually. More precisely, we removed tables, formulas, citations, quotes and sentences that include non-language content such as mathematical constructs or specific names of researchers, systems or algorithms. The average time span between both documents of an author is 15.6 years. The minimum and maximum time span are 6 and 40 years, respectively. Besides the temporal aspect of INLINEFORM12 , another challenge of this corpus is the formal (scientific) language, where the usage of stylistic devices is more restricted, in contrast to other genres such as novels or poems."
+      ]
+    },
+    {
+      "paper_id": "1912.02761",
+      "paper_title": "Measuring Social Bias in Knowledge Graph Embeddings",
+      "question": "Do they propose any solution to debias the embeddings?",
+      "gold_answer": "no",
+      "gold_evidence": [
+        "We have presented the first study on social bias in KG embeddings, and proposed a new metric for measuring such bias. We demonstrated that differences in the distributions of entities in real-world knowledge graphs (there are many more male bankers in Wikidata than female) translate into harmful biases related to professions being encoded in embeddings. Given that KGs are formed of real-world entities, we cannot simply equalize the counts; it is not possible to correct history by creating female US Presidents, etc. In light of this, we suggest that care is needed when applying graph embeddings in NLP pipelines, and work needed to develop robust methods to debias such embeddings."
+      ]
+    },
+    {
+      "paper_id": "1912.11602",
+      "paper_title": "Make Lead Bias in Your Favor: A Simple and Effective Method for News Summarization",
+      "question": "What does the data cleaning and filtering process consist of?",
+      "gold_answer": "many news articles begin with reporter names, media agencies, dates or other contents irrelevant to the content to ensure that the summary is concise and the article contains enough salient information, we only keep articles with 10-150 words in the top three sentences and 150-1200 words in the rest, and that contain at least 6 sentences in total we try to remove articles whose top three sentences may not form a relevant summary",
+      "gold_evidence": [
+        "First, many news articles begin with reporter names, media agencies, dates or other contents irrelevant to the content, e.g. \u201cNew York (CNN) \u2013\u201d, \u201cJones Smith, May 10th, 2018:\u201d. We therefore apply simple regular expressions to remove these prefixes.",
+        "Second, to ensure that the summary is concise and the article contains enough salient information, we only keep articles with 10-150 words in the top three sentences and 150-1200 words in the rest, and that contain at least 6 sentences in total. In this way, we filter out i) articles with excessively long content to reduce memory consumption; ii) very short leading sentences with little information which are unlikely to be a good summary. To encourage the model to generate abstrative summaries, we also remove articles where any of the top three sentences is exactly repeated in the rest of the article.",
+        "Third, we try to remove articles whose top three sentences may not form a relevant summary. For this purpose, we utilize a simple metric: overlapping words. We compute the portion of non-stopping words in the top three sentences that are also in the rest of an article. A higher portion implies that the summary is representative and has a higher chance of being inferred by the model using the rest of the article. To verify, we compute the overlapping ratio of non-stopping words between human-edited summary and the article in CNN/DailyMail dataset, which has a median value of 0.87. Therefore, in pretraining, we keep articles with an overlapping word ratio higher than 0.65."
+      ]
+    },
+    {
+      "paper_id": "2004.03685",
+      "paper_title": "Towards Faithfully Interpretable NLP Systems: How should we define and evaluate faithfulness?",
+      "question": "Which are key points in guidelines for faithfulness evaluation?",
+      "gold_answer": "Be explicit in what you evaluate. Faithfulness evaluation should not involve human-judgement on the quality of interpretation. Faithfulness evaluation should not involve human-provided gold labels. Do not trust \u201cinherent interpretability\u201d claims. Faithfulness evaluation of IUI systems should not rely on user performance.",
+      "gold_evidence": [
+        "Guidelines for Evaluating Faithfulness",
+        "We propose the following guidelines for evaluating the faithfulness of explanations. These guidelines address common pitfalls and sub-optimal practices we observed in the literature.",
+        "Guidelines for Evaluating Faithfulness ::: Be explicit in what you evaluate.",
+        "Conflating plausability and faithfulness is harmful. You should be explicit on which one of them you evaluate, and use suitable methodologies for each one. Of course, the same applies when designing interpretation techniques\u2014be clear about which properties are being prioritized.",
+        "Guidelines for Evaluating Faithfulness ::: Faithfulness evaluation should not involve human-judgement on the quality of interpretation.",
+        "We note that: (1) humans cannot judge if an interpretation is faithful or not: if they understood the model, interpretation would be unnecessary; (2) for similar reasons, we cannot obtain supervision for this problem, either. Therefore, human judgement should not be involved in evaluation for faithfulness, as human judgement measures plausability.",
+        "Guidelines for Evaluating Faithfulness ::: Faithfulness evaluation should not involve human-provided gold labels.",
+        "We should be able to interpret incorrect model predictions, just the same as correct ones. Evaluation methods that rely on gold labels are influenced by human priors on what should the model do, and again push the evaluation in the direction of plausability.",
+        "Guidelines for Evaluating Faithfulness ::: Do not trust \u201cinherent interpretability\u201d claims.",
+        "Inherent interpretability is a claim until proven otherwise. Explanations provided by \u201cinherently interpretable\u201d models must be held to the same standards as post-hoc interpretation methods, and be evaluated for faithfulness using the same set of evaluation techniques.",
+        "Guidelines for Evaluating Faithfulness ::: Faithfulness evaluation of IUI systems should not rely on user performance.",
+        "End-task user performance in HCI settings is merely indicative of correlation between plausibility and model performance, however small this correlation is. While important to evaluate the utility of the interpretations for some use-cases, it is unrelated to faithfulness."
+      ]
+    },
+    {
+      "paper_id": "2003.07758",
+      "paper_title": "Multi-modal Dense Video Captioning",
+      "question": "What ASR system do they use?",
+      "gold_answer": "YouTube ASR system ",
+      "gold_evidence": [
+        "The dataset itself is distributed as a collection of links to YouTube videos, some of which are no longer available. Authors provide pre-computed C3D features and frames at 5fps, but these are not suitable for our experiments. At the time of writing, we found 9,167 (out of 10,009) training and 4,483 (out of 4,917) validation videos which is, roughly, 91 % of the dataset. Out of these 2,798 training and 1,374 validation videos (approx. 28 %) contain at least one speech segment. The speech content was obtained from the closed captions (CC) provided by the YouTube ASR system which can be though as subtitles."
+      ]
+    },
+    {
+      "paper_id": "1909.01958",
+      "paper_title": "From 'F' to 'A' on the N.Y. Regents Science Exams: An Overview of the Aristo Project",
+      "question": "Is Aristo just some modern NLP model (ex. BERT) finetuned od data specific for this task?",
+      "gold_answer": "yes",
+      "gold_evidence": [
+        "The current configuration of Aristo comprises of eight solvers, described shortly, each of which attempts to answer a multiple choice question. To study particular phenomena and develop solvers, the project has created larger datasets to amplify and study different problems, resulting in 10 new datasets and 5 large knowledge resources for the community.",
+        "The solvers can be loosely grouped into:",
+        "Statistical and information retrieval methods",
+        "Reasoning methods",
+        "Large-scale language model methods",
+        "Over the life of the project, the relative importance of the methods has shifted towards large-scale language methods.",
+        "The field of NLP has advanced substantially with the advent of large-scale language models such as ELMo (BID6), ULMFit (BID37), GPT (BID38), BERT (BID7), and RoBERTa (BID8). These models are trained to perform various language prediction tasks such as predicting a missing word or the next sentence, using large amounts of text (e.g., BERT was trained on Wikipedia + the Google Book Corpus of 10,000 books). They can also be fine-tuned to new language prediction tasks, such as question-answering, and have been remarkably successful in the few months that they have been available.",
+        "We apply BERT to multiple choice questions by treating the task as classification: Given a question $q$ with answer options $a_{i}$ and optional background knowledge $K_{i}$, we provide it to BERT as:",
+        "[CLS] $K_i$ [SEP] $q$ [SEP] $a_{i}$ [SEP]",
+        "The AristoBERT solver uses three methods to apply BERT more effectively. First, we retrieve and supply background knowledge along with the question when using BERT. This provides the potential for BERT to \u201cread\u201d that background knowledge and apply it to the question, although the exact nature of how it uses background knowledge is more complex and less interpretable. Second, we fine-tune BERT using a curriculum of several datasets, including some that are not science related. Finally, we ensemble different variants of BERT together."
+      ]
+    },
+    {
+      "paper_id": "1708.09157",
+      "paper_title": "Cross-lingual, Character-Level Neural Morphological Tagging",
+      "question": "How are character representations from various languages joint?",
+      "gold_answer": "shared character embeddings for taggers in both languages together through optimization of a joint loss function",
+      "gold_evidence": [
+        "Our formulation of transfer learning builds on work in multi-task learning BIBREF15 , BIBREF9 . We treat each individual language as a task and train a joint model for all the tasks. We first discuss the current state of the art in morphological tagging: a character-level recurrent neural network. After that, we explore three augmentations to the architecture that allow for the transfer learning scenario. All of our proposals force the embedding of the characters for both the source and the target language to share the same vector space, but involve different mechanisms, by which the model may learn language-specific features.",
+        "Cross-lingual morphological tagging may be formulated as a multi-task learning problem. We seek to learn a set of shared character embeddings for taggers in both languages together through optimization of a joint loss function that combines the high-resource tagger and the low-resource one. The first loss function we consider is the following:"
+      ]
+    },
+    {
+      "paper_id": "1908.10383",
+      "paper_title": "Facet-Aware Evaluation for Extractive Text Summarization",
+      "question": "How do they evaluate their proposed metric?",
+      "gold_answer": "manually labeled and tell exactly if one sentence should be extracted (assuming our annotations are in agreement), to further verify that FAR correlates with human preference,",
+      "gold_evidence": [
+        "As shown in Table TABREF13, there is almost no discrimination among the last four methods under ROUGE-1 F1, and their rankings under ROUGE-1/2/L are quite different. In contrast, FAR shows that UnifiedSum(E) covers the most facets. Although FAR is supposed to be favored as FAMs are already manually labeled and tell exactly if one sentence should be extracted (assuming our annotations are in agreement), to further verify that FAR correlates with human preference, we rank UnifiedSum(E), NeuSum, and Lead-3 in Table TABREF15. The order of the 1st rank in the human evaluation coincides with FAR. FAR also has higher Spearman's coefficient $\\rho $ than ROUGE (0.457 vs. 0.44, n=30, threshold=0.362 at 95% significance)."
+      ]
+    },
+    {
+      "paper_id": "1911.06747",
+      "paper_title": "Towards Personalized Dialog Policies for Conversational Skill Discovery",
+      "question": "How did they measure effectiveness?",
+      "gold_answer": "number of dialogs that resulted in launching a skill divided by total number of dialogs",
+      "gold_evidence": [
+        "We trained the DQN agent using an $\\epsilon $-greedy policy with $\\epsilon $ decreasing linearly from 1 to $0.1$ over $100,000$ steps. Additionally, we tuned a window size to include previous dialog turns as input and set $\\gamma $ to $0.9$. We ran the method 30 times for $150,000$ steps, and in each run, after every 10,000 steps, we sampled $3,000$ dialog episodes with no exploration to evaluate the performance. The optimal parameters were found using Hyperopt BIBREF23 (see Appendix B). Figure FIGREF9 shows the simulation results during training. The Y-axis in the figure is the success rate of the agent (measured in terms of number of dialogs that resulted in launching a skill divided by total number of dialogs), and the X-axis is the number of learning steps. Given our choice of reward function, the increase in success rate is indicative of the agent learning to improve its policy over time. Furthermore, the RL agent outperformed the rule-based agent with average success rate of $68.00\\% (\\pm 2\\%$) in simulation."
+      ]
+    },
+    {
+      "paper_id": "1909.00279",
+      "paper_title": "Generating Classical Chinese Poems from Vernacular Chinese",
+      "question": "What dataset is used for training?",
+      "gold_answer": "We collected a corpus of poems and a corpus of vernacular literature from online resources",
+      "gold_evidence": [
+        "Training and Validation Sets We collected a corpus of poems and a corpus of vernacular literature from online resources. The poem corpus contains 163K quatrain poems from Tang Poems and Song Poems, the vernacular literature corpus contains 337K short paragraphs from 281 famous books, the corpus covers various literary forms including prose, fiction and essay. Note that our poem corpus and a vernacular corpus are not aligned. We further split the two corpora into a training set and a validation set."
+      ]
+    },
+    {
+      "paper_id": "1601.00901",
+      "paper_title": "Joint learning of ontology and semantic parser from text",
+      "question": "How did they induce the CFG?",
+      "gold_answer": "the parser first learns to parse simple sentences, then proceeds to learn more complex ones. The induction method is iterative, semi-automatic and based on frequent patterns",
+      "gold_evidence": [
+        "In this paper, we propose a novel approach to joint learning of ontology and semantic parsing, which is designed for homogeneous collections of text, where each fact is usually stated only once, therefore we cannot rely on data redundancy. Our approach is text-driven, semi-automatic and based on grammar induction. It is presented in Figure 1 .The input is a seed ontology together with text annotated with concepts from the seed ontology. The result of the process is an ontology with extended instances, classes, taxonomic and non-taxonomic relations, and a semantic parser, which transform basic units of text, i.e sentences, into semantic trees. Compared to trees that structure sentences based on syntactic information, nodes of semantic trees contain semantic classes, like location, profession, color, etc. Our approach does not rely on any syntactic analysis of text, like part-of-speech tagging or dependency parsing. The grammar induction method works on the premise of curriculum learning BIBREF7 , where the parser first learns to parse simple sentences, then proceeds to learn more complex ones. The induction method is iterative, semi-automatic and based on frequent patterns. A context-free grammar (CFG) is induced from the text, which is represented by several layers of semantic annotations. The motivation to use CFG is that it is very suitable for the proposed alternating usage of top-down and bottom-up parsing, where new rules are induced from previously unparsable parts. Furthermore, it has been shown by BIBREF8 that CFGs are expressive enough to model almost every language phenomena. The induction is based on a greedy iterative procedure that involves minor human involvement, which is needed for seed rule definition and rule categorization. Our experiments show that although the grammar is ambiguous, it is scalable enough to parse a large dataset of sentences."
+      ]
+    },
+    {
+      "paper_id": "1909.13362",
+      "paper_title": "Language-Agnostic Syllabification with Neural Sequence Labeling",
+      "question": "Is the LSTM bidirectional?",
+      "gold_answer": "yes",
+      "gold_evidence": [
+        "We use the LSTM network as follows. The $x$ vector is fed through the LSTM network which outputs a vector $\\overrightarrow{h_i}$ for each time step $i$ from 0 to $n-1$. This is the forward LSTM. As we have access to the complete vector $x$, we can process a backward LSTM as well. This is done by computing a vector $\\overleftarrow{h_i}$ for each time step $i$ from $n-1$ to 0. Finally, we concatenate the backward LSTM with the forward LSTM:",
+        "Both $\\overrightarrow{h_i}$ and $\\overleftarrow{h_i}$ have a dimension of $l$, which is an optimized hyperparameter. The BiLSTM output $h$ thus has dimension $2l\\times n$."
+      ]
+    },
+    {
+      "paper_id": "2002.00876",
+      "paper_title": "Torch-Struct: Deep Structured Prediction Library",
+      "question": "What general-purpose optimizations are included?",
+      "gold_answer": "Parallel Scan Inference Vectorized Parsing Semiring Matrix Operations",
+      "gold_evidence": [
+        "Optimizations ::: a) Parallel Scan Inference",
+        "Optimizations ::: b) Vectorized Parsing",
+        "Optimizations ::: c) Semiring Matrix Operations",
+        "Torch-Struct aims for computational and memory efficiency. Implemented naively, dynamic programming algorithms in Python are prohibitively slow. As such Torch-Struct provides key primitives to help batch and vectorize these algorithms to take advantage of GPU computation and to minimize the overhead of backpropagating through chart-based dynamic programmming. Figure FIGREF17 shows the impact of these optimizations on the core algorithms."
+      ]
+    },
+    {
+      "paper_id": "1712.00609",
+      "paper_title": "Improving Visually Grounded Sentence Representations with Self-Attention",
+      "question": "What baselines are the proposed method compared against?",
+      "gold_answer": "(Layer Normalized Skip-Thoughts, ST-LN) BIBREF31 Cap2All, Cap2Cap, Cap2Img",
+      "gold_evidence": [
+        "Adhering to the experimental settings of BIBREF1 , we concatenate sentence representations produced from our model with those obtained from the state-of-the-art unsupervised learning model (Layer Normalized Skip-Thoughts, ST-LN) BIBREF31 . We evaluate the quality of sentence representations produced from different variants of our encoders on well-known transfer tasks: movie review sentiment (MR) BIBREF32 , customer reviews (CR) BIBREF33 , subjectivity (SUBJ) BIBREF34 , opinion polarity (MPQA) BIBREF35 , paraphrase identification (MSRP) BIBREF36 , binary sentiment classification (SST) BIBREF37 , SICK entailment and SICK relatedness BIBREF38 .",
+        "Following the experimental design of BIBREF1 , we conduct experiments on three different learning objectives: Cap2All, Cap2Cap, Cap2Img. Under Cap2All, the model is trained to predict both the target caption and the associated image: INLINEFORM0 . Under Cap2Cap, the model is trained to predict only the target caption ( INLINEFORM1 ) and, under Cap2Img, only the associated image ( INLINEFORM2 )."
+      ]
+    },
+    {
+      "paper_id": "1809.01341",
+      "paper_title": "Embedding Multimodal Relational Data for Knowledge Base Completion",
+      "question": "What other multimodal knowledge base embedding methods are there?",
+      "gold_answer": "merging, concatenating, or averaging the entity and its features to compute its embeddings graph embedding approaches matrix factorization to jointly embed KB and textual relations",
+      "gold_evidence": [
+        "A number of methods utilize an extra type of information as the observed features for entities, by either merging, concatenating, or averaging the entity and its features to compute its embeddings, such as numerical values BIBREF26 (we use KBLN from this work to compare it with our approach using only numerical as extra attributes), images BIBREF27 , BIBREF28 (we use IKRL from the first work to compare it with our approach using only images as extra attributes), text BIBREF29 , BIBREF30 , BIBREF31 , BIBREF32 , BIBREF33 , BIBREF34 , and a combination of text and image BIBREF35 . Further, BIBREF7 address the multilingual relation extraction task to attain a universal schema by considering raw text with no annotation as extra feature and using matrix factorization to jointly embed KB and textual relations BIBREF36 . In addition to treating the extra information as features, graph embedding approaches BIBREF37 , BIBREF38 consider observed attributes while encoding to achieve more accurate embeddings."
+      ]
+    },
+    {
+      "paper_id": "2004.03762",
+      "paper_title": "Generating Narrative Text in a Switching Dynamical System",
+      "question": "What metrics are used for evaluation?",
+      "gold_answer": "ROUGE BIBREF29 and METEOR BIBREF30",
+      "gold_evidence": [
+        "We automatically evaluate on four different types of interpolations (where different combinations of sentences are removed and the model is forced to regenerate them), We evaluate the generations with the ROUGE BIBREF29 and METEOR BIBREF30 metrics using the true sentences as targets. Table TABREF33 shows the automatic evaluation results from interpolations using our proposed models and baselines. The #Sent(s) column indicates which sentence(s) were removed, and then regenerated by the model. We gave the baselines a slight edge over SLDS because they pick the best out of 1000 samples while SLDS is only out of 50. The SLDS models see their largest gain over the baseline models when at least the first sentence is given as an input. The baseline models do better when the first and second sentence need to be imputed. This is likely due to the fact that having access to the earlier sentences allows a better initialization for the Gibbs sampler. Surprisingly, the semi-supervised variants of the SLDS models achieve higher scores. The reasons for this is discussed below in the Perplexity section."
+      ]
+    },
+    {
+      "paper_id": "1910.11949",
+      "paper_title": "Automatic Reminiscence Therapy for Dementia.",
+      "question": "Is machine learning system underneath similar to image caption ML systems?",
+      "gold_answer": "yes",
+      "gold_evidence": [
+        "Our conversational agent uses two architectures to simulate a specialized reminiscence therapist. The block in charge of generating questions is based on the work Show, Attend and Tell BIBREF13. This work generates descriptions from pictures, also known as image captioning. In our case, we focus on generating questions from pictures. Our second architecture is inspired by Neural Conversational Model from BIBREF14 where the author presents an end-to-end approach to generate simple conversations. Building an open-domain conversational agent is a challenging problem. As addressed in BIBREF15 and BIBREF16, the lack of a consistent personality and lack of long-term memory which produces some meaningless responses in these models are still unresolved problems."
+      ]
+    }
+  ]
+}
