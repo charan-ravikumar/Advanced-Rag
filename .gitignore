@@ -20,3 +20,25 @@ data/
 .vscode/
 
 .ipynb_checkpoints/
+# Project archive
+Advanced-Rag.zip
+advanced-rag.zip
+*.zip
+
+# Python tooling caches and build artifacts
+.pytest_cache/
+.mypy_cache/
+dist/
+build/
+*.egg-info/
+
+# Logs
+logs/
+*.log
+
+# Local env variants
+.env.*
+
+# Docs to ignore
+docs/INTERVIEW_PREP.md
+docs/TECHNICAL_DEEP_DIVE.md
