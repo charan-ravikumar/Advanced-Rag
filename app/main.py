@@ -18,7 +18,7 @@ from schemas import (
     QueryRequest
 )
 
-from rag.query import (
+from rag.retrieval import (
 
     retrieve_and_build_context,
 

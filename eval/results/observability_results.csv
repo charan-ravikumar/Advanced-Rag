@@ -1,0 +1,7 @@
+metric,value
+P50 Retrieval Latency (s),0.505
+P95 Retrieval Latency (s),1.305
+P50 Total Latency (s),8.728
+P95 Total Latency (s),20.087
+Throughput (QPM),4.2
+Error Rate,0.0

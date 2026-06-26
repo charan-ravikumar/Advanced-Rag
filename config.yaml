@@ -1,0 +1,31 @@
+pipeline:
+  chunking: "semantic"            # options: "semantic", "recursive"
+  retrieval: "hybrid"             # options: "vector", "bm25", "hybrid"
+  fusion: "rrf"                   # options: "rrf", "none"
+  reranker_enabled: false         # false by default — +11.7s on CPU, enable only with GPU
+  reranker_model: "cross-encoder/ms-marco-MiniLM-L-6-v2"
+  top_k: 5
+  candidate_k: 20
+  rrf_k: 60
+  vector_weight: 1.0
+  bm25_weight: 0.7
+  vector_threshold: 0.35
+  bm25_threshold: 0.15
+
+embedding:
+  model: "sentence-transformers/all-MiniLM-L6-v2"
+  cache_enabled: true
+  cache_dir: ".cache/embeddings"
+  lru_cache_size: 512             # max cached query embeddings
+
+eval:
+  dataset_path: "eval/data/qasper_subset.json"
+  metrics:
+    - "recall@5"
+    - "mrr"
+    - "p50_latency_ms"
+    - "p95_latency_ms"
+    - "p99_latency_ms"
+  results_dir: "eval/results"
+  n_questions: 100
+  random_seed: 42

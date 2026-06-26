@@ -1,9 +1,11 @@
 import os
 
 import chromadb
-
 from dotenv import load_dotenv
 
+from observability.logger_config import get_logger
+
+logger = get_logger(__name__)
 
 # ============================================
 # LOAD ENV
@@ -16,30 +18,19 @@ load_dotenv()
 # CHROMA CLOUD CLIENT
 # ============================================
 
-print("\nInitializing Chroma Cloud Client...")
+logger.info("Initializing Chroma Cloud Client...")
+
+_chroma_port_raw = os.getenv("CHROMA_PORT")
 
 client = chromadb.CloudClient(
-
     cloud_host=os.getenv("CHROMA_HOST"),
-
-    cloud_port=int(
-        os.getenv("CHROMA_PORT")
-    ),
-
-    api_key=os.getenv(
-        "CHROMA_API_KEY"
-    ),
-
-    tenant=os.getenv(
-        "CHROMA_TENANT"
-    ),
-
-    database=os.getenv(
-        "CHROMA_DATABASE"
-    )
+    cloud_port=int(_chroma_port_raw) if _chroma_port_raw else None,
+    api_key=os.getenv("CHROMA_API_KEY"),
+    tenant=os.getenv("CHROMA_TENANT"),
+    database=os.getenv("CHROMA_DATABASE"),
 )
 
-print("Chroma Cloud connected.\n")
+logger.info("Chroma Cloud connected.")
 
 
 # ============================================
@@ -50,16 +41,10 @@ COLLECTION_NAME = "rag_chunks"
 
 collection = client.get_or_create_collection(
     name=COLLECTION_NAME,
-    metadata={
-        "description":
-        "Advanced RAG chunk embeddings"
-    }
+    metadata={"description": "Advanced RAG chunk embeddings"},
 )
 
-print(
-    f"Using collection: "
-    f"{COLLECTION_NAME}\n"
-)
+logger.info(f"Using collection: {COLLECTION_NAME}")
 
 
 # ============================================
@@ -67,89 +52,35 @@ print(
 # ============================================
 
 def push_to_chromadb(embedded_chunks):
-
-    print("\n===================================")
-    print("PUSHING TO CHROMADB CLOUD")
-    print("===================================\n")
-
+    """Upload a list of embedded chunk dicts to the ChromaDB Cloud collection."""
     ids = []
     documents = []
     embeddings = []
     metadatas = []
 
     total = len(embedded_chunks)
+    logger.info(f"Pushing {total} chunks to ChromaDB Cloud...")
 
-    print(
-        f"Total chunks to upload: "
-        f"{total}\n"
-    )
-
-    for idx, chunk in enumerate(
-        embedded_chunks
-    ):
-
-        print(
-            f"Preparing chunk "
-            f"{idx + 1}/{total}"
-        )
-
+    for idx, chunk in enumerate(embedded_chunks):
+        logger.debug(f"Preparing chunk {idx + 1}/{total}")
         ids.append(chunk["id"])
+        documents.append(chunk["content"])
+        embeddings.append(chunk["embedding"])
 
-        documents.append(
-            chunk["content"]
-        )
+        clean_metadata = {
+            key: value if isinstance(value, (str, int, float, bool)) else str(value)
+            for key, value in chunk["metadata"].items()
+        }
+        metadatas.append(clean_metadata)
 
-        embeddings.append(
-            chunk["embedding"]
-        )
-
-        # ------------------------------------
-        # CLEAN METADATA
-        # ------------------------------------
-
-        clean_metadata = {}
-
-        for key, value in chunk[
-            "metadata"
-        ].items():
-
-            if isinstance(
-                value,
-                (str, int, float, bool)
-            ):
-
-                clean_metadata[key] = value
-
-            else:
-
-                clean_metadata[key] = str(
-                    value
-                )
-
-        metadatas.append(
-            clean_metadata
-        )
-
-    print(
-        "\nUploading embeddings "
-        "to Chroma Cloud...\n"
-    )
-
+    logger.info("Uploading embeddings to ChromaDB Cloud...")
     collection.add(
         ids=ids,
         documents=documents,
         embeddings=embeddings,
-        metadatas=metadatas
+        metadatas=metadatas,
     )
-
-    print("\n===================================")
-    print("UPLOAD COMPLETE")
-    print("===================================\n")
-
-    print(
-        f"Collection Count: "
-        f"{collection.count()}"
-    )
+    logger.info(f"Upload complete. Collection count: {collection.count()}")
 
 
 # ============================================
@@ -157,45 +88,20 @@ def push_to_chromadb(embedded_chunks):
 # ============================================
 
 def clear_collection():
-    """
-    Deletes and recreates the collection,
-    giving a completely empty slate.
-    Returns the number of documents that
-    were deleted.
-    """
-
+    """Delete and recreate the collection. Returns the number of documents deleted."""
     global collection
 
-    print("\n===================================")
-    print("CLEARING CHROMADB COLLECTION")
-    print("===================================\n")
-
     count_before = collection.count()
+    logger.info(f"Clearing collection '{COLLECTION_NAME}' ({count_before} docs)...")
 
-    print(
-        f"Documents before clear: "
-        f"{count_before}\n"
-    )
-
-    client.delete_collection(
-        name=COLLECTION_NAME
-    )
+    client.delete_collection(name=COLLECTION_NAME)
 
     collection = client.get_or_create_collection(
         name=COLLECTION_NAME,
-        metadata={
-            "description":
-            "Advanced RAG chunk embeddings"
-        }
+        metadata={"description": "Advanced RAG chunk embeddings"},
     )
 
-    print(
-        f"Collection '{COLLECTION_NAME}' "
-        f"cleared and recreated.\n"
-    )
-
-    print("===================================\n")
-
+    logger.info(f"Collection '{COLLECTION_NAME}' cleared and recreated.")
     return count_before
 
 
@@ -204,12 +110,5 @@ def clear_collection():
 # ============================================
 
 def get_collection_count() -> int:
-    """
-    Returns the current document count using the
-    live module-level collection reference.
-    Safe to call after clear_collection() because
-    it always reads the current global, not a
-    stale import-time binding.
-    """
-
+    """Return the current document count for the live collection reference."""
     return collection.count()

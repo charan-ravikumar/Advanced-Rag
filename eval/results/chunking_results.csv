@@ -1,0 +1,4 @@
+strategy,recall_at_5,recall_at_10,mrr,faithfulness,answer_relevancy,avg_retrieval_latency,avg_total_latency
+recursive,0.25,0.34,0.1396,0.17,0.168,0.73,9.89
+layout,0.26,0.35,0.1693,0.229,0.213,0.61,16.419
+semantic,0.28,0.36,0.1703,0.23,0.224,0.747,18.472

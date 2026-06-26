@@ -13,13 +13,13 @@ Usage (from project root):
     python -m scripts.run_evaluation --skip-ragas           # skip RAGAS eval
     python -m scripts.run_evaluation --max-questions 10     # quick smoke test
 
-Outputs (evaluation/ directory):
-    qasper_subset.json
-    chunking_results.csv
-    retrieval_ablation_results.csv
-    ragas_results.csv
-    observability_results.csv
-    benchmark_summary.md
+Outputs:
+    eval/data/qasper_subset.json
+    eval/results/chunking_results.csv
+    eval/results/retrieval_ablation_results.csv
+    eval/results/ragas_results.csv
+    eval/results/observability_results.csv
+    eval/results/benchmark_summary.md
 """
 
 # ============================================================
@@ -67,8 +67,12 @@ logger = get_logger(__name__)
 # CONFIG
 # ============================================================
 
-EVAL_DIR        = ROOT / "evaluation"
-CHECKPOINT_DIR  = EVAL_DIR / "checkpoints"
+EVAL_DATA_DIR   = ROOT / "eval" / "data"
+EVAL_RESULTS_DIR = ROOT / "eval" / "results"
+CHECKPOINT_DIR  = EVAL_DATA_DIR / "checkpoints"
+
+# Keep EVAL_DIR as an alias for scripts that write results (backwards compat)
+EVAL_DIR        = EVAL_RESULTS_DIR
 QASPER_CACHE    = ROOT / ".cache" / "qasper" / "qasper-train-v0.3.json"
 CHROMA_CACHE    = ROOT / ".cache" / "chroma_docs_cache.json"
 
@@ -188,11 +192,12 @@ def _chromadb_query(
 def load_golden_subset(max_q: int = N_QUESTIONS) -> list:
     """
     Samples a reproducible subset of answerable QASPER questions
-    with non-empty evidence, saves to evaluation/qasper_subset.json,
+    with non-empty evidence, saves to eval/data/qasper_subset.json,
     and reuses the same questions on subsequent runs.
     """
-    EVAL_DIR.mkdir(parents=True, exist_ok=True)
-    subset_file = EVAL_DIR / "qasper_subset.json"
+    EVAL_DATA_DIR.mkdir(parents=True, exist_ok=True)
+    EVAL_RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    subset_file = EVAL_DATA_DIR / "qasper_subset.json"
 
     if subset_file.exists():
         logger.info(f"Reusing saved subset: {subset_file}")
@@ -1226,7 +1231,7 @@ def update_readme(
 ## Benchmark Results (QASPER) — {ts}
 
 Evaluated on a reproducible 100-question subset of the QASPER golden dataset (seed=42).
-Full results: [`evaluation/benchmark_summary.md`](evaluation/benchmark_summary.md)
+Full results: [`eval/results/benchmark_summary.md`](eval/results/benchmark_summary.md)
 
 ### Best Chunking Strategy
 
@@ -1256,12 +1261,12 @@ Full pipeline vs Vector-Only: **Recall@5 {r5_overall:+.1f}%**, **MRR {mrr_overal
 > Built and evaluated an enterprise-grade RAG platform on QASPER, comparing 3 chunking strategies and 4 retrieval architectures. Best strategy: `{best_strategy}` with Recall@5={best_c['recall_at_5']:.2%} and MRR={best_c['mrr']:.4f}. Improved Recall@5 by {r5_overall:+.1f}%, MRR by {mrr_overall:+.1f}%, and Faithfulness by {faith_overall:+.1f}% using hybrid BM25 retrieval, RRF fusion, and CrossEncoder reranking. Added full observability with OpenTelemetry, Phoenix, Prometheus, and Grafana (P50={obs.get('p50_total_latency_s', 'N/A')}s, P95={obs.get('p95_total_latency_s', 'N/A')}s).
 """
 
-    content = readme.read_text() if readme.exists() else ""
+    content = readme.read_text(encoding="utf-8") if readme.exists() else ""
     marker = "\n## Benchmark Results (QASPER)"
     if marker in content:
         content = content[:content.index(marker)]
 
-    readme.write_text(content + section)
+    readme.write_text(content + section, encoding="utf-8")
     logger.info(f"README updated → {readme}")
 
 
@@ -1325,7 +1330,7 @@ def _print_summary(
     print(f"P95 Total Latency      : {obs.get('p95_total_latency_s', 'N/A')}s")
     print(f"Throughput (QPM)       : {obs.get('throughput_qpm', 'N/A')}")
     print()
-    print("Output files: evaluation/")
+    print("Output files: eval/data/  eval/results/")
     print("=" * 60 + "\n")
 
 
@@ -1419,7 +1424,7 @@ def main():
 
     # ── Summary & README ─────────────────────────────────────
     md = build_summary(chunking_rows, ablation_rows, ragas_row, obs, best_strategy)
-    with open(EVAL_DIR / "benchmark_summary.md", "w") as f:
+    with open(EVAL_DIR / "benchmark_summary.md", "w", encoding="utf-8") as f:
         f.write(md)
     logger.info(f"Saved summary → {EVAL_DIR / 'benchmark_summary.md'}")
 
