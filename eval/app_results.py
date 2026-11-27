@@ -15,7 +15,7 @@ import hashlib
 import json
 import re
 from datetime import datetime, timezone
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 from typing import Any, Iterable
 
 SCHEMA = 1
@@ -186,7 +186,7 @@ def ragas_section(root: Path, gen_rel: str) -> dict | None:
     candidates = []
     for p in sorted((Path(root) / "runs" / "gen").glob("*_gen_ragas*")):
         cfg = json.loads((p / "config.json").read_text(encoding="utf-8"))
-        if Path(cfg["generation_run"]["path"]).name == Path(gen_rel).name:
+        if PureWindowsPath(cfg["generation_run"]["path"]).name == Path(gen_rel).name:  # saved paths may use \ or /
             candidates.append(p)
     if not candidates:
         return None

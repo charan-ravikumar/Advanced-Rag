@@ -1265,3 +1265,14 @@ after each task, using the template below. (The older free-form diary lives in
 - **Evidence it works (test or measurement, with file path):** Documentation change only (`CLAUDE.md`).
 - **Likely interview questions and strong answers:** None; housekeeping.
 - **Honest limitations:** Setup on this machine has not been tried yet.
+
+---
+
+### Cross-platform paths: default store location and saved run paths (2026-11-27)
+- **What we did:** `db/store.py::resolve_store_path` maps `%LOCALAPPDATA%` to `~/.local/share` when the variable is not set. `eval/app_results.py` reads saved run paths with `PureWindowsPath`, which accepts both separators.
+- **Why (the problem it solves):** Three tests failed on macOS: the default store path did not resolve, and the RAGAS run was not found.
+- **Alternatives considered and why rejected:** Changing `config.yaml` (it would change Windows behaviour or need two settings); editing saved run files (they are evidence).
+- **Trade-offs / what it costs:** The code fingerprint changes, so saved runs refer to earlier fingerprints.
+- **Evidence it works (test or measurement, with file path):** `tests/unit/test_store.py`, `tests/unit/test_lexical.py`, `tests/unit/test_app_support.py`; fast suite run on macOS, Python 3.13.5.
+- **Likely interview questions and strong answers:** *"What broke when you moved platforms?"* - "Windows-only environment variable syntax and path separators in saved metadata."
+- **Honest limitations:** Not re-run on Windows. The full (non-fast) suite was not run. README and project rules still show Windows commands.

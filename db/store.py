@@ -52,8 +52,14 @@ class VectorStore(Protocol):
 
 
 def resolve_store_path(raw: str) -> Path:
-    """Expand %VARS% / ~ and refuse synced folders (SQLite files do not survive sync)."""
-    path = Path(os.path.expandvars(os.path.expanduser(raw)))
+    """Expand %VARS% / ~ and refuse synced folders (SQLite files do not survive sync).
+
+    Where ``LOCALAPPDATA`` is not set, ``%LOCALAPPDATA%`` means ``~/.local/share``.
+    """
+    expanded = raw
+    if not os.environ.get("LOCALAPPDATA"):  # macOS / Linux: the Windows variable in config.yaml maps to the XDG data folder
+        expanded = expanded.replace("%LOCALAPPDATA%", "~/.local/share")
+    path = Path(os.path.expandvars(os.path.expanduser(expanded)))
     if "%" in str(path):
         raise RuntimeError(f"unresolved environment variable in store path: {raw!r}")
     if any("onedrive" in part.lower() for part in path.parts):
