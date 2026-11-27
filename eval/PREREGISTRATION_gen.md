@@ -136,3 +136,27 @@ Decision of the owner after the quota stop above. The pre-registered arms, compa
 - **Cut from this phase (not run, not claimed):** arms O, T and F; the R-vs-T and R-vs-O comparisons; the noise-floor repeat; the RAGAS-versus-span validation study; the judge calibration sheet and the 0.5 faithfulness threshold's use; the generation run on the test split.
   Any later use of them needs its own dated entry.
 - Nothing in the original text above was changed.
+
+### 2026-11-27: generator, judge and long-answer format changed (recorded at the owner's request; no scored run has used the new setup)
+
+Three changes made AFTER the exploratory generation run of this phase. That run used the original setup, and nothing below changes or re-labels it.
+
+- **Generator: Groq `openai/gpt-oss-120b` was replaced by Gemini `gemini-3.5-flash-lite`** (`generation.providers: ["gemini"]`, `generation.gemini_model`). This happened before today
+  and was not recorded here at the time. It is recorded now, after the fact. Groq has been removed from the answer path. `reasoning_effort` is no longer sent (Gemini has no such
+  parameter) and is recorded as `null`. The Groq limits in the 2026-11-22 entries do not apply to the new generator. The 180,000-token daily budget is kept as the project's own
+  budget; it is NOT a documented Gemini limit. The pacing defaults in `eval/run_generation_eval.py` (`GEMINI_RPM`, `GEMINI_TPM`) are unverified conservative placeholders.
+- **Judge: Gemini `gemini-2.5-flash` was replaced by Gemini `gemini-3.8-flash`** (`generation.judge.model`), with the same temperature, thinking budget and output limit. The owner
+  chose a model that differs from the generator but is from the SAME family (Gemini). Family-level self-preference bias therefore remains possible, and every scoring run records
+  this in `config.json` (`judge.family_note`). The judge is still uncalibrated. The model id was confirmed in the live model list on 2026-11-27. A one-call settings check
+  (`scripts/check_model_ids.py`) failed twice with HTTP 503/504 (server side), so those settings have NOT yet been verified on this model.
+- **Long-answer format: free text with `[S#]` markers was replaced by schema-constrained structured output.** The generator is given a JSON response schema (`rag_core/claims.py`,
+  schema version `claims-1`). The answer is a list of claims, each citing one or more sources by id (an enum of exactly the ids that were sent) with a word-for-word quote from each.
+  The long answer abstains through a `status` field instead of the `INSUFFICIENT_CONTEXT` sentinel. The short answer is unchanged.
+  - Citation validity keeps its meaning: valid cited ids over cited ids, now read from the structured claims instead of a regex over the text.
+  - A new EXPLORATORY metric, `QuoteVerified`, is recorded: the share of quotes found word for word in the source they cite. It was not pre-registered, it needs at least three
+    words per quote (a design default), and a found quote does not show that the source supports the claim.
+  - The long prompt changed (`PROMPT_VERSION` `2026-11-27.1`) and the generation cache schema moved to 3. Earlier cached answers are kept on disk and are never served for the
+    new format.
+- Any run with the new setup is a NEW exploratory run. Its numbers are not comparable with the earlier run's (different generator, judge and answer format), and no comparison
+  between them is pre-registered.
+- Nothing in the original text above was changed.

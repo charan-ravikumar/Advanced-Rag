@@ -10,7 +10,7 @@ import eval.run_ragas as rr
 from eval.disk_cache import DiskCache
 from eval.judge_core import (CachingJudge, JudgeError, JudgeQuotaExhausted, JudgeRateLimited, JudgeSettings, JudgeStats, RawJudgeResult, classify_http_error,
                              judge_cache_key, parse_reply)
-from tests.unit.rag_core_fakes import make_hit
+from tests.unit.rag_core_fakes import ABSTAIN_JSON, answer_json, make_hit
 from tests.unit.test_run_generation_eval import ModeProvider, run as run_generation
 
 SETTINGS = JudgeSettings(model="gemini-2.5-flash", temperature=0.0, thinking_budget=1024, max_output_tokens=4096)
@@ -188,7 +188,7 @@ class AbstainingProvider(ModeProvider):
         super().__init__(**kw)
         self.marker = marker
 
-    def stream(self, messages, *, timeout_s, max_output_tokens, temperature):
+    def stream(self, messages, *, timeout_s, max_output_tokens, temperature, response_schema=None):
         from rag_core.gateway import Delta, Final
 
         self.calls.append({"messages": messages, "max_output_tokens": max_output_tokens})
@@ -198,9 +198,9 @@ class AbstainingProvider(ModeProvider):
         question = text.split("<question>\n")[1].split("\n")[0]
         short = messages[0]["content"] == SYSTEM_SHORT
         if not short and self.marker in question:
-            yield Delta("INSUFFICIENT_CONTEXT")
+            yield Delta(ABSTAIN_JSON)
         else:
-            yield Delta("red green" if short else f"Because [S1]. About: {question}")
+            yield Delta("red green" if short else answer_json((f"Because of it. About: {question}", ["S1"])))
         yield Final("stop", 1000, 100, 30)
 
 
@@ -382,3 +382,24 @@ def test_importing_the_evaluation_modules_pulls_in_no_ragas_no_provider_sdk_and_
     proc = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, cwd=root, env=env, timeout=180)
     assert proc.returncode == 0, proc.stderr[-600:]
     assert proc.stdout.strip() == "[]"
+
+
+# ---- the judge's relation to the generator (recorded in config.json) ------------------------------------------------------------
+
+@pytest.mark.parametrize("judge, generator, expected", [
+    ("gemini-3.8-flash", "gemini-3.8-flash", "SAME model"),
+    ("gemini-3.8-flash", "gemini-3.5-flash-lite", "SAME family"),
+    ("gemini-3.8-flash", "openai/gpt-oss-120b", "different model families"),
+    ("gemini-3.8-flash", None, "unknown"),
+])
+def test_the_family_note_says_how_the_judge_relates_to_the_generator(judge, generator, expected):
+    note = rr.family_note(judge, generator)
+    assert expected in note and "NOT calibrated" in note
+
+
+def test_the_configured_judge_is_not_the_generator_model():
+    from config import cfg
+    from rag_core.config import RagConfig
+
+    rc = RagConfig.from_config(cfg)
+    assert rc.judge["model"] == "gemini-3.8-flash" and rc.judge["model"] != rc.gemini_model

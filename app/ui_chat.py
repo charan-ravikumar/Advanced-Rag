@@ -4,7 +4,8 @@
 Layers, so the logic can be tested without a browser:
 * PURE helpers: ``normalise_markers`` (``【S1】`` and ``［S1］`` become ``[S1]``), ``MarkerNormaliser`` (the same for a token stream: a marker split across deltas is held back until it
   is complete), ``style_markers`` (markers in the SHOWN text come from the PARSED result: a valid marker is bold, an invalid one is dropped and reported quietly),
-  ``classify`` (which of the states a finished ``AnswerResult`` is in), ``escape_md``.
+  ``classify`` (which of the states a finished ``AnswerResult`` is in), ``escape_md``, ``quotes_by_source`` / ``quote_counts`` (the structured long answer's quotes,
+  shown on the source card they came from with whether each was found word for word in it).
 * ``submit``: guards, the daily budget, streaming into the page, then the finished turn is stored in ``st.session_state`` and the page reruns to render it from the stored result
   (a later click on a thumb reruns the script and must not lose or repeat the answer).
 * ``render_turn`` and friends: states, source cards, feedback, details.
@@ -25,7 +26,7 @@ import streamlit as st
 from app.artifacts import cross_paper_facts, fmt_ms, rerank_facts
 from app.guards import SessionGuard, check_question
 from rag_core.errors import InvalidQuestion
-from rag_core.schemas import AnswerResult, Source
+from rag_core.schemas import AnswerResult, Claim, SpanCitation, Source
 
 SESSION_GUARD_KEY = "__session_guard__"
 TURN_KEY = "turn"
@@ -91,6 +92,23 @@ def style_markers(text: str, invalid: Iterable[str] = ()) -> str:
 def answer_markdown(result: AnswerResult) -> str:
     """The answer as shown: markers normalised and styled from the PARSED result, ``$`` escaped."""
     return style_markers(escape_md(normalise_markers(result.answer)), result.invalid_citations)
+
+
+def quotes_by_source(claims: Iterable[Claim]) -> dict[str, list[SpanCitation]]:
+    """The quotes of a structured answer grouped by the source label they cite, in answer order, each quote once per source."""
+    out: dict[str, list[SpanCitation]] = {}
+    for claim in claims:
+        for cite in claim.citations:
+            bucket = out.setdefault(cite.source, [])
+            if all(c.quote != cite.quote for c in bucket):
+                bucket.append(cite)
+    return out
+
+
+def quote_counts(claims: Iterable[Claim]) -> tuple[int, int]:
+    """``(found word for word, total)`` over the citations of a structured answer."""
+    spans = [c for claim in claims for c in claim.citations]
+    return sum(1 for c in spans if c.verified), len(spans)
 
 
 def classify(result: AnswerResult) -> str:
@@ -222,13 +240,16 @@ def submit(res, question: str, scope: str, paper_id: str | None, rerank: bool) -
 
 # ---- rendering ---------------------------------------------------------------------------------------------------------------------------
 
-def _source_cards(sources: list[Source], titles: dict[str, str], cited: Iterable[str] = ()) -> None:
-    cited_set = set(cited)
+def _source_cards(sources: list[Source], titles: dict[str, str], cited: Iterable[str] = (), quotes: dict[str, list[SpanCitation]] | None = None) -> None:
+    cited_set, quotes = set(cited), quotes or {}
     for s in sources:
         label = s.label or f"S{s.rank}"
         with st.container(border=True):
             badge = "  ·  :green[cited in the answer]" if label in cited_set else ""
             st.markdown(f"**[{label}]**  {escape_md(titles.get(s.doc_id) or s.doc_id)}  ·  *{escape_md(s.section or 'section unknown')}*  ·  rank {s.rank}{badge}")
+            for q in quotes.get(label, []):
+                where = "found word for word in this passage" if q.verified else "NOT found word for word in this passage"
+                st.caption(f"Quoted in the answer: \u201c{escape_md(q.quote)}\u201d ({where})")
             with st.expander("Passage", expanded=False):
                 st.markdown(escape_md(s.text))
 
@@ -307,12 +328,19 @@ def render_turn(res, turn: Turn) -> None:
                 st.caption("Served from the answer cache (no model call).")
             st.markdown(answer_markdown(result))
             if kind == "partial":
-                st.warning("The connection to the model broke while the answer was being written, so this answer is incomplete.")
-            if result.citations:
+                if any(e.code == "truncated" for e in result.errors):
+                    st.warning("The model reached its output limit before it finished, so this answer is incomplete.")
+                else:
+                    st.warning("The connection to the model broke while the answer was being written, so this answer is incomplete.")
+            if result.claims:
+                found, total = quote_counts(result.claims)
+                st.caption(f"Citations in brackets match the source cards below, and each claim quotes its passage: {found} of {total} quotes were found word for word "
+                           "in the passage they cite. A quote that is found shows the words are there; it does not prove that the passage supports the claim.")
+            elif result.citations:
                 st.caption("Citations in brackets match the source cards below. A citation shows which passage the model pointed at; it does not prove that the passage supports the claim.")
             if result.invalid_citations:
                 st.caption(f"Some citation markers ({', '.join(result.invalid_citations)}) did not match any source and were left out.")
-            _source_cards(result.used_sources, titles, cited=result.citations)
+            _source_cards(result.used_sources, titles, cited=result.citations, quotes=quotes_by_source(result.claims))
         _feedback(res, turn)
         _details(res, result)
 

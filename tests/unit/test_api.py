@@ -14,7 +14,7 @@ from api.sse import decode_service_event, iter_sse
 from app.bootstrap import Check, Resources, SelfCheck
 from app.guards import AppConfig, DailyBudget
 from rag_core.scores import FeedbackResult
-from tests.unit.rag_core_fakes import make_hit, ok
+from tests.unit.rag_core_fakes import answer_json, make_hit, ok
 from tests.unit.test_rag_core_service import Q, make
 
 
@@ -58,21 +58,23 @@ def code_of(response):
 # ---- the happy paths ---------------------------------------------------------------------------------------------------------------------
 
 def test_ask_streams_sources_then_tokens_then_exactly_one_done(api):
-    client = api(make([ok("Attention weighs ", "the tokens [S1].")])[0])
+    reply = answer_json(("Attention weighs the tokens.", ["S1"]))
+    client = api(make([ok(reply[:25], reply[25:])])[0])
     events = stream_events(client, {"question": Q})
     kinds = [e["type"] for e in events]
     assert kinds[0] == "sources" and kinds[-1] == "done" and kinds.count("done") == 1 and set(kinds[1:-1]) == {"token"}
     result = events[-1]["result"]
-    assert "".join(e["text"] for e in events if e["type"] == "token") == result.answer == "Attention weighs the tokens [S1]."
+    assert "".join(e["text"] for e in events if e["type"] == "token") == result.answer == "Attention weighs the tokens. [S1]"
     assert result.citations == ["S1"] and [s.label for s in events[0]["sources"]][:2] == ["S1", "S2"]
+    assert result.claims[0].text == "Attention weighs the tokens." and result.claims[0].citations[0].verified  # the claims survive the SSE round trip
 
 
 def test_answer_returns_the_same_result_as_one_json_body(api):
-    client = api(make([ok("Because [S2].")])[0])
+    client = api(make([ok(answer_json(("Because.", ["S2"])))])[0])
     response = client.post("/v1/answer", json={"question": Q})
     assert response.status_code == 200
     body = response.json()
-    assert body["answer"] == "Because [S2]." and body["citations"] == ["S2"] and body["request_id"] and body["degraded"] is False
+    assert body["answer"] == "Because. [S2]" and body["citations"] == ["S2"] and body["claims"][0]["citations"][0]["source"] == "S2" and body["request_id"] and body["degraded"] is False
 
 
 def test_retrieve_returns_passages_and_never_calls_the_model(api):

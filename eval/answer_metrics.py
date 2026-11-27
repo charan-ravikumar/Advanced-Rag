@@ -102,12 +102,22 @@ def score_short(short_answer: str | None, abstained: bool, references: Sequence[
     return metrics, None if score is None else score.best_type
 
 
-def score_long(citations: Sequence[str], invalid_citations: Sequence[str], abstained: bool) -> dict:
-    """Citation metrics of one long-mode answer. An abstention has no citations to judge (both citation metrics are None)."""
+def quote_counts(claims: Sequence) -> tuple[int, int]:
+    """``(verified, total)`` quotes over the claims of one long answer (``Claim`` objects or their dicts): a quote is verified when it was found word
+    for word in the source it cites (``rag_core.claims.locate_quote``). Verified does NOT mean the source supports the claim."""
+    spans = [c for claim in claims for c in (claim["citations"] if isinstance(claim, dict) else claim.citations)]
+    return sum(1 for c in spans if (c["verified"] if isinstance(c, dict) else c.verified)), len(spans)
+
+
+def score_long(citations: Sequence[str], invalid_citations: Sequence[str], abstained: bool, claims: Sequence = ()) -> dict:
+    """Citation metrics of one long-mode answer. An abstention has no citations to judge (the citation metrics are None). ``QuoteVerified`` is the
+    share of the answer's quotes found word for word in their cited source (None when there is no quote)."""
     valid, total = citation_counts(citations, invalid_citations)
     if abstained:
-        return {"CitationValidity": None, "HasCitation": None, "Abstained": 1.0}
-    return {"CitationValidity": None if total == 0 else valid / total, "HasCitation": 1.0 if total else 0.0, "Abstained": 0.0}
+        return {"CitationValidity": None, "HasCitation": None, "QuoteVerified": None, "Abstained": 1.0}
+    verified, quotes = quote_counts(claims)
+    return {"CitationValidity": None if total == 0 else valid / total, "HasCitation": 1.0 if total else 0.0,
+            "QuoteVerified": None if quotes == 0 else verified / quotes, "Abstained": 0.0}
 
 
 # ---- summaries with paper-clustered intervals -------------------------------------------------------------------------------------
@@ -146,14 +156,18 @@ def summarize_short(rows: Sequence[dict], **kw) -> dict:
 
 def summarize_long(rows: Sequence[dict], **kw) -> dict:
     """Long-mode summary: per-answer citation validity, the pooled validity rate, the share of non-abstained answers with no citation, the abstention rate."""
-    valid = total = 0
+    valid = total = verified = quotes = 0
     for r in rows:
         if not r.get("abstained"):
             v, t = citation_counts(r.get("citations", []), r.get("invalid_citations", []))
             valid, total = valid + v, total + t
+            qv, qt = quote_counts(r.get("claims", []))
+            verified, quotes = verified + qv, quotes + qt
     answered = [r for r in rows if not r.get("abstained")]
     return {"CitationValidity_per_answer": summarize_metric(rows, "CitationValidity", **kw),
             "CitationValidity_pooled": None if total == 0 else {"valid": valid, "cited": total, "rate": valid / total},
+            "QuoteVerified_per_answer": summarize_metric([r for r in rows if "QuoteVerified" in r["metrics"]], "QuoteVerified", **kw),
+            "QuoteVerified_pooled": None if quotes == 0 else {"verified": verified, "quotes": quotes, "rate": verified / quotes},
             "answers_with_no_citation": {"n": sum(1 for r in answered if not citation_counts(r.get("citations", []), r.get("invalid_citations", []))[1]),
                                          "of": len(answered)},
             "AbstentionRate_on_answerable": summarize_metric(rows, "Abstained", **kw), "n_questions": len(rows)}

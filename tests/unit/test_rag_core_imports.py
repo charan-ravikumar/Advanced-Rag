@@ -36,7 +36,8 @@ def test_rag_core_imports_nothing_deprecated_dormant_or_heavy(path):
 def test_the_package_has_the_documented_modules():
     assert {p.name for p in PACKAGE} >= {"__init__.py", "schemas.py", "context.py", "prompts.py", "citations.py", "gateway.py", "cache.py", "service.py",
                                          "errors.py", "config.py", "env.py", "langfuse_client.py", "prompt_store.py", "prompt_sync.py", "tracing.py",
-                                         "scores.py", "observability_reader.py"}
+                                         "scores.py", "observability_reader.py", "claims.py",
+                                         "otel_tracing.py"}
 
 
 SDK_TOP_LEVELS = {"openai", "google", "httpx", "langfuse", "opentelemetry", "groq", "dotenv", "requests"}
@@ -122,7 +123,7 @@ def test_defaults_equal_the_generation_section_of_config_yaml_and_top_k_is_five(
     from_yaml, defaults = RagConfig.from_config(cfg), RagConfig()
     assert from_yaml.as_dict() == defaults.as_dict()
     assert defaults.top_k == 5 and defaults.providers == ["gemini"] and defaults.max_question_chars == 500
-    assert defaults.judge == {"provider": "gemini", "model": "gemini-3.5-flash-lite", "temperature": 0.0, "thinking_budget": 1024, "max_output_tokens": 4096}
+    assert defaults.judge == {"provider": "gemini", "model": "gemini-3.8-flash", "temperature": 0.0, "thinking_budget": 1024, "max_output_tokens": 4096}
     assert defaults.prices == {}  # the judge is for offline evaluation only; prices stay empty until a source is found (never estimated)
 
 

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from types import SimpleNamespace
 
 from rag_core.errors import ProviderError
@@ -11,6 +12,24 @@ from rag_core.gateway import Delta, Final
 def ok(*texts: str, finish: str | None = "stop", prompt_tokens: int | None = 11, completion_tokens: int | None = 7) -> list:
     """A successful scripted step: the deltas, then the final usage."""
     return [*texts, Final(finish, prompt_tokens, completion_tokens)]
+
+
+def default_quote(label: str) -> str:
+    """Words that ARE in the default passage of ``make_hit`` (so the quote is verified)."""
+    return f"Passage number {label[1:]} says something"
+
+
+def answer_json(*claims, status: str = "answered") -> str:
+    """A structured long answer as the model would write it. Each claim is ``(text, cites)``; a cite is a label ("S1", quoted with
+    ``default_quote``) or a ``(label, quote)`` pair."""
+    rows = []
+    for text, cites in claims:
+        rows.append({"text": text, "citations": [{"source": c, "quote": default_quote(c)} if isinstance(c, str) else {"source": c[0], "quote": c[1]}
+                                                 for c in cites]})
+    return json.dumps({"status": status, "claims": rows})
+
+
+ABSTAIN_JSON = json.dumps({"status": "insufficient_context", "claims": []})
 
 
 def fail(kind: str, status: int | None = None, retry_after: float | None = None, name: str | None = None) -> ProviderError:
@@ -25,8 +44,9 @@ class ScriptedProvider:
         self.name, self.model, self.script = name, model, list(script)
         self.calls: list[dict] = []
 
-    def stream(self, messages, *, timeout_s, max_output_tokens, temperature):
-        self.calls.append({"messages": messages, "timeout_s": timeout_s, "max_output_tokens": max_output_tokens, "temperature": temperature})
+    def stream(self, messages, *, timeout_s, max_output_tokens, temperature, response_schema=None):
+        self.calls.append({"messages": messages, "timeout_s": timeout_s, "max_output_tokens": max_output_tokens, "temperature": temperature,
+                           "response_schema": response_schema})
         step = self.script.pop(0) if len(self.script) > 1 else self.script[0]
         for item in step:
             if isinstance(item, BaseException):

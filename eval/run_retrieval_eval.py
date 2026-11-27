@@ -451,6 +451,9 @@ def main(argv=None, *, components=None, embedder=None, reranker=None) -> int:
         check_test_guard(confirmed=args.final, config=config_arms, freeze_path=Path(args.freeze_file))
 
     golden_path, split_path = Path(args.golden), Path(args.split_file)
+    from eval.heldout import refuse_heldout_inputs
+
+    refuse_heldout_inputs([golden_path, split_path, Path(args.corpus)])  # the official test set is opened only through eval.heldout
     golden = json.loads(golden_path.read_text(encoding="utf-8"))
     split = json.loads(split_path.read_text(encoding="utf-8"))
     if split.get("golden_set_sha256") != _sha256(golden_path):

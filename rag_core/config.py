@@ -46,7 +46,7 @@ class RagConfig:
     # Kept only so results, cache keys and the UI keep one schema: Gemini has no reasoning-effort parameter, so it stays None.
     reasoning_effort: str | None = None
     # the OFFLINE evaluation judge (a later phase): never used on the answer path
-    judge: dict = field(default_factory=lambda: {"provider": "gemini", "model": "gemini-3.5-flash-lite", "temperature": 0.0, "thinking_budget": 1024,
+    judge: dict = field(default_factory=lambda: {"provider": "gemini", "model": "gemini-3.8-flash", "temperature": 0.0, "thinking_budget": 1024,
                                                  "max_output_tokens": 4096})
     # per MILLION tokens, {"<model id>": {"input": x, "output": y}}. Empty means no cost is ever computed (never invent a price).
     prices: dict = field(default_factory=dict)
@@ -135,6 +135,9 @@ class TracingConfig:
     capture: str = "masked"  # masked | full | none
     trace_evaluation: bool = False
     flush_timeout_seconds: float = 3.0
+    # where the OpenTelemetry spans go (rag_core/otel_tracing.py): "langfuse" (needs both Langfuse keys) and/or "otlp" (any OTLP/HTTP backend,
+    # configured by the standard OTEL_EXPORTER_OTLP_* variables, which the OpenTelemetry SDK reads itself)
+    exporters: list = field(default_factory=lambda: ["langfuse"])
 
     @classmethod
     def from_config(cls, cfg) -> "TracingConfig":

@@ -42,13 +42,14 @@ from eval.disk_cache import DiskCache  # noqa: E402
 from eval.gen_arms import ContextHit, FixedContextRetriever, context_hash, usable_references  # noqa: E402
 from eval.quota_plan import Pacer  # noqa: E402
 from rag_core.schemas import AnswerResult  # noqa: E402
+from rag_core.claims import MIN_QUOTE_WORDS, SCHEMA_VERSION as CLAIMS_SCHEMA_VERSION  # noqa: E402
 
 LABEL = "EXPLORATORY: n=40 answerable dev questions, one arm (R = RAG, configuration D, top-5), one seeded sample; not a published result"
 PREREG_FILE = ROOT / "eval" / "PREREGISTRATION_gen.md"
 PREREG_HASH_FILE = ROOT / "eval" / "PREREGISTRATION_gen.sha256"
 FREEZE_FILE = ROOT / "eval" / "gen_freeze.json"
 DATASET_DIR = ROOT / "eval" / "datasets" / "qasper_dev"
-CACHE_SCHEMA = 2  # 2: the citation parser now reads 【S1】 (a schema-1 entry stored "no citations" for answers that did cite); old files are left in place and never read
+CACHE_SCHEMA = 3  # 3: long answers are structured (claims with quotes, rag_core/claims.py); 2: the citation parser read 【S1】. Old files are left in place and never read
 DEFAULT_TOKEN_ESTIMATE = 2500  # used for the governor and the pacer until this session has measured calls
 EXIT_QUOTA = 3
 # conservative pacing defaults for Gemini, NOT documented limits of gemini-3.5-flash-lite (check the quota of your key in Google AI Studio and adjust)
@@ -159,11 +160,11 @@ def _row(q: dict, mode: str, result, *, from_cache: bool) -> dict:
     if mode == "short":
         metrics, best_type = score_short(result.short_answer, result.abstained, refs)
     else:
-        metrics, best_type = score_long(result.citations, result.invalid_citations, result.abstained), None
+        metrics, best_type = score_long(result.citations, result.invalid_citations, result.abstained, result.claims), None
     # ``arm`` is per mode ("R_short", "R_long") so that eval/compare.py, which reads rows by (arm, question_id), never sees two rows with one key
     return {"question_id": q["id"], "paper_id": q["paper_id"], "arm": f"R_{mode}", "arm_base": "R", "mode": mode, "answerable": True, "question": q["question"],
             "answer": result.answer,
-            "short_answer": result.short_answer, "used_sources": _source_rows(result), "citations": result.citations,
+            "short_answer": result.short_answer, "claims": [c.model_dump() for c in result.claims], "used_sources": _source_rows(result), "citations": result.citations,
             "invalid_citations": result.invalid_citations, "abstained": result.abstained, "provider": result.provider, "model": result.model,
             "reasoning_effort": result.reasoning_effort, "usage": result.usage.model_dump(), "latency_ms": result.latency_ms.model_dump(),
             "finish_reason": result.finish_reason, "errors": [e.code for e in result.errors], "from_cache": from_cache,
@@ -288,6 +289,9 @@ def main(argv=None, *, retriever=None, gateway=None, index_version: str | None =
 
     prereg = preregistration_info(Path(args.prereg), Path(args.prereg_hash_file))  # refuses if the pre-registered text changed
     golden_path, split_path = Path(args.golden), Path(args.split_file)
+    from eval.heldout import refuse_heldout_inputs
+
+    refuse_heldout_inputs([golden_path, split_path])  # the official test set is opened only through eval.heldout
     golden = json.loads(golden_path.read_text(encoding="utf-8"))
     split = json.loads(split_path.read_text(encoding="utf-8"))
     if split.get("golden_set_sha256") != hashlib.sha256(golden_path.read_bytes()).hexdigest():
@@ -370,6 +374,8 @@ def main(argv=None, *, retriever=None, gateway=None, index_version: str | None =
                       "temperature": rag_cfg.temperature, "max_output_tokens": {"long": rag_cfg.max_output_tokens, "short": rag_cfg.short_max_output_tokens},
                       "top_k": rag_cfg.top_k, "max_attempts": rag_cfg.max_attempts, "tracing": "off (trace_evaluation=false)"},
         "retrieval": rag_cfg.retrieval_settings(False), "prompts": describe_prompts(prompts), "prompt_cache_ids": prompt_ids,
+        "long_answer_format": {"kind": "structured output (JSON schema, claims with source ids and verbatim quotes)", "schema_version": CLAIMS_SCHEMA_VERSION,
+                               "min_quote_words": MIN_QUOTE_WORDS},
         "token_governor": {"daily_token_budget": args.daily_token_budget, "already_used_tokens_declared": args.already_used_tokens, "ledger": str(governor.ledger.path),
                            "rolling_window_hours": 24, "documented_provider_limits": "none recorded: the pacer uses conservative defaults (GEMINI_RPM / GEMINI_TPM), not documented limits of the model"},
         "cache": {"dir": str(cache.dir), "schema": CACHE_SCHEMA, "key": "model, reasoning effort, prompt name|version|sha256, arm, mode, question id, context hash, caps, temperature, top_k"},

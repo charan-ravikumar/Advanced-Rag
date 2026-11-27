@@ -3,7 +3,7 @@
 Question answering over scientific papers ([Qasper](https://allenai.org/data/qasper)), served as a FastAPI service with streamed, cited answers and a Streamlit client.
 
 - **Retrieval**: vector search (Chroma) plus SQLite FTS5 keyword search, weighted RRF fusion, optional cross-encoder rerank. It is evaluated with a protocol written **before** the test run.
-- **Answers**: a gateway to Gemini (`gemini-3.5-flash-lite`) with timeouts, bounded retries, a circuit breaker and typed errors; answers are cited, validated against the passages that were sent, and may abstain.
+- **Answers**: a gateway to Gemini (`gemini-3.5-flash-lite`) with timeouts, bounded retries, a circuit breaker and typed errors. Long answers are schema-constrained structured output: claims, each citing the passages it relies on with a word-for-word quote. The code checks every citation against the passages that were sent and looks every quote up in its passage. The model may abstain.
 - **Service**: async endpoints, Pydantic schemas, answers as server-sent events, per-key rate limits, strict input validation, auto-generated OpenAPI docs.
 
 The interesting result is not a big number. On the held-out test split, hybrid retrieval and semantic chunking did **not** give a reliable gain, and the cross-encoder reranker did, at a latency cost. Every figure below can be traced to a saved run in [docs/CLAIMS_LOG.md](docs/CLAIMS_LOG.md).
@@ -65,15 +65,15 @@ flowchart LR
     R --> X[Token-budgeted context]
     F --> X
     X --> LLM[LLM gateway: Gemini 3.5 Flash Lite]
-    LLM --> A[Cited answer, or abstention]
+    LLM --> A[Structured claims with quotes, checked; or abstention]
     A -->|sources, token..., done| UI
 ```
 
 - **Ingestion** ([rag/ingestion.py](rag/ingestion.py), [scripts/ingest.py](scripts/ingest.py)): offset-preserving chunking, deterministic chunk ids, incremental upserts, an ingest signature that refuses a store built with different chunking code, and a post-run check that the vector and lexical indexes hold the same ids.
 - **Retrieval** ([rag/retriever.py](rag/retriever.py), [rag/fusion.py](rag/fusion.py)): one `Retriever` class used by both the service and the evaluation runner, so the evaluated system is the served system. Reports per-stage latency.
-- **Generation** ([rag_core/](rag_core)): `LLMGateway` with a per-call timeout, bounded retry with backoff and jitter, a circuit breaker, and typed errors. It accepts an ordered provider list (failover only before the first streamed token), but only Gemini is configured, so no failover is in use. Prompts are versioned with a local fallback. Only complete, cited, non-degraded answers are cached; the cache key includes the retrieval config, index version, embedder revision, prompt hash and model.
+- **Generation** ([rag_core/](rag_core)): `LLMGateway` with a per-call timeout, bounded retry with backoff and jitter, a circuit breaker, and typed errors. It accepts an ordered provider list (failover only before the first streamed token), but only Gemini is configured, so no failover is in use. The long answer is requested with a per-request JSON schema whose source ids are exactly the ids that were sent ([rag_core/claims.py](rag_core/claims.py)); a reply that does not follow it is reported as invalid output and the passages are shown instead. Prompts are versioned with a local fallback. Only complete, cited, non-degraded answers are cached; the cache key includes the retrieval config, index version, embedder revision, prompt hash and model.
 - **Safety and cost**: prompt-injection escaping of questions and passages, a daily answer budget, per-key rate limits, masked tracing by default. API keys are read from the environment only and are never logged. The injection tests ([test_prompt_injection.py](tests/unit/test_prompt_injection.py), [test_rag_core_prompts.py](tests/unit/test_rag_core_prompts.py)) check the trust boundaries around the model; they do not show that a real model resists an injection.
-- **Tracing**: optional Langfuse tracing, wrapped so a tracing failure can never change an answer.
+- **Tracing**: optional OpenTelemetry tracing ([rag_core/otel_tracing.py](rag_core/otel_tracing.py)), exported over OTLP to Langfuse, which shows it as an LLM trace, and optionally to any other OTLP backend (`tracing.exporters`). Generation spans carry the OpenTelemetry GenAI attributes. The tracer is wrapped so that a tracing failure can never change an answer.
 - **API** ([api/](api)): FastAPI over the same `RagService`; see [API](#api).
 - **App** ([app/](app)): Streamlit with chat, evaluation, observability and about tabs. It is a **client of the API**: it opens no index and holds no model or key ([app/remote.py](app/remote.py) adapts the API to the interfaces the UI uses). The evaluation tab reads only `app_data/results.json`, which is built from the claims log and refuses a number with no run folder.
 
@@ -187,7 +187,7 @@ docker run --rm --network advrag-net -p 8501:8501 -e ADVRAG_API_URL=http://api:8
 | Path | What it holds |
 |---|---|
 | [rag/](rag) | chunking, embedders, lexical (FTS5) index, fusion, retriever, reranker, ingestion |
-| [rag_core/](rag_core) | answer path: service, gateway, prompts, cache, citations, tracing |
+| [rag_core/](rag_core) | answer path: service, gateway, prompts, structured claims, cache, tracing (OpenTelemetry) |
 | [api/](api) | FastAPI service (SSE streaming, schemas, rate limits) and its Python client |
 | [db/](db) | local Chroma store wrapper |
 | [app/](app) | Streamlit app (a client of the API) |
@@ -200,9 +200,9 @@ docker run --rm --network advrag-net -p 8501:8501 -e ADVRAG_API_URL=http://api:8
 
 ## Limitations
 
-- **Generation is not validated.** The only answer-quality run is exploratory (40 dev questions, no baseline, an uncalibrated judge) and used an earlier generator. Behaviour on unanswerable questions has not been measured, so the hallucination rate is unknown. The offline judge is the same Gemini model as the generator, so self-preference is possible.
+- **Generation is not validated.** The only answer-quality run is exploratory (40 dev questions, no baseline, an uncalibrated judge) and used an earlier generator. Behaviour on unanswerable questions has not been measured, so the hallucination rate is unknown. The offline judge (`gemini-3.8-flash`) is a different model from the generator but the same family (Gemini), so self-preference is still possible.
 - **One process, one retrieval lock.** The retriever (SQLite, the embedder) is serialised by one lock, so concurrent questions queue at retrieval. Rate limits and the daily budget are in memory and per process. There is a single optional shared token and no accounts. No concurrency or load test exists.
-- **Prompt injection** is handled by escaping and delimiting untrusted text and by validating what comes back (citations, abstention). That is tested with scripted providers; it has not been measured against a real model.
+- **Prompt injection** is handled by escaping and delimiting untrusted text and by validating what comes back (the structured answer, its citations and quotes, abstention). That is tested with scripted providers; it has not been measured against a real model.
 - **Corpus scale.** The audit measured the keyword leg growing roughly linearly with corpus size; the corpus here is small (200 papers).
 - **Semantic chunking** did not beat recursive chunking on the test split, and the audit found many of its windows exceeding the embedder's input limit. The served index uses recursive chunks.
 - **Reranker** is off by default because of its latency on CPU.

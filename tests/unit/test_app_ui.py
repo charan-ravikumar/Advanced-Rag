@@ -20,7 +20,7 @@ from app.bootstrap import Check, Resources, SelfCheck
 from rag_core.scores import FeedbackResult, FeedbackStore, record_feedback
 from rag_core.service import BUDGET_MESSAGE, DEGRADED_MESSAGE, DIRECT_REPLY
 from tests.unit.app_fakes import ENTRY, EXAMPLES, PAPER_ID, PAPERS, ROOT, FakeReader, all_text, ask, fixture_artifacts, make_resources, real_artifacts, run_app
-from tests.unit.rag_core_fakes import FakeLangfuse, fail, ok
+from tests.unit.rag_core_fakes import ABSTAIN_JSON, FakeLangfuse, answer_json, default_quote, fail, ok
 
 Q = "What does the attention mechanism compute?"
 Q2 = "How are the heads combined in the model?"
@@ -132,16 +132,18 @@ def test_one_snapshot_is_shared_by_all_sessions_and_reruns_within_the_ttl():
 
 # ---- chat: the happy path and the citation rendering --------------------------------------------------------------------------------------
 
-def test_chat_happy_path_a_lenticular_citation_renders_as_a_bracket_marker_pointing_at_its_source_card():
+def test_chat_happy_path_claims_render_with_bracket_markers_and_their_quote_on_the_source_card():
     res = make_resources()
     at = clean(ask(run_app(res), Q))
     md = texts(at.markdown)
-    assert any("Attention weighs the tokens**[S1]**." == m for m in md)  # \u3010S1\u3011 from the model, [S1] on the page
-    assert not any("\u3010" in m for m in md)
+    assert "Attention weighs the tokens. **[S1]**" in md  # rendered by the code from the structured claims
+    assert not any('"status"' in m or '"claims"' in m for m in md)  # the JSON is never shown
     cards = [m for m in md if m.startswith("**[S") and "rank" in m]
     assert len(cards) == 5 and cards[0].startswith("**[S1]**") and "cited in the answer" in cards[0] and not any("cited in the answer" in c for c in cards[1:])
     assert [e.label for e in at.expander].count("Passage") == 5 and "Details of this answer" in [e.label for e in at.expander]
-    assert any("Citations in brackets match the source cards" in c for c in texts(at.caption))
+    captions = texts(at.caption)
+    assert any("Citations in brackets match the source cards" in c and "1 of 1 quotes were found word for word" in c for c in captions)
+    assert f"Quoted in the answer: \u201c{default_quote('S1')}\u201d (found word for word in this passage)" in captions
     turn = at.session_state["turn"]
     assert turn.kind == "answer" and turn.result.citations == ["S1"] and turn.question == Q
 
@@ -156,9 +158,25 @@ def test_source_cards_show_the_paper_title_section_rank_and_a_collapsed_passage(
 
 
 def test_an_invalid_citation_marker_is_left_out_of_the_text_and_flagged_quietly():
-    res = make_resources(primary=[ok("Attention\u3010S1\u3011 and more\u3010S9\u3011.")])
+    res = make_resources(primary=[ok(answer_json(("Attention.", ["S1"]), ("And more.", ["S9"])))])
     at = clean(ask(run_app(res), Q))
-    assert "Attention**[S1]** and more." in texts(at.markdown) and any("S9" in c and "left out" in c for c in texts(at.caption))
+    assert any(m.startswith("Attention. **[S1]** And more.") and "S9" not in m for m in texts(at.markdown))
+    assert any("S9" in c and "left out" in c for c in texts(at.caption))
+
+
+def test_a_quote_that_is_not_in_its_passage_is_labelled_not_found():
+    res = make_resources(primary=[ok(answer_json(("Attention.", [("S2", "words the passage never used")])))])
+    at = clean(ask(run_app(res), Q))
+    captions = texts(at.caption)
+    assert "Quoted in the answer: \u201cwords the passage never used\u201d (NOT found word for word in this passage)" in captions
+    assert any("0 of 1 quotes were found word for word" in c for c in captions)
+
+
+def test_an_answer_cut_off_by_the_output_limit_says_so():
+    reply = answer_json(("First claim.", ["S1"]), ("Second", ["S2"]))
+    res = make_resources(primary=[ok(reply[: reply.index("Second") + 6], finish="length")])
+    at = clean(ask(run_app(res), Q))
+    assert at.session_state["turn"].kind == "partial" and any("output limit" in w for w in texts(at.warning))
 
 
 def test_each_question_is_independent_and_the_page_says_so():
@@ -247,7 +265,7 @@ def test_top_k_has_no_slider_and_the_sidebar_names_the_default():
 # ---- chat states -----------------------------------------------------------------------------------------------------------------------
 
 def test_state_abstained_explains_and_shows_the_retrieved_passages():
-    res = make_resources(primary=[ok("INSUFFICIENT_CONTEXT")])
+    res = make_resources(primary=[ok(ABSTAIN_JSON)])
     at = clean(ask(run_app(res), Q))
     assert at.session_state["turn"].kind == "abstained" and any("do not contain enough information" in i for i in texts(at.info))
     assert len([m for m in texts(at.markdown) if m.startswith("**[S") and "rank" in m]) == 5 and len(at.feedback) == 1
@@ -263,7 +281,7 @@ def test_state_degraded_shows_a_banner_and_the_passages_only():
 
 
 def test_state_mid_stream_error_keeps_the_partial_text_and_adds_a_notice():
-    res = make_resources(primary=[["Attention weighs ", "the tok", fail("connection")]])
+    res = make_resources(primary=[['{"status": "answered", "claims": [{"text": "Attention weighs ', "the tok", fail("connection")]])
     at = clean(ask(run_app(res), Q))
     assert at.session_state["turn"].kind == "partial" and "Attention weighs the tok" in texts(at.markdown)
     assert any("incomplete" in w for w in texts(at.warning)) and len(at.feedback) == 1 and res.daily.used == 1  # the provider did answer partly: the unit is spent
@@ -392,7 +410,7 @@ def test_the_answer_survives_the_rerun_caused_by_a_thumb_without_calling_the_mod
     at = clean(ask(run_app(res), Q))
     at.feedback[0].set_value(1).run()
     clean(at)
-    assert provider_calls(res) == 1 and "Attention weighs the tokens**[S1]**." in texts(at.markdown)
+    assert provider_calls(res) == 1 and "Attention weighs the tokens. **[S1]**" in texts(at.markdown)
 
 
 # ---- the access-code gate -------------------------------------------------------------------------------------------------------------

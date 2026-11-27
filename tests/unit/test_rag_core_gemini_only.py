@@ -9,7 +9,7 @@ from rag_core.cache import InMemoryTTLCache
 from rag_core.config import RagConfig
 from rag_core.gateway import GeminiProvider, build_gateway
 from rag_core.service import DEGRADED_MESSAGE, RagService
-from tests.unit.rag_core_fakes import FakeClock, FakeRetriever
+from tests.unit.rag_core_fakes import FakeClock, FakeRetriever, answer_json
 from tests.unit.test_rag_core_service import done_of, events
 
 FAKE_KEY = "AIza_test_not_a_real_key_0123456789"
@@ -59,7 +59,8 @@ def status_error(code):
 
 
 USAGE = SimpleNamespace(prompt_token_count=30, candidates_token_count=9)
-GOOD = [chunk("Attention weighs the tokens "), chunk("[S1]."), chunk(None, "STOP", USAGE)]
+REPLY = answer_json(("Attention weighs the tokens.", ["S1"]))
+GOOD = [chunk(REPLY[:30]), chunk(REPLY[30:]), chunk(None, "STOP", USAGE)]
 
 
 def test_the_default_path_builds_exactly_one_provider_gemini_with_the_configured_model():
@@ -77,11 +78,21 @@ def test_a_gemini_only_service_answers_with_streamed_tokens_citations_usage_and_
     svc, gw, client = gemini_service([GOOD], monkeypatch)
     evs = events(svc)
     r = done_of(evs)
-    assert "".join(e["text"] for e in evs if e["type"] == "token") == "Attention weighs the tokens [S1]."
+    assert "".join(e["text"] for e in evs if e["type"] == "token") == r.answer == "Attention weighs the tokens. [S1]"
     assert (r.provider, r.model, r.finish_reason, r.citations, r.degraded) == ("gemini", MODEL, "stop", ["S1"], False)
     assert (r.usage.prompt_tokens, r.usage.completion_tokens) == (30, 9) and [a.provider for a in r.attempts] == ["gemini"]
     call = client.calls[0]
     assert call["model"] == MODEL and call["config"].system_instruction and "<source id=\"S1\"" in call["contents"][0].parts[0].text
+    assert call["config"].response_mime_type == "application/json"  # structured output: the schema goes to Gemini with every long answer
+    assert call["config"].response_json_schema["properties"]["claims"]["items"]["properties"]["citations"]["items"]["properties"]["source"]["enum"] == \
+        ["S1", "S2", "S3", "S4", "S5"]
+
+
+def test_a_short_answer_sends_no_response_schema_to_gemini(monkeypatch):
+    svc, gw, client = gemini_service([[chunk("yes"), chunk(None, "STOP", USAGE)]], monkeypatch)
+    assert svc.answer_short("Do they use attention?").short_answer == "yes"
+    config = client.calls[0]["config"]
+    assert config.response_mime_type is None and config.response_json_schema is None
 
 
 def test_a_gemini_failure_gives_a_degraded_result_with_the_retrieved_passages_and_no_second_provider(monkeypatch):
@@ -120,12 +131,12 @@ def test_a_missing_key_degrades_instead_of_crashing_and_names_no_key(monkeypatch
 
 def test_a_stream_that_breaks_after_tokens_is_a_mid_stream_error_not_a_second_provider(monkeypatch):
     def broken():
-        yield chunk("Attention weighs ")
+        yield chunk('{"status": "answered", "claims": [{"text": "Attention weighs ')
         raise ConnectionResetError("reset")
 
     svc, gw, client = gemini_service([broken()], monkeypatch)
     r = done_of(events(svc))
-    assert r.partial and r.answer == "Attention weighs " and r.errors[0].code == "mid_stream" and len(client.calls) == 1 and not r.degraded
+    assert r.partial and r.answer == "Attention weighs" and r.errors[0].code == "mid_stream" and len(client.calls) == 1 and not r.degraded
     assert len(svc.cache) == 0
 
 
@@ -159,11 +170,11 @@ def test_the_thinking_budget_is_passed_to_the_api_only_when_configured(monkeypat
     assert client2.calls[0]["config"].thinking_config.thinking_budget == 0
 
 
-def test_config_yaml_uses_gemini_3_5_flash_lite_for_the_answers_and_the_judge_and_invents_no_prices():
+def test_config_yaml_uses_gemini_3_5_flash_lite_for_the_answers_and_gemini_3_8_flash_for_the_judge_and_invents_no_prices():
     from config import cfg
 
     gen = RagConfig.from_config(cfg)
     assert gen.providers == ["gemini"] and gen.gemini_model == MODEL and gen.reasoning_effort is None and gen.prices == {}
-    assert gen.judge["provider"] == "gemini" and gen.judge["model"] == MODEL
+    assert gen.judge["provider"] == "gemini" and gen.judge["model"] == "gemini-3.8-flash" != MODEL
     assert gen.judge["thinking_budget"] == 1024 and gen.judge["max_output_tokens"] == 4096 and gen.judge["temperature"] == 0.0
     assert RagConfig().judge == gen.judge and RagConfig().gemini_model == gen.gemini_model  # the code defaults equal config.yaml
