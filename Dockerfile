@@ -1,31 +1,34 @@
 # syntax=docker/dockerfile:1.7
 #
-# One image, two processes (run as two containers, see README "Docker"): the API (`python -m uvicorn api.main:app`, needs the index, the models and the keys) and the
-# Streamlit UI (the default CMD; a client of the API, it needs neither). The image contains the code and the pinned Python packages only:
-#   - no API keys (pass them with --env-file at run time),
-#   - no embedding / reranker models (mount your local HuggingFace cache; the app never downloads),
-#   - no vector index (build it once inside the /data volume with scripts/ingest.py).
-# Build and run commands: README.md, section "Docker".
+# One image, run by compose.yaml as two services: the API (`uvicorn api.main:app`, needs the index, the models and the keys) and the
+# Streamlit UI (the default CMD; a client of the API, it needs none of them). `docker compose up --build` is the whole build.
+# Packages come from public PyPI, at the versions in requirements.lock; torch comes from PyTorch's public CPU-only wheel index (no CUDA).
+# No credentials are needed or accepted. The image holds code and packages only:
+#   - no API keys (compose passes the named variables at run time),
+#   - no embedding / reranker models (compose mounts the host's HuggingFace cache read-only; the app never downloads),
+#   - no vector index (built once into the data volume: `docker compose run --rm ingest`).
 
 # ---- builder: install the locked packages into a virtualenv ------------------------------------------------------------------------
 FROM python:3.13-slim AS builder
 
-ENV PIP_DISABLE_PIP_VERSION_CHECK=1 PIP_NO_CACHE_DIR=1
-# Optional: an approved index that serves CPU-only torch wheels. Without it the Linux torch wheel is the (very large) CUDA build.
-ARG TORCH_INDEX_URL=""
+ENV PIP_DISABLE_PIP_VERSION_CHECK=1
+# The index torch is installed from. The default serves CPU-only wheels for linux/amd64 and linux/arm64.
+ARG TORCH_INDEX_URL="https://download.pytorch.org/whl/cpu"
 
 WORKDIR /build
 COPY requirements.lock ./
 
-# The pip configuration (index URL and credentials) is passed as a BuildKit secret, so it is never written into an image layer.
-# `required=true` makes the build fail instead of silently falling back to the public index.
-RUN --mount=type=secret,id=pipconf,target=/etc/pip.conf,required=true \
+# 1) the runtime lock = requirements.lock without the dev tools (CR stripped: the file may have Windows line endings)
+# 2) torch first, alone, from the CPU index; its dependencies come from PyPI with everything else (a local "+cpu" version satisfies the pin)
+# 3) fail the build if the environment is inconsistent, or if a CUDA torch or an NVIDIA package got in
+RUN --mount=type=cache,target=/root/.cache/pip \
     python -m venv /opt/venv \
- && grep -viE '^(pytest|pytest-cov|hypothesis|ruff)==' requirements.lock > runtime.lock \
- && if [ -n "$TORCH_INDEX_URL" ]; then \
-      /opt/venv/bin/pip install --index-url "$TORCH_INDEX_URL" "$(grep -i '^torch==' runtime.lock)"; \
-    fi \
- && /opt/venv/bin/pip install -r runtime.lock
+ && tr -d '\r' < requirements.lock | grep -viE '^(pytest|pytest-cov|hypothesis|ruff)==' > runtime.lock \
+ && /opt/venv/bin/pip install --no-deps --index-url "$TORCH_INDEX_URL" "$(grep -E '^torch==' runtime.lock)" \
+ && /opt/venv/bin/pip install -r runtime.lock \
+ && /opt/venv/bin/pip check \
+ && /opt/venv/bin/python -c "import torch, sys; sys.exit(0 if torch.version.cuda is None else 'a CUDA build of torch was installed')" \
+ && ! /opt/venv/bin/pip list --format=freeze | grep -iE '^nvidia'
 
 # ---- runtime ------------------------------------------------------------------------------------------------------------------------
 FROM python:3.13-slim
@@ -40,12 +43,14 @@ ENV PYTHONUNBUFFERED=1 \
     ADVRAG_INDEX_DIR=/data/chroma \
     CHROMA_LOCAL_PATH=/data/chroma
 
-# /data  = the index volume (Chroma store, SQLite FTS5 index and ingest manifests)
+# /data   = the index volume (Chroma store, SQLite FTS5 index, ingest manifests, feedback file)
 # /models = the HuggingFace cache, bind-mounted from the host
+# The two symlinks put what the code writes under the volume: runs/ingest (manifests) and ~/.local/share/advrag (feedback.sqlite3).
 RUN useradd --create-home --uid 10001 app \
- && mkdir -p /data/runs/ingest /models /app/runs \
+ && mkdir -p /data/runs/ingest /data/advrag /models /app/runs /home/app/.local/share \
  && ln -s /data/runs/ingest /app/runs/ingest \
- && chown -R app:app /data /models /app
+ && ln -s /data/advrag /home/app/.local/share/advrag \
+ && chown -R app:app /data /models /app /home/app/.local
 
 WORKDIR /app
 COPY --from=builder /opt/venv /opt/venv
@@ -62,11 +67,7 @@ COPY --chown=app:app scripts ./scripts
 COPY --chown=app:app utils ./utils
 
 USER app
-VOLUME ["/data"]
 EXPOSE 8501 8000
-
-HEALTHCHECK --interval=30s --timeout=5s --start-period=90s --retries=3 \
-    CMD python -c "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8501/_stcore/health', timeout=4).status == 200 else 1)"
 
 CMD ["streamlit", "run", "app/streamlit_app.py", \
      "--server.address=0.0.0.0", "--server.port=8501", "--server.headless=true", \

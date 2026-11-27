@@ -1,0 +1,71 @@
+# The API and the Streamlit UI.
+#
+#   docker compose run --rm --build ingest    # once: build the index into the data volume (minutes, CPU)
+#   docker compose up --build                 # API on http://127.0.0.1:8000/docs, UI on http://127.0.0.1:8501
+#
+# Needs the pinned models in the host's HuggingFace cache (default ~/.cache/huggingface; set HF_CACHE_DIR to the folder that holds hub/).
+# Keys: compose reads a .env file next to this file ONLY to fill the ${...} names below, so only these variables reach a container.
+# `docker compose config` prints their values: use `docker compose config --quiet` to check the file.
+# Ports are published on the host's loopback address only.
+
+name: advrag
+
+x-index: &index
+  image: advrag:local
+  build: .
+  volumes:
+    - data:/data
+    - type: bind
+      source: ${HF_CACHE_DIR:-${HOME}/.cache/huggingface}
+      target: /models
+      read_only: true
+      bind:
+        create_host_path: false   # a wrong path is an error, not a silently empty cache
+
+services:
+  api:
+    <<: *index
+    command: ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    init: true
+    environment:
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      LANGFUSE_PUBLIC_KEY: ${LANGFUSE_PUBLIC_KEY:-}
+      LANGFUSE_SECRET_KEY: ${LANGFUSE_SECRET_KEY:-}
+      LANGFUSE_BASE_URL: ${LANGFUSE_BASE_URL:-}
+      ADVRAG_API_TOKEN: ${ADVRAG_API_TOKEN:-}
+    ports:
+      - "127.0.0.1:${API_PORT:-8000}:8000"
+    healthcheck:   # liveness. Readiness (index, models) is GET /v1/ready, shown by the UI's self-check
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/v1/health', timeout=4)"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 180s
+
+  ui:
+    image: advrag:local
+    pull_policy: never   # built by the api service
+    init: true
+    environment:
+      ADVRAG_API_URL: http://api:8000
+      ADVRAG_API_TOKEN: ${ADVRAG_API_TOKEN:-}
+      APP_ACCESS_CODE: ${APP_ACCESS_CODE:-}
+    ports:
+      - "127.0.0.1:${UI_PORT:-8501}:8501"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8501/_stcore/health', timeout=4)"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+
+  ingest:   # one-shot, not started by `up`. Incremental: it never clears a collection.
+    <<: *index
+    profiles: ["tools"]
+    command: ["python", "scripts/ingest.py", "--strategy", "recursive"]
+
+volumes:
+  data:
