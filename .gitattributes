@@ -1,0 +1,2 @@
+# Run folders and exports carry SHA256SUMS: their bytes must not be rewritten by a checkout (autocrlf would change every hash).
+runs/** -text

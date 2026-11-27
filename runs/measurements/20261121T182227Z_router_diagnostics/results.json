@@ -1,0 +1,27 @@
+{
+  "created_utc": "2026-11-21T18:22:27.339057+00:00",
+  "code_fingerprint": "3afc204dec26c731a999c16b6fcfa86cedaa76e8144de5e21fe89b2871a3566c",
+  "preregistration": {
+    "path": "<repo>\\eval\\PREREGISTRATION_2b.md",
+    "sha256_original_text": "698ab27d98ea6d6a376dbee4fdb4783a51b88b723882a4d684aba3d44429c95e",
+    "sha256_file": "698ab27d98ea6d6a376dbee4fdb4783a51b88b723882a4d684aba3d44429c95e",
+    "has_deviations_section": false,
+    "recorded_sha256": "698ab27d98ea6d6a376dbee4fdb4783a51b88b723882a4d684aba3d44429c95e"
+  },
+  "scope": "dev split, answerable questions; development only, not publishable",
+  "router": "title + abstract per paper; exact cosine + FTS5, RRF k=60 1.0/0.7, 20 candidates per leg",
+  "golden_set_sha256": "31ff6c7a656378042364fea140ee8f4012f2c71cf510cd9878680855d14bd715",
+  "results": {
+    "minilm": {
+      "embedder": "sentence-transformers/all-MiniLM-L6-v2",
+      "revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+      "papers_indexed": 200,
+      "questions": 174,
+      "questions_papers": 71,
+      "DocHit@1": 0.3620689655172414,
+      "DocHit@3": 0.4942528735632184,
+      "DocHit@5": 0.5344827586206896,
+      "DocHit@10": 0.5747126436781609
+    }
+  }
+}

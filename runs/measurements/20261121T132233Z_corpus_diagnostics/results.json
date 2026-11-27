@@ -1,0 +1,154 @@
+{
+  "created_utc": "2026-11-21T13:22:33.354489+00:00",
+  "code_fingerprint": "0d717273efc05d993a48b6785b0a6e9f2a3795a8d3bc4341123f4dc46941e878",
+  "scope": "dev split, answerable questions; development only, not publishable",
+  "runs": {
+    "corpus": "runs\\eval\\20261121T131505Z_0d717273_dev_corpus_titled",
+    "paper": "runs\\eval\\20261121T125301Z_0d717273_dev_paper",
+    "depth": null
+  },
+  "run_config_sha256": {
+    "corpus": "b47635db2d56737c55dba80f5768767d110dc421acfab3acc03e29a79b39591b",
+    "paper": "40a932a0b7e82dc5161c37efe16566dadbce11b652f3dee6f30f4157d52bf968"
+  },
+  "arms": {
+    "A": {
+      "n_questions": 174,
+      "DocHit": {
+        "@1": 0.9195402298850575,
+        "@5": 0.9712643678160919,
+        "@10": 1.0,
+        "@20": null,
+        "@20_source": null,
+        "@10_in_depth_run": null
+      },
+      "HitRate@5_corpus_all": 0.3103448275862069,
+      "HitRate@5_paper_all": 0.6436781609195402,
+      "doc_found_at_5": {
+        "n": 169,
+        "HitRate@5_corpus": 0.31952662721893493,
+        "HitRate@5_paper_same_questions": 0.6449704142011834
+      },
+      "doc_not_found_at_5": {
+        "n": 5,
+        "HitRate@5_corpus": 0.0,
+        "HitRate@5_paper_same_questions": 0.6
+      }
+    },
+    "B": {
+      "n_questions": 174,
+      "DocHit": {
+        "@1": 0.9655172413793104,
+        "@5": 1.0,
+        "@10": 1.0,
+        "@20": null,
+        "@20_source": null,
+        "@10_in_depth_run": null
+      },
+      "HitRate@5_corpus_all": 0.28735632183908044,
+      "HitRate@5_paper_all": 0.5919540229885057,
+      "doc_found_at_5": {
+        "n": 174,
+        "HitRate@5_corpus": 0.28735632183908044,
+        "HitRate@5_paper_same_questions": 0.5919540229885057
+      },
+      "doc_not_found_at_5": {
+        "n": 0,
+        "HitRate@5_corpus": null,
+        "HitRate@5_paper_same_questions": null
+      }
+    },
+    "C": {
+      "n_questions": 174,
+      "DocHit": {
+        "@1": 0.9195402298850575,
+        "@5": 0.9885057471264368,
+        "@10": 1.0,
+        "@20": null,
+        "@20_source": null,
+        "@10_in_depth_run": null
+      },
+      "HitRate@5_corpus_all": 0.3218390804597701,
+      "HitRate@5_paper_all": 0.6206896551724138,
+      "doc_found_at_5": {
+        "n": 172,
+        "HitRate@5_corpus": 0.32558139534883723,
+        "HitRate@5_paper_same_questions": 0.6162790697674418
+      },
+      "doc_not_found_at_5": {
+        "n": 2,
+        "HitRate@5_corpus": 0.0,
+        "HitRate@5_paper_same_questions": 1.0
+      }
+    },
+    "D": {
+      "n_questions": 174,
+      "DocHit": {
+        "@1": 0.9482758620689655,
+        "@5": 0.9942528735632183,
+        "@10": 0.9942528735632183,
+        "@20": null,
+        "@20_source": null,
+        "@10_in_depth_run": null
+      },
+      "HitRate@5_corpus_all": 0.3275862068965517,
+      "HitRate@5_paper_all": 0.6551724137931034,
+      "doc_found_at_5": {
+        "n": 173,
+        "HitRate@5_corpus": 0.32947976878612717,
+        "HitRate@5_paper_same_questions": 0.653179190751445
+      },
+      "doc_not_found_at_5": {
+        "n": 1,
+        "HitRate@5_corpus": 0.0,
+        "HitRate@5_paper_same_questions": 1.0
+      }
+    },
+    "E": {
+      "n_questions": 174,
+      "DocHit": {
+        "@1": 0.9195402298850575,
+        "@5": 0.9655172413793104,
+        "@10": 0.9942528735632183,
+        "@20": null,
+        "@20_source": null,
+        "@10_in_depth_run": null
+      },
+      "HitRate@5_corpus_all": 0.3333333333333333,
+      "HitRate@5_paper_all": 0.6494252873563219,
+      "doc_found_at_5": {
+        "n": 168,
+        "HitRate@5_corpus": 0.34523809523809523,
+        "HitRate@5_paper_same_questions": 0.6428571428571429
+      },
+      "doc_not_found_at_5": {
+        "n": 6,
+        "HitRate@5_corpus": 0.0,
+        "HitRate@5_paper_same_questions": 0.8333333333333334
+      }
+    },
+    "F": {
+      "n_questions": 174,
+      "DocHit": {
+        "@1": 0.9425287356321839,
+        "@5": 0.9942528735632183,
+        "@10": 1.0,
+        "@20": null,
+        "@20_source": null,
+        "@10_in_depth_run": null
+      },
+      "HitRate@5_corpus_all": 0.3333333333333333,
+      "HitRate@5_paper_all": 0.7011494252873564,
+      "doc_found_at_5": {
+        "n": 173,
+        "HitRate@5_corpus": 0.3352601156069364,
+        "HitRate@5_paper_same_questions": 0.6994219653179191
+      },
+      "doc_not_found_at_5": {
+        "n": 1,
+        "HitRate@5_corpus": 0.0,
+        "HitRate@5_paper_same_questions": 1.0
+      }
+    }
+  }
+}

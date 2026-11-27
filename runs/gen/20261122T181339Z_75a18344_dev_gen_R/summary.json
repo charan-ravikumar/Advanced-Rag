@@ -1,0 +1,94 @@
+{
+  "label": "EXPLORATORY: n=40 answerable dev questions, one arm (R = RAG, configuration D, top-5), one seeded sample; not a published result",
+  "arm": "R",
+  "short_mode": {
+    "AnswerF1": {
+      "n": 2,
+      "n_papers": 2,
+      "mean": 0.7948717948717948,
+      "ci_low": 0.6666666666666666,
+      "ci_high": 0.923076923076923
+    },
+    "AnswerF1_by_best_reference_type": {
+      "extractive": {
+        "n": 2,
+        "n_papers": 2,
+        "mean": 0.7948717948717948,
+        "ci_low": 0.6666666666666666,
+        "ci_high": 0.923076923076923
+      }
+    },
+    "YesNoAccuracy": {
+      "n": 0,
+      "n_papers": 0,
+      "mean": null,
+      "ci_low": null,
+      "ci_high": null
+    },
+    "AbstentionRate_on_answerable": {
+      "n": 2,
+      "n_papers": 2,
+      "mean": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0
+    },
+    "n_questions": 2
+  },
+  "long_mode": {
+    "CitationValidity_per_answer": {
+      "n": 0,
+      "n_papers": 0,
+      "mean": null,
+      "ci_low": null,
+      "ci_high": null
+    },
+    "CitationValidity_pooled": null,
+    "answers_with_no_citation": {
+      "n": 2,
+      "of": 2
+    },
+    "AbstentionRate_on_answerable": {
+      "n": 2,
+      "n_papers": 2,
+      "mean": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0
+    },
+    "n_questions": 2
+  },
+  "finish_reasons": {
+    "short": {
+      "stop": 2
+    },
+    "long": {
+      "stop": 2
+    }
+  },
+  "usage_tokens": {
+    "short": {
+      "prompt": 2121,
+      "completion": 75,
+      "reasoning": 42
+    },
+    "long": {
+      "prompt": 2215,
+      "completion": 197,
+      "reasoning": 38
+    }
+  },
+  "usage_note": "token sums cover the generations made in THIS session (cache hits cost nothing and are excluded)",
+  "session": {
+    "calls_made": 4,
+    "cache_hits": 0,
+    "tokens_used_this_session": 4608,
+    "failed": [],
+    "stopped_reason": null,
+    "pending": [],
+    "complete": false,
+    "remaining": [],
+    "tokens_used_in_window_before": 50000,
+    "tokens_used_in_window_after": 54608,
+    "daily_token_budget": 180000,
+    "already_used_tokens_declared": 50000
+  }
+}

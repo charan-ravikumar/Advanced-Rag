@@ -1,3 +1,5 @@
+> **UNVERIFIED: written before the rebuild. Do not quote. See docs/CLAIMS_LOG.md.**
+
 # Technical Deep Dive — RAG Pipeline Architecture
 
 ---

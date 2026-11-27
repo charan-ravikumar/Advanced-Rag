@@ -1,0 +1,167 @@
+{
+  "setting": "EXTENSION: corpus-wide retrieval (not Qasper's canonical task; questions were written about one paper)",
+  "primary_setting": false,
+  "latency_label": "retrieval_latency_ms: time spent inside Retriever.retrieve only (embed, vector, lexical, fuse, hydrate, rerank, total). Excludes metric computation, any LLM or generation, and is NOT end-to-end latency.",
+  "warmup_requests_discarded_per_arm": 5,
+  "old_metric_note": "old_* = the previous relevance rule (token-F1 >= 0.25 against the evidence text); shown only to compare metrics, not as a result",
+  "arms": {
+    "A": {
+      "strategy": "recursive",
+      "mode": "vector",
+      "fusion": null,
+      "n_questions": 174,
+      "n_unreachable_questions": 0,
+      "means": {
+        "HitRate@1": 0.08045977011494253,
+        "HitRate@5": 0.14942528735632185,
+        "HitRate@10": 0.22413793103448276,
+        "MRR": 0.12370949307297555,
+        "nDCG@10": 0.11310866082442646,
+        "DocHit@1": 0.3045977011494253,
+        "DocHit@5": 0.43103448275862066,
+        "DocHit@10": 0.4827586206896552,
+        "EvidenceRecall@1": 0.0603448275862069,
+        "EvidenceRecall@5": 0.11350574712643678,
+        "EvidenceRecall@10": 0.17385057471264365,
+        "EvidenceF1@1": 0.06839080459770114,
+        "EvidenceF1@5": 0.08026944320047769,
+        "EvidenceF1@10": 0.10376025040494276,
+        "Recall@50": 0.32895457033388065,
+        "EvidenceRecall@50": 0.35507662835249043,
+        "old_HitRate@1": 0.21839080459770116,
+        "old_HitRate@5": 0.3850574712643678,
+        "old_HitRate@10": 0.4540229885057471,
+        "old_MRR": 0.2972823184944075
+      },
+      "retrieval_latency_ms": {
+        "total": {
+          "p50": 22.602699999879405,
+          "p95": 26.338425000358257,
+          "max": 28.527500000564032,
+          "n_measured": 174
+        },
+        "route": {
+          "p50": 0.0,
+          "p95": 0.0,
+          "max": 0.0,
+          "n_measured": 174
+        },
+        "embed": {
+          "p50": 11.935950000406592,
+          "p95": 14.891274999763482,
+          "max": 18.047800000204006,
+          "n_measured": 174
+        },
+        "vector": {
+          "p50": 10.081549999995332,
+          "p95": 11.384314999395428,
+          "max": 16.03519999935088,
+          "n_measured": 174
+        },
+        "lexical": {
+          "p50": 0.0,
+          "p95": 0.0,
+          "max": 0.0,
+          "n_measured": 174
+        },
+        "fuse": {
+          "p50": 0.112749999971129,
+          "p95": 0.29883000006520855,
+          "max": 3.8209000003917026,
+          "n_measured": 174
+        },
+        "hydrate": {
+          "p50": 0.019750000319618266,
+          "p95": 0.026599999728205148,
+          "max": 0.03280000055383425,
+          "n_measured": 174
+        },
+        "rerank": {
+          "p50": 0.0,
+          "p95": 0.0,
+          "max": 0.0,
+          "n_measured": 174
+        }
+      }
+    },
+    "D": {
+      "strategy": "recursive",
+      "mode": "hybrid",
+      "fusion": "rrf",
+      "n_questions": 174,
+      "n_unreachable_questions": 0,
+      "means": {
+        "HitRate@1": 0.06896551724137931,
+        "HitRate@5": 0.16666666666666666,
+        "HitRate@10": 0.25862068965517243,
+        "MRR": 0.12461787514663608,
+        "nDCG@10": 0.12376842159774755,
+        "DocHit@1": 0.3103448275862069,
+        "DocHit@5": 0.43103448275862066,
+        "DocHit@10": 0.5057471264367817,
+        "EvidenceRecall@1": 0.04406130268199234,
+        "EvidenceRecall@5": 0.14080459770114942,
+        "EvidenceRecall@10": 0.22270114942528735,
+        "EvidenceF1@1": 0.05019157088122605,
+        "EvidenceF1@5": 0.06947787206407896,
+        "EvidenceF1@10": 0.09456433307008019,
+        "Recall@50": 0.38076081007115486,
+        "EvidenceRecall@50": 0.4082375478927203,
+        "old_HitRate@1": 0.20114942528735633,
+        "old_HitRate@5": 0.3793103448275862,
+        "old_HitRate@10": 0.47126436781609193,
+        "old_MRR": 0.2884875242075672
+      },
+      "retrieval_latency_ms": {
+        "total": {
+          "p50": 43.568449999838776,
+          "p95": 57.650880000392135,
+          "max": 74.25400000010995,
+          "n_measured": 174
+        },
+        "route": {
+          "p50": 0.0,
+          "p95": 0.0,
+          "max": 0.0,
+          "n_measured": 174
+        },
+        "embed": {
+          "p50": 12.167500000032305,
+          "p95": 15.969239999958514,
+          "max": 29.70389999973122,
+          "n_measured": 174
+        },
+        "vector": {
+          "p50": 10.305850000349892,
+          "p95": 11.55776499995227,
+          "max": 14.412499999707507,
+          "n_measured": 174
+        },
+        "lexical": {
+          "p50": 18.7101999999868,
+          "p95": 28.533969999944016,
+          "max": 43.9488000001802,
+          "n_measured": 174
+        },
+        "fuse": {
+          "p50": 0.33854999992399826,
+          "p95": 0.5644899996241289,
+          "max": 3.8635999999314663,
+          "n_measured": 174
+        },
+        "hydrate": {
+          "p50": 2.1916999994573416,
+          "p95": 2.84054000053402,
+          "max": 6.222699999852921,
+          "n_measured": 174
+        },
+        "rerank": {
+          "p50": 0.0,
+          "p95": 0.0,
+          "max": 0.0,
+          "n_measured": 174
+        }
+      }
+    }
+  }
+}

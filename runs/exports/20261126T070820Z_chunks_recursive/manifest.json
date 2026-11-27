@@ -1,0 +1,42 @@
+{
+  "created_utc": "2026-11-26T07:08:20.513023+00:00",
+  "strategy": "recursive",
+  "code_fingerprint": "c690a51697522d47ec2cb05623aef4ce994baded5304f3b6edb6a0d4f783b9b2",
+  "store": {
+    "collection": "rag_recursive",
+    "vector_count": 7255,
+    "lexical_count": 7255,
+    "ingest_signature": "cbe6d0e9c85af6f1a4ec9b01ac18e7137554ed6d84e9ed20e3c5a75dc25ddc12"
+  },
+  "counts": {
+    "chunks": 7255,
+    "papers": 200,
+    "chunks_per_split": {
+      "test": 4636,
+      "dev": 2483,
+      "none": 136
+    },
+    "dev_questions": 174,
+    "relevant_pairs": 340,
+    "relevant_per_question": {
+      "min": 1,
+      "median": 1.0,
+      "max": 7
+    }
+  },
+  "inputs": {
+    "golden_set_sha256": "31ff6c7a656378042364fea140ee8f4012f2c71cf510cd9878680855d14bd715",
+    "split_file_sha256": "7915be07d474583e60607d451042e5f407bafb45caeee701d971530b09202918",
+    "corpus_sha256": "e6c4f1f94a58460bc4b7116ba1d182e5deeda01fc944de69c3a84387d0905422"
+  },
+  "format": {
+    "chunks.jsonl": "one JSON object per line: chunk_id, text, metadata{paper_id, doc_id, section, chunk_idx, char_start, char_end, strategy, text_sha256, doc_version, split}",
+    "qrels_dev.jsonl": "one JSON object per answerable dev question: question_id, paper_id, query, relevant_chunk_ids (derived with the span-overlap rule, >= 0.5 x min(len(span), len(chunk)))"
+  },
+  "notes": [
+    "offsets are relative to the section text, not the whole paper",
+    "test-split labels are not part of this export",
+    "metadata.split lets a consumer keep test papers out of anything it tunes"
+  ],
+  "verification": "passed (ids unique and re-derivable; vector store, lexical index and export agree; every dev label reachable and inside its own paper; files re-read from disk)"
+}

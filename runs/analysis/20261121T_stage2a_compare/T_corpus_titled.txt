@@ -1,0 +1,16 @@
+SETTING: EXTENSION: corpus-wide, title-qualified (user names the paper)
+comparisons made in this invocation: 10  (Holm-adjusted at alpha=0.05 on the clustered p-values; bootstrap resamples=5000, seed=0)
+difference = first arm minus second arm. PRIMARY CI = 95% paper-clustered paired bootstrap (papers resampled, their questions kept together); per-q CI = 95% per-question bootstrap, secondary (understates uncertainty). W/L/T = questions where the first arm is better/worse/equal.
+
+pair     metric      n_q n_pap  mean_x  mean_y     diff   PRIMARY CI (clustered)            per-q CI       W/L/T p (clust.) Holm sig
+------------------------------------------------------------------------------------------------------------------------------------
+A vs D   nDCG@10     174    71   0.221   0.204   +0.017         [-0.004, +0.040]    [-0.003, +0.039]  40/ 33/101     0.1272       no
+A vs D   MRR         174    71   0.183   0.174   +0.009         [-0.013, +0.033]    [-0.013, +0.034]  33/ 32/109     0.4459       no
+A vs D   HitRate@5   174    71   0.310   0.328   -0.017         [-0.067, +0.031]    [-0.075, +0.034]  10/ 13/151     0.5991       no
+A vs D   EvidenceRecall@10  174    71   0.411   0.378   +0.033         [-0.009, +0.078]    [-0.007, +0.074]  16/  7/151     0.1356       no
+A vs D   EvidenceF1@5  174    71   0.109   0.096   +0.013         [-0.004, +0.031]    [-0.006, +0.032]  33/ 19/122     0.1372       no
+D vs F   nDCG@10     174    71   0.204   0.233   -0.029         [-0.054, -0.006]    [-0.054, -0.004]  28/ 51/ 95     0.0196       no
+D vs F   MRR         174    71   0.174   0.191   -0.017         [-0.046, +0.011]    [-0.043, +0.010]  27/ 44/103     0.2292       no
+D vs F   HitRate@5   174    71   0.328   0.333   -0.006         [-0.056, +0.042]    [-0.052, +0.046]   9/ 10/155     0.9030       no
+D vs F   EvidenceRecall@10  174    71   0.378   0.451   -0.074         [-0.120, -0.031]    [-0.124, -0.022]  12/ 28/134     0.0012      YES
+D vs F   EvidenceF1@5  174    71   0.096   0.095   +0.000         [-0.013, +0.013]    [-0.014, +0.015]  42/ 21/111     0.9662       no

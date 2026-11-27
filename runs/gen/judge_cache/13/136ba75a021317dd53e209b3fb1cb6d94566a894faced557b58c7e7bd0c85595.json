@@ -1,0 +1,1 @@
+{"text": "{\"question\": \"What does the paper challenge regarding ROUGE as a metric for evaluating summaries?\", \"noncommittal\": 0}", "metric": "answer_relevancy", "judge_model": "gemini-2.5-flash", "ragas_version": "0.4.4", "usage": {"prompt_tokens": 528, "output_tokens": 28, "thinking_tokens": 99}, "finish_reason": "FinishReason.STOP"}

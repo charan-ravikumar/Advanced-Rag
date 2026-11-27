@@ -1,0 +1,155 @@
+{
+  "created_utc": "2026-11-21T13:20:56.522234+00:00",
+  "code_fingerprint": "0d717273efc05d993a48b6785b0a6e9f2a3795a8d3bc4341123f4dc46941e878",
+  "scope": "dev split, answerable questions; development only, not publishable",
+  "runs": {
+    "corpus": "runs\\eval\\20261121T121338Z_b45a6048_dev_corpus",
+    "paper": "runs\\eval\\20261121T125301Z_0d717273_dev_paper",
+    "depth": "runs\\eval\\20261121T131902Z_0d717273_dev_corpus"
+  },
+  "run_config_sha256": {
+    "corpus": "3ef5cd2b67ba8c245b3ffc8ff85a9511d9bcddfb0c6150f887cf4a6221c716da",
+    "paper": "40a932a0b7e82dc5161c37efe16566dadbce11b652f3dee6f30f4157d52bf968",
+    "depth": "5e3bba088e9a05077aa303055041e2e2c93c130ed8ad989e742706b9a7731913"
+  },
+  "arms": {
+    "A": {
+      "n_questions": 174,
+      "DocHit": {
+        "@1": 0.3045977011494253,
+        "@5": 0.43103448275862066,
+        "@10": 0.4827586206896552,
+        "@20": 0.5287356321839081,
+        "@20_source": "separate top_k=20 corpus run (retrieved lists can differ from the top-10 run by HNSW noise)",
+        "@10_in_depth_run": 0.4827586206896552
+      },
+      "HitRate@5_corpus_all": 0.14942528735632185,
+      "HitRate@5_paper_all": 0.6436781609195402,
+      "doc_found_at_5": {
+        "n": 75,
+        "HitRate@5_corpus": 0.3466666666666667,
+        "HitRate@5_paper_same_questions": 0.5466666666666666
+      },
+      "doc_not_found_at_5": {
+        "n": 99,
+        "HitRate@5_corpus": 0.0,
+        "HitRate@5_paper_same_questions": 0.7171717171717171
+      }
+    },
+    "B": {
+      "n_questions": 174,
+      "DocHit": {
+        "@1": 0.3505747126436782,
+        "@5": 0.47126436781609193,
+        "@10": 0.5517241379310345,
+        "@20": 0.6091954022988506,
+        "@20_source": "separate top_k=20 corpus run (retrieved lists can differ from the top-10 run by HNSW noise)",
+        "@10_in_depth_run": 0.5517241379310345
+      },
+      "HitRate@5_corpus_all": 0.14942528735632185,
+      "HitRate@5_paper_all": 0.5919540229885057,
+      "doc_found_at_5": {
+        "n": 82,
+        "HitRate@5_corpus": 0.3170731707317073,
+        "HitRate@5_paper_same_questions": 0.6219512195121951
+      },
+      "doc_not_found_at_5": {
+        "n": 92,
+        "HitRate@5_corpus": 0.0,
+        "HitRate@5_paper_same_questions": 0.5652173913043478
+      }
+    },
+    "C": {
+      "n_questions": 174,
+      "DocHit": {
+        "@1": 0.3045977011494253,
+        "@5": 0.4827586206896552,
+        "@10": 0.5574712643678161,
+        "@20": 0.6379310344827587,
+        "@20_source": "separate top_k=20 corpus run (retrieved lists can differ from the top-10 run by HNSW noise)",
+        "@10_in_depth_run": 0.5574712643678161
+      },
+      "HitRate@5_corpus_all": 0.1724137931034483,
+      "HitRate@5_paper_all": 0.6206896551724138,
+      "doc_found_at_5": {
+        "n": 84,
+        "HitRate@5_corpus": 0.35714285714285715,
+        "HitRate@5_paper_same_questions": 0.6071428571428571
+      },
+      "doc_not_found_at_5": {
+        "n": 90,
+        "HitRate@5_corpus": 0.0,
+        "HitRate@5_paper_same_questions": 0.6333333333333333
+      }
+    },
+    "D": {
+      "n_questions": 174,
+      "DocHit": {
+        "@1": 0.29310344827586204,
+        "@5": 0.40229885057471265,
+        "@10": 0.47701149425287354,
+        "@20": 0.5287356321839081,
+        "@20_source": "separate top_k=20 corpus run (retrieved lists can differ from the top-10 run by HNSW noise)",
+        "@10_in_depth_run": 0.47701149425287354
+      },
+      "HitRate@5_corpus_all": 0.1781609195402299,
+      "HitRate@5_paper_all": 0.6551724137931034,
+      "doc_found_at_5": {
+        "n": 70,
+        "HitRate@5_corpus": 0.44285714285714284,
+        "HitRate@5_paper_same_questions": 0.5714285714285714
+      },
+      "doc_not_found_at_5": {
+        "n": 104,
+        "HitRate@5_corpus": 0.0,
+        "HitRate@5_paper_same_questions": 0.7115384615384616
+      }
+    },
+    "E": {
+      "n_questions": 174,
+      "DocHit": {
+        "@1": 0.27586206896551724,
+        "@5": 0.39655172413793105,
+        "@10": 0.43103448275862066,
+        "@20": 0.5,
+        "@20_source": "separate top_k=20 corpus run (retrieved lists can differ from the top-10 run by HNSW noise)",
+        "@10_in_depth_run": 0.43103448275862066
+      },
+      "HitRate@5_corpus_all": 0.16091954022988506,
+      "HitRate@5_paper_all": 0.6494252873563219,
+      "doc_found_at_5": {
+        "n": 69,
+        "HitRate@5_corpus": 0.4057971014492754,
+        "HitRate@5_paper_same_questions": 0.6086956521739131
+      },
+      "doc_not_found_at_5": {
+        "n": 105,
+        "HitRate@5_corpus": 0.0,
+        "HitRate@5_paper_same_questions": 0.6761904761904762
+      }
+    },
+    "F": {
+      "n_questions": 174,
+      "DocHit": {
+        "@1": 0.29310344827586204,
+        "@5": 0.39080459770114945,
+        "@10": 0.4482758620689655,
+        "@20": 0.5,
+        "@20_source": "separate top_k=20 corpus run (retrieved lists can differ from the top-10 run by HNSW noise)",
+        "@10_in_depth_run": 0.4482758620689655
+      },
+      "HitRate@5_corpus_all": 0.1839080459770115,
+      "HitRate@5_paper_all": 0.7011494252873564,
+      "doc_found_at_5": {
+        "n": 68,
+        "HitRate@5_corpus": 0.47058823529411764,
+        "HitRate@5_paper_same_questions": 0.6617647058823529
+      },
+      "doc_not_found_at_5": {
+        "n": 106,
+        "HitRate@5_corpus": 0.0,
+        "HitRate@5_paper_same_questions": 0.7264150943396226
+      }
+    }
+  }
+}

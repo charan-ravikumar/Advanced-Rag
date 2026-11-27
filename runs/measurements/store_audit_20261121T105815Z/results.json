@@ -1,0 +1,26 @@
+{
+  "created_utc": "2026-11-21T10:58:05.094172+00:00",
+  "code_fingerprint": "3fdfe4e767a0ebeb296a53154723547c3d4d57a73e1d97fd712f0662509a11ab",
+  "corpus_sha256": "e6c4f1f94a58460bc4b7116ba1d182e5deeda01fc944de69c3a84387d0905422",
+  "docs": 200,
+  "strategies": {
+    "recursive": {
+      "collection": "rag_recursive",
+      "chunks": 7255,
+      "chunks_whose_text_differs_from_section_slice": 0,
+      "chunks_unlocated": 0,
+      "nonwhitespace_source_chars": 4007452,
+      "uncovered_chars": 0,
+      "docs_with_any_uncovered_char": 0
+    },
+    "semantic": {
+      "collection": "rag_semantic",
+      "chunks": 6442,
+      "chunks_whose_text_differs_from_section_slice": 0,
+      "chunks_unlocated": 0,
+      "nonwhitespace_source_chars": 4007452,
+      "uncovered_chars": 0,
+      "docs_with_any_uncovered_char": 0
+    }
+  }
+}

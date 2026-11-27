@@ -1,0 +1,39 @@
+{
+  "status": "PROPOSED by the assistant; awaiting the owner's review. Multi-label and heuristic; not used to change any arm.",
+  "arm": "D",
+  "questions_scored": 174,
+  "questions_with_HitRate@10_eq_0": 26,
+  "definitions": {
+    "vocabulary_mismatch": "fewer than 25% of the question's content words occur in the evidence text",
+    "multi_paragraph_evidence": "the question has 2 or more distinct evidence paragraphs",
+    "evidence_in_unusual_section": "a gold section name does not match the usual section-name pattern",
+    "table_or_figure_context_also_cited": "an annotator also cited a table or figure as evidence (not retrievable as text)",
+    "near_miss_partial_overlap": "a retrieved chunk overlaps a gold span by >= 1 character but fails the 0.5 length-neutral rule",
+    "gold_not_reachable_by_any_chunk": "no stored chunk can satisfy the relevance rule for this question",
+    "none_of_the_proposed": "no heuristic fired"
+  },
+  "counts_over_all_misses": {
+    "vocabulary_mismatch": 14,
+    "none_of_the_proposed": 7,
+    "multi_paragraph_evidence": 6,
+    "evidence_in_unusual_section": 4,
+    "table_or_figure_context_also_cited": 3
+  },
+  "counts_over_sample": {
+    "vocabulary_mismatch": 13,
+    "none_of_the_proposed": 7,
+    "multi_paragraph_evidence": 5,
+    "evidence_in_unusual_section": 4,
+    "table_or_figure_context_also_cited": 3
+  },
+  "answer_types_all_scored_questions_with_at_least_one_such_answer": {
+    "yes_no": 16,
+    "extractive": 132,
+    "abstractive": 66
+  },
+  "answer_types_among_misses_with_at_least_one_such_answer": {
+    "yes_no": 6,
+    "abstractive": 7,
+    "extractive": 18
+  }
+}

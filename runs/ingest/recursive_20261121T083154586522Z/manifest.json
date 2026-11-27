@@ -1,0 +1,76 @@
+{
+  "strategy": "recursive",
+  "started_utc": "2026-11-21T08:31:54.586522+00:00",
+  "dataset": {
+    "path": "<repo>\\eval\\datasets\\qasper_dev\\corpus.json",
+    "sha256": "e6c4f1f94a58460bc4b7116ba1d182e5deeda01fc944de69c3a84387d0905422",
+    "docs_in_corpus": 200,
+    "docs_processed": 200,
+    "limit_docs": null
+  },
+  "code_fingerprint": "70fa03b21a13011af39abc1035ac229ed12dec704ce502238ec3f199d83cf531",
+  "ingest_signature": "887a2010e05997b5a780ab74d74043806e0915bb12fdb78b631d4001581d48b9",
+  "embedder": {
+    "class": "SentenceTransformerEmbedder",
+    "name": "sentence-transformers/all-MiniLM-L6-v2",
+    "revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+    "max_seq_length": 256,
+    "token_counter": "wordpiece-real"
+  },
+  "chunking_config": {
+    "max_chunk_chars": 2000,
+    "max_tokens": 256,
+    "recursive_chunk_size": 1000,
+    "recursive_chunk_overlap": 200,
+    "semantic_similarity_threshold": 0.78,
+    "min_chunk_chars": 300,
+    "semantic_window_size": 3
+  },
+  "store": {
+    "location": "%USERPROFILE%\\AppData\\Local\\advrag\\chroma",
+    "collection": "rag_recursive",
+    "count_after": 7255
+  },
+  "docs": {
+    "ingested": 200,
+    "skipped_unchanged": 0,
+    "replaced_old_version": 0
+  },
+  "chunks": {
+    "written_this_run": 7255,
+    "total_in_store_for_processed_docs": 7255,
+    "per_doc": {
+      "min": 10,
+      "median": 35.0,
+      "max": 134
+    }
+  },
+  "offset_confidence_ingested_docs_only": {
+    "exact": 7255,
+    "normalised": 0,
+    "ambiguous": 0,
+    "not_found": 0
+  },
+  "verification": {
+    "store_count": 7255,
+    "sum_of_chunk_counts": 7255,
+    "orphan_doc_ids": 0,
+    "duplicate_chunk_ids": 0,
+    "docs_without_chunks": 0,
+    "docs_with_missing_chunks": 0,
+    "round_trip": {
+      "sampled": 20,
+      "unlocated_skipped": 0,
+      "mismatches": 0
+    },
+    "token_check": {
+      "counter": "wordpiece-real",
+      "max_seq_length": 256,
+      "chunks_checked": 7255,
+      "chunks_over_max_seq_length": 0
+    },
+    "ok": true,
+    "problems": []
+  },
+  "duration_s": 631.54
+}

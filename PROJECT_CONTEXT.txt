@@ -1,0 +1,273 @@
+UNVERIFIED: written before the rebuild. Do not quote. See docs/CLAIMS_LOG.md.
+
+================================================================================
+PROJECT CONTEXT LOG  -  Advanced RAG (Hybrid Retrieval + RRF + Reranking)
+================================================================================
+PURPOSE OF THIS FILE
+  A running diary of WHAT I did in this project and WHY I did it.
+  Read it top to bottom before an interview. Sections 1-6 are the stable
+  "story"; Section 7 is the dated change log (newest entry at the BOTTOM);
+  Section 8 is a template for new entries.
+
+RULE: after every work session, append an entry to Section 7 (what / why /
+evidence / what I learned / interview angle). Never delete old entries; if a
+decision changes, add a new entry that says "supersedes entry #N".
+
+--------------------------------------------------------------------------------
+1. ONE-PARAGRAPH PITCH (say this out loud in the interview)
+--------------------------------------------------------------------------------
+I built a RAG (retrieval-augmented generation) pipeline for question answering
+over scientific papers (QASPER dataset). Instead of just wiring up a vector DB,
+I treated it as an experiment: I compared chunking strategies (recursive,
+layout, semantic) and retrieval configurations (vector-only, vector+BM25,
+hybrid+RRF fusion, +cross-encoder reranker) with a checkpointed evaluation
+harness. Later I audited my own project, found that several headline numbers
+were not backed by raw data and a few features were buggy, and started fixing
+them. The key message: I measure, I question my own claims, and I fix them.
+
+--------------------------------------------------------------------------------
+2. TECH STACK AND WHERE THINGS LIVE
+--------------------------------------------------------------------------------
+Pipeline (rag/)
+  loaders.py         document loading
+  chunkers.py        recursive / layout / semantic chunking
+  embeddings.py      sentence-transformers (all-MiniLM-L6-v2) + LRU query cache
+  ingest.py          ingestion into vector DB + BM25
+  retrieval.py       vector search, BM25, weighted RRF fusion, reranker
+  context_builder.py token-budgeted context assembly
+  pipeline.py        end-to-end orchestration
+db/vectordb.py       ChromaDB Cloud client
+cache/cache.py       Redis cache for final answers (fails open on error)
+app/main.py          FastAPI service (sync endpoints, streaming)
+streamlit_app.py     demo frontend
+observability/       Prometheus metrics, logging config
+config.yaml/config.py/schemas.py   configuration and pydantic schemas
+eval/                eval harness (run_eval, run_ablation, metrics, datasets)
+evaluation/          saved results: CSVs + per-question checkpoints (*.jsonl)
+scripts/             build_qasper_eval_set, ingest_qasper, run_evaluation
+tests/unit/          chunkers, fusion (RRF), retrieval, eval metrics
+technical_audit/     my 7-part self-audit (01..07) - READ 01 and 07 pre-interview
+docs/                EVALUATION_REPORT.md, TECHNICAL_DEEP_DIVE.md
+prompt.txt           the prompt I used to get the staff-level audit done
+resume_bullets_v2.md resume bullets (need to be corrected - see Section 5)
+
+LLMs: Groq (primary) with Gemini as fallback. Vector store: ChromaDB Cloud.
+Lexical search: rank_bm25 (in-memory). Cache: Redis. Frontend: Streamlit.
+
+REQUEST LIFECYCLE (be able to draw this)
+  Upload/Ingest -> Parse -> Chunk -> Embed -> Index (Chroma + BM25)
+  Query -> embed (LRU cache) -> vector search || BM25 search (parallel)
+        -> weighted RRF fusion (k=60) -> optional cross-encoder rerank
+        -> context builder (token budget, neighbor chunks) -> LLM -> stream
+
+--------------------------------------------------------------------------------
+3. WHY I MADE THE KEY DESIGN CHOICES  (interview "why" answers)
+--------------------------------------------------------------------------------
+* Hybrid (BM25 + vector) instead of vector only
+    Why: scientific text has exact terms (model names, metrics, acronyms) that
+    dense embeddings blur; BM25 catches exact matches, vectors catch meaning.
+* RRF (Reciprocal Rank Fusion, k=60) instead of score blending
+    Why: BM25 scores and cosine similarities are on different scales; RRF only
+    uses ranks, so no score normalization or tuning is needed. Weighted RRF
+    lets me bias toward one retriever. Unit-tested in tests/unit/test_fusion.py.
+* Semantic chunking vs recursive
+    Why: I hypothesized that splitting on meaning boundaries keeps answers
+    intact. Result: small gain, NOT statistically significant (see Section 4).
+* Cross-encoder reranker kept OPTIONAL / off by default on CPU
+    Why: tiny recall gain (+1pp) for a huge latency cost on CPU. A GPU would
+    change this decision. This is a legit cost/benefit engineering call.
+* Redis fails open
+    Why: cache is an optimization; if Redis is down the API must still answer.
+* Per-call overrides (retrieval_mode_override, use_rrf_override,
+  reranker_override)
+    Why: lets me A/B different pipeline configs without redeploying.
+* Per-question checkpoint files (evaluation/checkpoints/*.jsonl)
+    Why: long LLM-judged evals crash/rate-limit; checkpoints make them
+    resumable AND let me compute paired statistics later (bootstrap CIs).
+
+--------------------------------------------------------------------------------
+4. WHAT THE DATA ACTUALLY SHOWS (honest numbers - use these, not the README)
+--------------------------------------------------------------------------------
+Dataset: QASPER dev subset (200 papers, 100 questions). Small -> wide CIs.
+
+Retrieval ablation (semantic chunking), measured:
+  Vector only            Recall@5 0.21   MRR 0.157
+  Hybrid (no RRF)        Recall@5 0.21   MRR 0.157   (identical -> suspicious/bug)
+  Hybrid + RRF           Recall@5 0.27   MRR 0.175
+  Production (+rerank)   Recall@5 0.28   MRR 0.170
+
+Defensible claim:
+  Hybrid+RRF improves Recall@5 from 0.21 to 0.27 = +6 percentage points
+  (+28.6% relative). Paired bootstrap: 6 wins / 0 losses, 95% CI [+2, +11] pp.
+
+Chunking comparison (Recall@5): recursive 0.25, layout 0.26, semantic 0.28.
+  Paired test semantic vs recursive: 8 wins / 5 losses, CI [-4, +10] pp
+  -> NOT distinguishable. Say "directionally better, not significant".
+
+Retrieval latency: measured P50 ~0.5 s, P95 ~1.0-1.3 s.
+End-to-end (retrieval+LLM) is much larger and noisy (LLM-dominated).
+Reranker on CPU: ~3 s (checkpoint median) to ~11.7 s (one noisy run).
+
+--------------------------------------------------------------------------------
+5. KNOWN PROBLEMS I FOUND IN MY OWN PROJECT (own them in the interview)
+--------------------------------------------------------------------------------
+Claims that were wrong / unsupported (README + resume_bullets_v2.md):
+  - "+44% Recall@5": baseline 0.188 was ESTIMATED by a formula in
+    eval/feature_contrib.py, never measured. Real: +28.6% (0.21 -> 0.27).
+  - "P50 latency 1.7 s": that was mean end-to-end latency, not P50 retrieval.
+  - "CrossEncoder +12.6 s": a difference of two noisy means, wrong model named
+    (benchmark used bge-reranker-base, docs said ms-marco-MiniLM).
+  - "SSE streaming": it is plain-text StreamingResponse, not text/event-stream.
+  - "Throughput 4.2/14.3 QPM": computed as 60/latency for one sequential
+    stream - that is latency inverted, not capacity.
+  - "0% error rate": hard-coded literal, not measured.
+  - "Two-tier cache": really two different caches (query-embedding LRU and
+    Redis for final answers), not tiers.
+  - Grafana/Phoenix mentioned but no dashboards/configs exist.
+
+Real bugs (from technical_audit/03_CODE_REVIEW.md):
+  - Gemini fallback broken: config={"timeout": 30} raises ValidationError on
+    google-genai, so fallback always fails.
+  - Failed LLM results can be cached.
+  - Fusion output not truncated before reranking (unbounded rerank input).
+  - Chunker can drop leftover small groups of text (data loss).
+  - Three chunking strategies mixed in one Chroma collection.
+  - BM25 is in-memory and ignores metadata filters.
+Gaps: no auth/rate limit, no Dockerfile/CI/.env.example, polluted
+requirements.txt, thin tests (none for cache/API/context builder).
+
+HOW TO TALK ABOUT THIS: "I audited my own work, found my headline number was
+derived rather than measured, and replaced it with a paired-bootstrap result.
+That is the number I defend." Interviewers value this far more than a big
+number they can poke holes in.
+
+--------------------------------------------------------------------------------
+6. ROADMAP (from technical_audit/05_IMPROVEMENT_ROADMAP.md)
+--------------------------------------------------------------------------------
+Do NOT update resume/README claims until claims hygiene (P0-2) is done.
+Top 5 workstreams, in order:
+  1. Trustworthy retrieval + evaluation  (fix bugs, re-measure, CIs)   ~58 h
+  2. LLM reliability gateway             (retries, breaker, failover,
+                                          real SSE, no error caching) ~30 h
+  3. Real ingestion lifecycle            (SQLite FTS5, incremental
+                                          ingest, upload API)          ~28 h
+  4. Deployment + load testing + observability (Docker, CI, Grafana)  ~48 h
+  5. Grounding and safety                (citations, prompt-injection
+                                          defence, calibrated judge)   ~28 h
+Priorities: P0 critical (bugs, claims, auth, packaging, corpus hygiene,
+hermetic tests/CI) -> P1 production quality -> P2 differentiation.
+
+Status tracker (update as I go):
+  [ ] P0-1 Fix correctness bugs + regression tests
+  [ ] P0-2 Re-measure baseline, remove derived numbers, fix README/resume
+  [ ] P0-3 API auth, rate limit, input caps
+  [ ] P0-4 Packaging: clean deps, Dockerfile, compose, .env.example
+  [ ] P0-5 Corpus hygiene (one strategy per collection, filter parity)
+  [ ] P0-6 Hermetic tests + CI gate
+  [ ] P1-1 Evaluation v2
+  [ ] P1-2 FTS5 + incremental ingestion + upload API
+  [ ] P1-3 LLM gateway
+  [ ] P1-4 Observability v2
+
+--------------------------------------------------------------------------------
+7. DATED CHANGE LOG  (append new entries at the bottom)
+--------------------------------------------------------------------------------
+
+ENTRY 1  |  Before 2026-06 (reconstructed from files, dates approximate)
+  WHAT:  Built the base RAG pipeline: loaders, three chunkers, embeddings with
+         LRU cache, ChromaDB Cloud storage, BM25, hybrid retrieval, RRF,
+         optional cross-encoder reranker, context builder, FastAPI + Streamlit.
+  WHY:   Learn and demonstrate a production-style RAG system rather than a
+         notebook demo; target GenAI/Applied AI engineer roles.
+  EVIDENCE: rag/, app/, streamlit_app.py, tests/unit/.
+
+ENTRY 2  |  2026-06-15 to 2026-06-19 (from result file timestamps)
+  WHAT:  Built the QASPER eval set and ran two evaluations: (1) chunking
+         comparison, (2) retrieval ablation, plus an observability run.
+         Saved per-question checkpoints and CSVs.
+  WHY:   Choose chunking/retrieval settings with data, not intuition.
+  EVIDENCE: evaluation/*.csv, evaluation/checkpoints/*.jsonl,
+            eval/results/benchmark_summary.md.
+  NOTE:  The auto-generated summary in benchmark_summary.md contains
+         misleading "resume-ready" text (see Section 5) - do not quote it.
+
+ENTRY 3  |  2026-11-21
+  WHAT:  Ran a staff-level technical audit of the whole repo (prompt in
+         prompt.txt). Output: technical_audit/01..07 (executive summary,
+         architecture, code review, missing features, roadmap, benchmarking
+         strategy, interview readiness). Created this PROJECT_CONTEXT.txt.
+  WHY:   Find out what an interviewer for a Rs 35+ LPA GenAI role would find
+         if they cloned the repo, and turn it into a prioritized plan.
+  KEY FINDINGS: audit score 5.0/10 (my own resume file said 7.5/10). Biggest
+         issue = evidence integrity (numbers not traceable to raw data), then
+         correctness bugs and missing production basics (Section 5).
+  DECISION: Fix claims and correctness bugs BEFORE adding new features.
+  NEXT:  Start P0-1 (bugs + tests) and P0-2 (re-measure baseline).
+  INTERVIEW ANGLE: shows self-critique, prioritization, and honesty.
+
+--- (append ENTRY 4, 5, ... below this line) ---
+
+--------------------------------------------------------------------------------
+8. TEMPLATE FOR NEW ENTRIES  (copy, paste, fill in)
+--------------------------------------------------------------------------------
+ENTRY N  |  YYYY-MM-DD
+  WHAT:      (what I changed/built/measured - files touched)
+  WHY:       (the problem or finding that motivated it; link audit ID, e.g. R-01)
+  HOW:       (approach / key technical detail, 2-4 lines)
+  EVIDENCE:  (test name, result file, commit hash, before -> after numbers)
+  TRADEOFFS: (what I considered and rejected, and why)
+  LEARNED:   (surprises, mistakes, things I'd do differently)
+  INTERVIEW ANGLE: (the 1-2 sentence story I can tell from this)
+  NEXT:      (what follows)
+
+--------------------------------------------------------------------------------
+9. LIKELY INTERVIEW QUESTIONS - QUICK ANSWERS
+--------------------------------------------------------------------------------
+Q: Why hybrid retrieval?
+A: Dense embeddings capture semantics but miss exact tokens (acronyms, model
+   names); BM25 does the opposite. Fusing them gave +6pp Recall@5 on my
+   eval, 6 wins / 0 losses on paired questions.
+
+Q: Why RRF instead of weighted score sum?
+A: Scores from BM25 and cosine are not comparable. RRF uses ranks only, is
+   parameter-light (k=60), robust, and easy to test.
+
+Q: Is semantic chunking better?
+A: Directionally (0.28 vs 0.25 Recall@5) but the paired CI spans zero
+   [-4, +10] pp, so I cannot claim it on 100 questions.
+
+Q: Why isn't the reranker on by default?
+A: +1pp recall for seconds of CPU latency (and it lowered faithfulness in one
+   run). On a GPU I would re-evaluate. Decision driven by measured cost/benefit.
+
+Q: What would you fix first / what is wrong with the project?
+A: Evidence integrity (a derived baseline presented as measured), the broken
+   Gemini fallback, error caching, unbounded rerank input, and chunker data
+   loss. I've documented them and have a prioritized plan (Section 6).
+
+Q: How would this scale?
+A: Replace in-memory BM25 with persistent FTS5/OpenSearch, incremental
+   ingestion with deterministic IDs, async endpoints, LLM gateway with retries
+   and circuit breaker, load-test to find the Chroma Cloud concurrency
+   ceiling (~10 concurrent reads), then scale horizontally behind a queue.
+
+Q: How do you evaluate RAG quality?
+A: Retrieval: Recall@k, MRR against gold evidence; generation: faithfulness
+   and answer relevance via LLM judge (noisy - needs calibration); always
+   report confidence intervals and use paired comparisons.
+
+Q: Biggest lesson?
+A: Numbers are only valuable if traceable to raw data. I now label each
+   metric precisely (retrieval P50 vs end-to-end P50) and cite its source file.
+
+--------------------------------------------------------------------------------
+10. PRE-INTERVIEW CHECKLIST
+--------------------------------------------------------------------------------
+  [ ] Re-read Section 1 pitch and Section 4 numbers
+  [ ] Re-read technical_audit/01_EXECUTIVE_SUMMARY.md and 07_INTERVIEW_READINESS.md
+  [ ] Be able to draw the request lifecycle (Section 2) from memory
+  [ ] Be able to explain RRF with the formula: score(d) = sum(w_i / (k + rank_i(d)))
+  [ ] Know which README/resume claims are fixed vs still pending
+  [ ] Check Section 6 status tracker so I describe only what is actually done
+  [ ] Run the app/tests once so I can demo without surprises
+================================================================================

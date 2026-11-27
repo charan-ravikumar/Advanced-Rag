@@ -1,0 +1,29 @@
+{
+  "created_utc": "2026-11-21T12:10:31.442933+00:00",
+  "code_fingerprint": "b45a6048bcf38e67d7055079b729910e3cf17efc3a77e11016857da0a48e17a6",
+  "old_store": "%USERPROFILE%\\AppData\\Local\\advrag\\chroma",
+  "new_store": "%USERPROFILE%\\AppData\\Local\\advrag\\chroma_v2",
+  "strategies": {
+    "semantic": {
+      "chunks_old": 6442,
+      "chunks_new": 6442,
+      "ids_in_both": 6442,
+      "ids_only_in_old": 0,
+      "ids_only_in_new": 0,
+      "ids_changed": 0,
+      "docs_old": 200,
+      "docs_new": 200,
+      "fields_differing_for_ids_in_both": {
+        "text": 0,
+        "section": 0,
+        "char_start": 0,
+        "char_end": 0,
+        "doc_version": 0,
+        "chunk_idx": 0,
+        "doc_id": 0
+      },
+      "examples_only_in_old": [],
+      "examples_only_in_new": []
+    }
+  }
+}

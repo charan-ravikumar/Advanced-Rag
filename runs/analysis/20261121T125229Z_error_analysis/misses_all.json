@@ -1,0 +1,669 @@
+[
+  {
+    "question_id": "1603.01514:6568a31241167f618ef5ede939053feaa2fb0d7e",
+    "paper_id": "1603.01514",
+    "question": "Do they add one latent variable for each language pair in their Bayesian model?",
+    "answer_types": [
+      "yes_no"
+    ],
+    "n_annotators": 1,
+    "n_evidence_paragraphs": 1,
+    "gold_sections": [
+      "Multilingual Model"
+    ],
+    "question_words_found_in_evidence": 0.5,
+    "categories_PROPOSED": [
+      "none_of_the_proposed"
+    ],
+    "reachable": true,
+    "metrics": {
+      "HitRate@10": 0.0,
+      "DocHit@10": 1.0,
+      "EvidenceRecall@10": 0.0,
+      "EvidenceF1@5": 0.0,
+      "nDCG@10": 0.0
+    }
+  },
+  {
+    "question_id": "1604.08504:3cd185b7adc835e1c4449eff81222f5fc15c8500",
+    "paper_id": "1604.08504",
+    "question": "How do they detect spammers?",
+    "answer_types": [
+      "abstractive"
+    ],
+    "n_annotators": 1,
+    "n_evidence_paragraphs": 4,
+    "gold_sections": [
+      "Performance Comparisons with Baseline",
+      "Topic-based Features"
+    ],
+    "question_words_found_in_evidence": 0.0,
+    "categories_PROPOSED": [
+      "vocabulary_mismatch",
+      "multi_paragraph_evidence",
+      "evidence_in_unusual_section"
+    ],
+    "reachable": true,
+    "metrics": {
+      "HitRate@10": 0.0,
+      "DocHit@10": 1.0,
+      "EvidenceRecall@10": 0.0,
+      "EvidenceF1@5": 0.0,
+      "nDCG@10": 0.0
+    }
+  },
+  {
+    "question_id": "1604.08504:dac087e1328e65ca08f66d8b5307d6624bf3943f",
+    "paper_id": "1604.08504",
+    "question": "LDA is an unsupervised method; is this paper introducing an unsupervised approach to spam detection?",
+    "answer_types": [
+      "yes_no"
+    ],
+    "n_annotators": 2,
+    "n_evidence_paragraphs": 1,
+    "gold_sections": [
+      "Performance Comparisons with Baseline"
+    ],
+    "question_words_found_in_evidence": 0.0,
+    "categories_PROPOSED": [
+      "vocabulary_mismatch"
+    ],
+    "reachable": true,
+    "metrics": {
+      "HitRate@10": 0.0,
+      "DocHit@10": 1.0,
+      "EvidenceRecall@10": 0.0,
+      "EvidenceF1@5": 0.0,
+      "nDCG@10": 0.0
+    }
+  },
+  {
+    "question_id": "1608.01884:1dc2da5078a7e5ea82ccd1c90d81999a922bc9bf",
+    "paper_id": "1608.01884",
+    "question": "Do the authors conduct experiments on the tasks mentioned?",
+    "answer_types": [
+      "yes_no"
+    ],
+    "n_annotators": 2,
+    "n_evidence_paragraphs": 1,
+    "gold_sections": [
+      "Current state of the art"
+    ],
+    "question_words_found_in_evidence": 0.0,
+    "categories_PROPOSED": [
+      "vocabulary_mismatch",
+      "evidence_in_unusual_section"
+    ],
+    "reachable": true,
+    "metrics": {
+      "HitRate@10": 0.0,
+      "DocHit@10": 1.0,
+      "EvidenceRecall@10": 0.0,
+      "EvidenceF1@5": 0.0,
+      "nDCG@10": 0.0
+    }
+  },
+  {
+    "question_id": "1608.01884:9a7ba5ed1779c664d2cac92494a43517d3e87c96",
+    "paper_id": "1608.01884",
+    "question": "What data do they look at?",
+    "answer_types": [
+      "extractive"
+    ],
+    "n_annotators": 1,
+    "n_evidence_paragraphs": 1,
+    "gold_sections": [
+      "Winograd schemas as the basis for challenges for machine translation programs"
+    ],
+    "question_words_found_in_evidence": 0.0,
+    "categories_PROPOSED": [
+      "vocabulary_mismatch",
+      "evidence_in_unusual_section"
+    ],
+    "reachable": true,
+    "metrics": {
+      "HitRate@10": 0.0,
+      "DocHit@10": 1.0,
+      "EvidenceRecall@10": 0.0,
+      "EvidenceF1@5": 0.0,
+      "nDCG@10": 0.0
+    }
+  },
+  {
+    "question_id": "1701.02962:2fbb6322e485e7743ec3fb4bb02d44bf4b5ea8a6",
+    "paper_id": "1701.02962",
+    "question": "What dataset do they use to evaluate their method?",
+    "answer_types": [
+      "extractive"
+    ],
+    "n_annotators": 2,
+    "n_evidence_paragraphs": 2,
+    "gold_sections": [
+      "Dataset",
+      "Experimental Settings"
+    ],
+    "question_words_found_in_evidence": 0.25,
+    "categories_PROPOSED": [
+      "multi_paragraph_evidence"
+    ],
+    "reachable": true,
+    "metrics": {
+      "HitRate@10": 0.0,
+      "DocHit@10": 1.0,
+      "EvidenceRecall@10": 0.0,
+      "EvidenceF1@5": 0.0,
+      "nDCG@10": 0.0
+    }
+  },
+  {
+    "question_id": "1702.03342:2a6003a74d051d0ebbe62e8883533a5f5e55078b",
+    "paper_id": "1702.03342",
+    "question": "which neural embedding model works better?",
+    "answer_types": [
+      "abstractive",
+      "extractive"
+    ],
+    "n_annotators": 2,
+    "n_evidence_paragraphs": 1,
+    "gold_sections": [
+      "Dataless Classification"
+    ],
+    "question_words_found_in_evidence": 0.4,
+    "categories_PROPOSED": [
+      "table_or_figure_context_also_cited"
+    ],
+    "reachable": true,
+    "metrics": {
+      "HitRate@10": 0.0,
+      "DocHit@10": 1.0,
+      "EvidenceRecall@10": 0.0,
+      "EvidenceF1@5": 0.0,
+      "nDCG@10": 0.0
+    }
+  },
+  {
+    "question_id": "1703.07090:c0af8b7bf52dc15e0b33704822c4a34077e09cd1",
+    "paper_id": "1703.07090",
+    "question": "which lstm models did they compare with?",
+    "answer_types": [
+      "abstractive"
+    ],
+    "n_annotators": 1,
+    "n_evidence_paragraphs": 1,
+    "gold_sections": [
+      "Deployment"
+    ],
+    "question_words_found_in_evidence": 0.333,
+    "categories_PROPOSED": [
+      "evidence_in_unusual_section",
+      "table_or_figure_context_also_cited"
+    ],
+    "reachable": true,
+    "metrics": {
+      "HitRate@10": 0.0,
+      "DocHit@10": 1.0,
+      "EvidenceRecall@10": 0.0,
+      "EvidenceF1@5": 0.0,
+      "nDCG@10": 0.0
+    }
+  },
+  {
+    "question_id": "1706.01678:a6a48de63c1928238b37c2a01c924b852fe752f8",
+    "paper_id": "1706.01678",
+    "question": "Which other methods do they compare with?",
+    "answer_types": [
+      "extractive"
+    ],
+    "n_annotators": 2,
+    "n_evidence_paragraphs": 3,
+    "gold_sections": [
+      "Baselines",
+      "Procedure to Analyze and Evaluate each step"
+    ],
+    "question_words_found_in_evidence": 1.0,
+    "categories_PROPOSED": [
+      "multi_paragraph_evidence"
+    ],
+    "reachable": true,
+    "metrics": {
+      "HitRate@10": 0.0,
+      "DocHit@10": 1.0,
+      "EvidenceRecall@10": 0.0,
+      "EvidenceF1@5": 0.0,
+      "nDCG@10": 0.0
+    }
+  },
+  {
+    "question_id": "1708.01464:0752d71a0a1f73b3482a888313622ce9e9870d6e",
+    "paper_id": "1708.01464",
+    "question": "what was the baseline?",
+    "answer_types": [
+      "extractive"
+    ],
+    "n_annotators": 2,
+    "n_evidence_paragraphs": 1,
+    "gold_sections": [
+      "Baseline"
+    ],
+    "question_words_found_in_evidence": 0.0,
+    "categories_PROPOSED": [
+      "vocabulary_mismatch"
+    ],
+    "reachable": true,
+    "metrics": {
+      "HitRate@10": 0.0,
+      "DocHit@10": 1.0,
+      "EvidenceRecall@10": 0.0,
+      "EvidenceF1@5": 0.0,
+      "nDCG@10": 0.0
+    }
+  },
+  {
+    "question_id": "1802.06024:585626d18a20d304ae7df228c2128da542d248ff",
+    "paper_id": "1802.06024",
+    "question": "What metrics are used to establish that this makes chatbots more knowledgeable and better at learning and conversation?",
+    "answer_types": [
+      "extractive"
+    ],
+    "n_annotators": 2,
+    "n_evidence_paragraphs": 1,
+    "gold_sections": [
+      "Experiments"
+    ],
+    "question_words_found_in_evidence": 0.111,
+    "categories_PROPOSED": [
+      "vocabulary_mismatch"
+    ],
+    "reachable": true,
+    "metrics": {
+      "HitRate@10": 0.0,
+      "DocHit@10": 1.0,
+      "EvidenceRecall@10": 0.0,
+      "EvidenceF1@5": 0.0,
+      "nDCG@10": 0.0
+    }
+  },
+  {
+    "question_id": "1802.08636:f03112b868b658c954db62fc64430bebbaa7d9e0",
+    "paper_id": "1802.08636",
+    "question": "Do they use other evaluation metrics besides ROUGE?",
+    "answer_types": [
+      "yes_no"
+    ],
+    "n_annotators": 2,
+    "n_evidence_paragraphs": 1,
+    "gold_sections": [
+      "Introduction"
+    ],
+    "question_words_found_in_evidence": 0.4,
+    "categories_PROPOSED": [
+      "none_of_the_proposed"
+    ],
+    "reachable": true,
+    "metrics": {
+      "HitRate@10": 0.0,
+      "DocHit@10": 1.0,
+      "EvidenceRecall@10": 0.0,
+      "EvidenceF1@5": 0.0,
+      "nDCG@10": 0.0
+    }
+  },
+  {
+    "question_id": "1809.01202:a4d115220438c0ded06a91ad62337061389a6747",
+    "paper_id": "1809.01202",
+    "question": "What types of social media did they consider?",
+    "answer_types": [
+      "extractive"
+    ],
+    "n_annotators": 2,
+    "n_evidence_paragraphs": 1,
+    "gold_sections": [
+      "Dataset"
+    ],
+    "question_words_found_in_evidence": 0.0,
+    "categories_PROPOSED": [
+      "vocabulary_mismatch"
+    ],
+    "reachable": true,
+    "metrics": {
+      "HitRate@10": 0.0,
+      "DocHit@10": 1.0,
+      "EvidenceRecall@10": 0.0,
+      "EvidenceF1@5": 0.0,
+      "nDCG@10": 0.0
+    }
+  },
+  {
+    "question_id": "1809.06537:41b70699514703820435b00efbc3aac4dd67560a",
+    "paper_id": "1809.06537",
+    "question": "what civil field is the dataset about?",
+    "answer_types": [
+      "extractive"
+    ],
+    "n_annotators": 2,
+    "n_evidence_paragraphs": 1,
+    "gold_sections": [
+      "Experiments"
+    ],
+    "question_words_found_in_evidence": 0.667,
+    "categories_PROPOSED": [
+      "none_of_the_proposed"
+    ],
+    "reachable": true,
+    "metrics": {
+      "HitRate@10": 0.0,
+      "DocHit@10": 1.0,
+      "EvidenceRecall@10": 0.0,
+      "EvidenceF1@5": 0.0,
+      "nDCG@10": 0.0
+    }
+  },
+  {
+    "question_id": "1809.06537:aa2948209cc33b071dbf294822e72bb136678345",
+    "paper_id": "1809.06537",
+    "question": "what are their results on the constructed dataset?",
+    "answer_types": [
+      "extractive"
+    ],
+    "n_annotators": 1,
+    "n_evidence_paragraphs": 3,
+    "gold_sections": [
+      "Results and Analysis"
+    ],
+    "question_words_found_in_evidence": 0.0,
+    "categories_PROPOSED": [
+      "vocabulary_mismatch",
+      "multi_paragraph_evidence"
+    ],
+    "reachable": true,
+    "metrics": {
+      "HitRate@10": 0.0,
+      "DocHit@10": 1.0,
+      "EvidenceRecall@10": 0.0,
+      "EvidenceF1@5": 0.0,
+      "nDCG@10": 0.0
+    }
+  },
+  {
+    "question_id": "1810.12091:9b4dc790e4ff49562992aae4fad3a38621fadd8b",
+    "paper_id": "1810.12091",
+    "question": "what are the existing approaches?",
+    "answer_types": [
+      "extractive"
+    ],
+    "n_annotators": 1,
+    "n_evidence_paragraphs": 1,
+    "gold_sections": [
+      "Variants and Baseline Methods"
+    ],
+    "question_words_found_in_evidence": 0.0,
+    "categories_PROPOSED": [
+      "vocabulary_mismatch"
+    ],
+    "reachable": true,
+    "metrics": {
+      "HitRate@10": 0.0,
+      "DocHit@10": 1.0,
+      "EvidenceRecall@10": 0.0,
+      "EvidenceF1@5": 0.0,
+      "nDCG@10": 0.0
+    }
+  },
+  {
+    "question_id": "1902.09666:682e26262abba473412f68cbeb5f69aa3b9968d7",
+    "paper_id": "1902.09666",
+    "question": "What are the differences between this dataset and pre-existing ones?",
+    "answer_types": [
+      "extractive"
+    ],
+    "n_annotators": 1,
+    "n_evidence_paragraphs": 1,
+    "gold_sections": [
+      "Introduction"
+    ],
+    "question_words_found_in_evidence": 0.0,
+    "categories_PROPOSED": [
+      "vocabulary_mismatch"
+    ],
+    "reachable": true,
+    "metrics": {
+      "HitRate@10": 0.0,
+      "DocHit@10": 1.0,
+      "EvidenceRecall@10": 0.0,
+      "EvidenceF1@5": 0.0,
+      "nDCG@10": 0.0
+    }
+  },
+  {
+    "question_id": "1903.03530:2c85865a65acd429508f50b5e4db9674813d67f2",
+    "paper_id": "1903.03530",
+    "question": "Which data do they use as a starting point for the dialogue dataset?",
+    "answer_types": [
+      "abstractive",
+      "extractive"
+    ],
+    "n_annotators": 2,
+    "n_evidence_paragraphs": 2,
+    "gold_sections": [
+      "Data Preparation",
+      "Linguistic Characterization on Seed Data"
+    ],
+    "question_words_found_in_evidence": 0.5,
+    "categories_PROPOSED": [
+      "multi_paragraph_evidence"
+    ],
+    "reachable": true,
+    "metrics": {
+      "HitRate@10": 0.0,
+      "DocHit@10": 1.0,
+      "EvidenceRecall@10": 0.0,
+      "EvidenceF1@5": 0.0,
+      "nDCG@10": 0.0
+    }
+  },
+  {
+    "question_id": "1905.10851:49eb52b3ec0647e165a5e41488088c80a20cc78f",
+    "paper_id": "1905.10851",
+    "question": "What aspects of discussion are relevant to instructor intervention, according to the attention mechanism?",
+    "answer_types": [
+      "extractive"
+    ],
+    "n_annotators": 1,
+    "n_evidence_paragraphs": 1,
+    "gold_sections": [
+      "Discussion"
+    ],
+    "question_words_found_in_evidence": 0.25,
+    "categories_PROPOSED": [
+      "none_of_the_proposed"
+    ],
+    "reachable": true,
+    "metrics": {
+      "HitRate@10": 0.0,
+      "DocHit@10": 1.0,
+      "EvidenceRecall@10": 0.0,
+      "EvidenceF1@5": 0.0,
+      "nDCG@10": 0.0
+    }
+  },
+  {
+    "question_id": "1906.07662:fe2666ace293b4bfac3182db6d0c6f03ea799277",
+    "paper_id": "1906.07662",
+    "question": "Why challenges does word segmentation in Vietnamese pose?",
+    "answer_types": [
+      "abstractive",
+      "extractive"
+    ],
+    "n_annotators": 2,
+    "n_evidence_paragraphs": 1,
+    "gold_sections": [
+      "CONCLUSIONS AND FUTURE WORKS"
+    ],
+    "question_words_found_in_evidence": 0.6,
+    "categories_PROPOSED": [
+      "none_of_the_proposed"
+    ],
+    "reachable": true,
+    "metrics": {
+      "HitRate@10": 0.0,
+      "DocHit@10": 1.0,
+      "EvidenceRecall@10": 0.0,
+      "EvidenceF1@5": 0.0,
+      "nDCG@10": 0.0
+    }
+  },
+  {
+    "question_id": "1909.09587:55569d0a4586d20c01268a80a7e31a17a18198e2",
+    "paper_id": "1909.09587",
+    "question": "what does the model learn in zero-shot setting?",
+    "answer_types": [
+      "extractive"
+    ],
+    "n_annotators": 1,
+    "n_evidence_paragraphs": 2,
+    "gold_sections": [
+      "Zero-shot Transfer with Multi-BERT ::: Experimental Setup and Data"
+    ],
+    "question_words_found_in_evidence": 0.2,
+    "categories_PROPOSED": [
+      "vocabulary_mismatch",
+      "multi_paragraph_evidence"
+    ],
+    "reachable": true,
+    "metrics": {
+      "HitRate@10": 0.0,
+      "DocHit@10": 1.0,
+      "EvidenceRecall@10": 0.0,
+      "EvidenceF1@5": 0.0,
+      "nDCG@10": 0.0
+    }
+  },
+  {
+    "question_id": "1910.06592:483a699563efcb8804e1861b18809279f21c7610",
+    "paper_id": "1910.06592",
+    "question": "Was the approach used in this work to detect fake news fully supervised?",
+    "answer_types": [
+      "yes_no"
+    ],
+    "n_annotators": 1,
+    "n_evidence_paragraphs": 1,
+    "gold_sections": [
+      "Methodology"
+    ],
+    "question_words_found_in_evidence": 0.125,
+    "categories_PROPOSED": [
+      "vocabulary_mismatch"
+    ],
+    "reachable": true,
+    "metrics": {
+      "HitRate@10": 0.0,
+      "DocHit@10": 1.0,
+      "EvidenceRecall@10": 0.0,
+      "EvidenceF1@5": 0.0,
+      "nDCG@10": 0.0
+    }
+  },
+  {
+    "question_id": "1911.07555:e5c8e9e54e77960c8c26e8e238168a603fcdfcc6",
+    "paper_id": "1911.07555",
+    "question": "Does the algorithm improve on the state-of-the-art methods?",
+    "answer_types": [
+      "abstractive",
+      "yes_no"
+    ],
+    "n_annotators": 2,
+    "n_evidence_paragraphs": 1,
+    "gold_sections": [
+      "Results and Analysis"
+    ],
+    "question_words_found_in_evidence": 0.0,
+    "categories_PROPOSED": [
+      "vocabulary_mismatch",
+      "table_or_figure_context_also_cited"
+    ],
+    "reachable": true,
+    "metrics": {
+      "HitRate@10": 0.0,
+      "DocHit@10": 1.0,
+      "EvidenceRecall@10": 0.0,
+      "EvidenceF1@5": 0.0,
+      "nDCG@10": 0.0
+    }
+  },
+  {
+    "question_id": "1912.06262:9a8b9ea3176d30da2453cac6e9347737c729a538",
+    "paper_id": "1912.06262",
+    "question": "what were their performance results?",
+    "answer_types": [
+      "extractive"
+    ],
+    "n_annotators": 2,
+    "n_evidence_paragraphs": 1,
+    "gold_sections": [
+      "Experiments ::: Results"
+    ],
+    "question_words_found_in_evidence": 0.0,
+    "categories_PROPOSED": [
+      "vocabulary_mismatch"
+    ],
+    "reachable": true,
+    "metrics": {
+      "HitRate@10": 0.0,
+      "DocHit@10": 1.0,
+      "EvidenceRecall@10": 0.0,
+      "EvidenceF1@5": 0.0,
+      "nDCG@10": 0.0
+    }
+  },
+  {
+    "question_id": "1912.08960:63a1cbe66fd58ff0ead895a8bac1198c38c008aa",
+    "paper_id": "1912.08960",
+    "question": "Which existing models are evaluated?",
+    "answer_types": [
+      "extractive"
+    ],
+    "n_annotators": 2,
+    "n_evidence_paragraphs": 1,
+    "gold_sections": [
+      "Experimental Setup ::: Models"
+    ],
+    "question_words_found_in_evidence": 0.333,
+    "categories_PROPOSED": [
+      "none_of_the_proposed"
+    ],
+    "reachable": true,
+    "metrics": {
+      "HitRate@10": 0.0,
+      "DocHit@10": 1.0,
+      "EvidenceRecall@10": 0.0,
+      "EvidenceF1@5": 0.0,
+      "nDCG@10": 0.0
+    }
+  },
+  {
+    "question_id": "2001.01269:81d193672090295e687bc4f4ac1b7a9c76ea35df",
+    "paper_id": "2001.01269",
+    "question": "What baseline method is used?",
+    "answer_types": [
+      "abstractive",
+      "extractive"
+    ],
+    "n_annotators": 2,
+    "n_evidence_paragraphs": 1,
+    "gold_sections": [
+      "Related Work"
+    ],
+    "question_words_found_in_evidence": 0.333,
+    "categories_PROPOSED": [
+      "none_of_the_proposed"
+    ],
+    "reachable": true,
+    "metrics": {
+      "HitRate@10": 0.0,
+      "DocHit@10": 1.0,
+      "EvidenceRecall@10": 0.0,
+      "EvidenceF1@5": 0.0,
+      "nDCG@10": 0.0
+    }
+  }
+]

@@ -1,0 +1,2 @@
+{"question_id": "1604.00400:184b0082e10ce191940c1d24785b631828a9f714", "paper_id": "1604.00400", "arm": "R_long", "arm_base": "R", "mode": "long", "n_contexts": 5, "metrics": {"Faithfulness": 1.0, "AnswerRelevancy": 0.5594451015267325}}
+{"question_id": "1606.03676:0a5ffe4697913a57fda1fd5a188cd5ed59bdc5c7", "paper_id": "1606.03676", "arm": "R_long", "arm_base": "R", "mode": "long", "n_contexts": 5, "metrics": {"Faithfulness": 1.0, "AnswerRelevancy": 0.6819647706760342}}

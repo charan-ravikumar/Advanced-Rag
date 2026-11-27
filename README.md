@@ -1,145 +1,210 @@
-# RAG Pipeline — Semantic Chunking · Hybrid Retrieval · RRF Fusion
+# Advanced RAG: hybrid retrieval, a resilient LLM gateway, and a pre-registered evaluation
 
-![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)
-![License: MIT](https://img.shields.io/badge/License-MIT-green)
-![CI](https://github.com/your-org/advanced-rag/actions/workflows/ci.yml/badge.svg)
-![Recall@5: 0.270](https://img.shields.io/badge/Recall%405-0.270-blueviolet)
-![P50 Latency: 2.3s](https://img.shields.io/badge/P50+Latency-2.3s-success)
+Question answering over scientific papers ([Qasper](https://allenai.org/data/qasper)), served as a FastAPI service with streamed, cited answers and a Streamlit client.
 
-A configurable, production-aware RAG pipeline built from scratch for document QA, backed by ChromaDB Cloud for managed vector storage. Groq and Gemini APIs are required (see `.env.example`). The core technical contribution is a systematic ablation study across four pipeline configurations, demonstrating that semantic chunking combined with hybrid BM25+ChromaDB retrieval and RRF fusion achieves **+44% relative Recall@5** over a naive baseline at under 2.5 seconds P95 latency. What makes it engineering-grade is a config-driven pipeline, parallel retrieval, LRU embedding cache, and a formal evaluation harness with P50/P95/P99 latency reporting.
+- **Retrieval**: vector search (Chroma) plus SQLite FTS5 keyword search, weighted RRF fusion, optional cross-encoder rerank. It is evaluated with a protocol written **before** the test run.
+- **Answers**: a gateway to Gemini (`gemini-3.5-flash-lite`) with timeouts, bounded retries, a circuit breaker and typed errors; answers are cited, validated against the passages that were sent, and may abstain.
+- **Service**: async endpoints, Pydantic schemas, answers as server-sent events, per-key rate limits, strict input validation, auto-generated OpenAPI docs.
+
+The interesting result is not a big number. On the held-out test split, hybrid retrieval and semantic chunking did **not** give a reliable gain, and the cross-encoder reranker did, at a latency cost. Every figure below can be traced to a saved run in [docs/CLAIMS_LOG.md](docs/CLAIMS_LOG.md).
+
+- **Evidence rule:** a performance number appears in this README only if it has a row in the claims log (metric, value, run folder, code fingerprint).
+- **Scope:** a local demo. One process, one shared bearer token at most, no per-user accounts, and no load test (see [Limitations](#limitations)).
 
 ---
 
-## Architecture
+## Results (retrieval, test split, run once)
+
+Setup: Qasper **test** split, **292** answerable questions from **124** papers, paper mode (the question's paper is given), retrieval only, `all-MiniLM-L6-v2`, local Chroma store. Metric: nDCG@10 with span-based relevance. Run folder: `runs/eval/20261122T144233Z_3afc204d_test_paper`. The test split was evaluated once (`eval/test_ledger.jsonl`), after the configuration was frozen (`eval/test_freeze.json`). Dev-split numbers are for development only and are not quoted here.
+
+| Arm | Chunking | Retrieval | Reranker | nDCG@10 |
+|---|---|---|---|---|
+| A | recursive | vector only | no | 0.430 |
+| **D (frozen, served)** | recursive | hybrid (RRF k=60, weights 1.0 / 0.7) | no | **0.456** |
+| F | semantic | hybrid (RRF) | no | 0.463 |
+| G | recursive | hybrid (RRF) | cross-encoder, top 20 | 0.514 |
+
+Pre-registered comparisons (5,000 paper-clustered bootstrap resamples, Holm correction over the 3 comparisons):
+
+| Comparison | Difference in nDCG@10 | Clustered 95% CI | Verdict |
+|---|---|---|---|
+| A vs D (vector-only vs hybrid) | A - D = -0.027 | [-0.051, -0.002] | not significant after Holm (p = 0.0320) |
+| F vs D (semantic vs recursive chunks) | F - D = +0.006 | [-0.012, +0.024] | not significant (p = 0.5035) |
+| D vs G (without vs with reranker) | D - G = -0.058 | [-0.084, -0.031] | **significant after Holm** (p = 0.0004), G is higher |
+
+Other metrics for the frozen configuration D: MRR 0.434, HitRate@5 0.682, EvidenceRecall@10 0.705, EvidenceF1@5 0.210.
+
+Retrieval latency, CPU only (no GPU, 4 logical CPUs), excluding any LLM call:
+
+| Configuration | p50 | p95 |
+|---|---|---|
+| D (served) | 60 ms | 286 ms |
+| G (D + rerank), total | 1,242 ms | 1,942 ms |
+| G, rerank stage only | 1,191 ms | 1,848 ms |
+
+**What I took from it.** The reranker is the only significant gain, but it costs about 1.2 s per query on this CPU, so it is a per-request switch (off by default) rather than part of the frozen configuration. The dev split had not shown a reranker gain and the test split did, so the dev result did not predict the test result.
+
+**Generation (answer quality) is not validated.** The only run is exploratory (40 dev questions, no baseline, an uncalibrated judge) and it used an earlier generator (Groq `openai/gpt-oss-120b`), not the Gemini model configured now. No number from it is published here, and it says nothing about the current generator.
+
+---
+
+## How it works
 
 ```mermaid
 flowchart LR
-    subgraph Ingestion
-        D[Documents] --> SC[Semantic Chunker]
-        SC --> SE[Sentence Embeddings]
-        SE --> CI[ChromaDB Cloud]
-        SC --> BI[BM25 Index]
-    end
-
-    subgraph Query Pipeline
-        Q[User Query] --> EC{Embedding Cache\nLRU 512-entry}
-        EC -->|cache miss| EMB[Sentence Transformer\nall-MiniLM-L6-v2]
-        EC -->|cache hit| FUSE
-        EMB --> FUSE
-
-        EMB --> VS[ChromaDB Vector Search]
-        EMB --> BM[BM25 Keyword Search]
-        VS -->|parallel| FUSE[RRF Fusion\nk=60]
-        BM -->|parallel| FUSE
-        FUSE --> RR[CrossEncoder Reranker\ndisabled on CPU]
-        RR --> TK[Top-K Chunks]
-        TK --> LLM[LLM Generation]
-        LLM --> ANS[Answer]
-    end
+    UI[Streamlit UI] -->|POST /v1/ask, SSE| Q[Question]
+    Q --> G[Guards: validation, rate limit, daily budget]
+    G --> C{Answer cache}
+    C -- hit --> A
+    C -- miss --> E[Embed query: MiniLM]
+    E --> V[Chroma vector search]
+    G --> L[SQLite FTS5 keyword search]
+    V --> F[Weighted RRF fusion]
+    L --> F
+    F --> R[Cross-encoder rerank, optional]
+    R --> X[Token-budgeted context]
+    F --> X
+    X --> LLM[LLM gateway: Gemini 3.5 Flash Lite]
+    LLM --> A[Cited answer, or abstention]
+    A -->|sources, token..., done| UI
 ```
 
----
+- **Ingestion** ([rag/ingestion.py](rag/ingestion.py), [scripts/ingest.py](scripts/ingest.py)): offset-preserving chunking, deterministic chunk ids, incremental upserts, an ingest signature that refuses a store built with different chunking code, and a post-run check that the vector and lexical indexes hold the same ids.
+- **Retrieval** ([rag/retriever.py](rag/retriever.py), [rag/fusion.py](rag/fusion.py)): one `Retriever` class used by both the service and the evaluation runner, so the evaluated system is the served system. Reports per-stage latency.
+- **Generation** ([rag_core/](rag_core)): `LLMGateway` with a per-call timeout, bounded retry with backoff and jitter, a circuit breaker, and typed errors. It accepts an ordered provider list (failover only before the first streamed token), but only Gemini is configured, so no failover is in use. Prompts are versioned with a local fallback. Only complete, cited, non-degraded answers are cached; the cache key includes the retrieval config, index version, embedder revision, prompt hash and model.
+- **Safety and cost**: prompt-injection escaping of questions and passages, a daily answer budget, per-key rate limits, masked tracing by default. API keys are read from the environment only and are never logged. The injection tests ([test_prompt_injection.py](tests/unit/test_prompt_injection.py), [test_rag_core_prompts.py](tests/unit/test_rag_core_prompts.py)) check the trust boundaries around the model; they do not show that a real model resists an injection.
+- **Tracing**: optional Langfuse tracing, wrapped so a tracing failure can never change an answer.
+- **API** ([api/](api)): FastAPI over the same `RagService`; see [API](#api).
+- **App** ([app/](app)): Streamlit with chat, evaluation, observability and about tabs. It is a **client of the API**: it opens no index and holds no model or key ([app/remote.py](app/remote.py) adapts the API to the interfaces the UI uses). The evaluation tab reads only `app_data/results.json`, which is built from the claims log and refuses a number with no run folder.
 
-## Performance — Ablation Study
+## API
 
-Each configuration was evaluated on the same held-out question set. Latency is P50 at query time on CPU (no GPU).
+Interactive docs at `/docs` (OpenAPI at `/openapi.json`) once the server is running. Errors are `{"error": {"code", "message"}}`.
 
-| Config | Chunking | Retrieval | Fusion | Reranker | Recall@5 | MRR | P50 Latency | vs Baseline |
-|--------|----------|-----------|--------|----------|----------|-----|-------------|-------------|
-| A — Baseline | Recursive | Vector only | — | ✗ | 0.188 | 0.140 | 2.1s | — |
-| B | Semantic | Vector only | — | ✗ | 0.210 | 0.157 | 3.6s | +11.7% R@5 |
-| C — **Recommended** | Semantic | Hybrid (BM25+ChromaDB) | RRF | ✗ | 0.270 | 0.175 | 1.7s | +43.6% R@5 |
-| D | Semantic | Hybrid (BM25+ChromaDB) | RRF | ✓ | 0.280 | 0.170 | 14.3s | +48.9% R@5 |
+| Method and path | What it does |
+|---|---|
+| `POST /v1/ask` | the answer as server-sent events: `sources`, then `token` events, then `done` (the full `AnswerResult`); a typed `error` event may precede `done` |
+| `POST /v1/answer` | the same pipeline as one JSON body (`AnswerResult`) |
+| `POST /v1/retrieve` | retrieval only: the best passages, no model call |
+| `POST /v1/feedback` | a thumbs up or down for an answer (saved locally, forwarded to Langfuse when the answer was traced) |
+| `GET /v1/health` | liveness |
+| `GET /v1/ready` | readiness with the self-check (index, models, keys) |
+| `GET /v1/meta` | what is running, the limits and the daily budget |
+| `GET /v1/observability` | the shared Langfuse metrics snapshot |
 
-> **Engineering decision:** Config D adds +1pp Recall@5 over C but costs +12.6s of CPU reranker latency. Config C is the production-recommended configuration. On a GPU (T4+), the reranker runs in ~0.1s and Config D becomes the better choice.
+- **Order of checks for a query:** authentication, readiness, per-key rate limit (429), question validation (422), daily budget. A question over the daily budget is still answered with HTTP 200: the retrieved passages and a `daily_budget_reached` error, never a model call.
+- **Rate limiting** ([api/limits.py](api/limits.py), `slowapi`): keyed by the `X-Session-Id` header when it is a well-formed id, else by client address. `ask`, `answer` and `retrieve` share one bucket per key; feedback has its own. The numbers come from `app.*` in [config.yaml](config.yaml). Limits are in memory and per process.
+- **Validation** ([api/schemas.py](api/schemas.py)): request bodies refuse unknown fields; paper, session, request and trace ids must be plain tokens; bodies over 16 KB are refused before they are read. Control and invisible characters are removed from the question.
+- **Authentication:** none by default. Set `ADVRAG_API_TOKEN` on the server to require `Authorization: Bearer <token>` on everything except `/v1/health`.
 
----
+Example (the stream arrives token by token):
 
-## Quick Start
+```powershell
+curl.exe -N -X POST http://127.0.0.1:8000/v1/ask -H "Content-Type: application/json" -d '{\"question\": \"What dataset do they use?\"}'
+```
+
+## Evaluation method
+
+Written down before the test run in [eval/PREREGISTRATION.md](eval/PREREGISTRATION.md) (its sha256 is checked by the runner):
+
+- Dev/test split by **paper**, not by question.
+- Arms, metrics, comparisons and the decision rule fixed in advance; deviations are appended, never rewritten.
+- The test split runs only with an explicit flag and a frozen config, and is recorded in a ledger. It has been run once.
+- Paired, paper-clustered bootstrap with Holm correction ([eval/compare.py](eval/compare.py)).
+- Retrieval evaluation calls only `Retriever.retrieve`: no LLM, no network.
+
+## Quick start (Windows, local)
+
+Requires Python 3.13. The environment below follows the standing rules in [CLAUDE.md](CLAUDE.md): a venv outside OneDrive, packages from the configured index, and models loaded from the local HuggingFace cache only (pinned revisions in [config.yaml](config.yaml); the code never downloads them).
+
+```powershell
+python -m venv "$env:LOCALAPPDATA\advrag\venv"
+& "$env:LOCALAPPDATA\advrag\venv\Scripts\python.exe" -m pip install -r requirements.lock
+& "$env:LOCALAPPDATA\advrag\venv\Scripts\python.exe" -m pip install -e . --no-deps
+
+# one-time: build the index for the recursive strategy (incremental; never clears a collection)
+$env:CHROMA_LOCAL_PATH = "$env:LOCALAPPDATA\advrag\chroma_v2"
+& "$env:LOCALAPPDATA\advrag\venv\Scripts\python.exe" scripts\ingest.py --strategy recursive
+
+# 1) start the API (opens the index and loads the models; set GEMINI_API_KEY in the environment or in .env to enable answers)
+& "$env:LOCALAPPDATA\advrag\venv\Scripts\python.exe" -m uvicorn api.main:app --host 127.0.0.1 --port 8000
+#    docs: http://127.0.0.1:8000/docs    readiness: http://127.0.0.1:8000/v1/ready
+
+# 2) in a second terminal: the Streamlit UI, a client of the API
+& "$env:LOCALAPPDATA\advrag\venv\Scripts\python.exe" -m streamlit run app\streamlit_app.py
+```
+
+Without a Gemini key the API still retrieves and the app shows the passages. If the UI cannot reach the API it shows an error screen with the failed check. Keep the API bound to 127.0.0.1 unless `ADVRAG_API_TOKEN` is set.
+
+### Configuration
+
+Settings live in [config.yaml](config.yaml). Environment variables (values are never printed; `.env.example` lists names only):
+
+| Variable | Read by | Purpose |
+|---|---|---|
+| `ADVRAG_INDEX_DIR` or `CHROMA_LOCAL_PATH` | API | folder of the Chroma store (no default: nothing opens a store you did not name) |
+| `GEMINI_API_KEY` | API | answers (every LLM call uses `gemini-3.5-flash-lite`) |
+| `LANGFUSE_PUBLIC_KEY`, `LANGFUSE_SECRET_KEY`, `LANGFUSE_BASE_URL` | API | optional tracing and metrics |
+| `ADVRAG_API_TOKEN` | API and UI | optional shared bearer token |
+| `ADVRAG_API_URL` | UI | where the API is (default `http://127.0.0.1:8000`) |
+| `APP_ACCESS_CODE` | UI | optional access code for the page |
+
+### Tests
+
+```powershell
+pytest --fast -p no:cacheprovider -q -rs   # everyday run, skips tests marked slow
+pytest -p no:cacheprovider -q -rs          # full run, more Hypothesis examples
+```
+
+The suite is hermetic: it blocks non-loopback network access and `chromadb.CloudClient`, and uses fake providers instead of real keys.
+
+## Docker
+
+The image holds code and pinned packages only. Models, the index and API keys are supplied at run time.
 
 ```bash
-git clone <your-repo-url> && cd <repo-name>
-cp .env.example .env  # fill in your API keys
-pip install -e .
-streamlit run streamlit_app.py
+# build: your pip configuration (index URL and credentials) is passed as a BuildKit secret, never stored in a layer
+docker build --secret id=pipconf,src=<path-to-your-pip.ini-or-pip.conf> -t advanced-rag .
+
+# 1) one-time: build the index inside the data volume (needs the HuggingFace cache with the pinned models)
+docker run --rm -v advrag-data:/data -v <host-huggingface-cache>:/models \
+  advanced-rag python scripts/ingest.py --strategy recursive
+
+# 2) run the API (index, models and keys live here) and, in a second container, the UI (it needs none of them)
+docker network create advrag-net
+docker run --rm --name api --network advrag-net --no-healthcheck -v advrag-data:/data -v <host-huggingface-cache>:/models \
+  --env-file .env advanced-rag python -m uvicorn api.main:app --host 0.0.0.0 --port 8000
+docker run --rm --network advrag-net -p 8501:8501 -e ADVRAG_API_URL=http://api:8000 advanced-rag
 ```
 
-Ingest QASPER documents into ChromaDB Cloud:
+- The existing Windows index cannot be reused in the container: ingest manifests record the store location, and the API checks it. Build the index in the container volume as shown.
+- `<host-huggingface-cache>` is the folder that contains `hub/` (on Windows usually `%USERPROFILE%\.cache\huggingface`). The container runs with `HF_HUB_OFFLINE=1`.
+- On Linux the default `torch` wheel is the CUDA build. If you have an approved index with CPU wheels, add `--build-arg TORCH_INDEX_URL=<that index>`.
+- The Dockerfile has not been built or run (Docker is not installed in the development environment).
 
-```bash
-python scripts/ingest_qasper.py
-```
+## Repository map
 
-Run the full ablation study (all 4 configs, comparison table printed at the end):
+| Path | What it holds |
+|---|---|
+| [rag/](rag) | chunking, embedders, lexical (FTS5) index, fusion, retriever, reranker, ingestion |
+| [rag_core/](rag_core) | answer path: service, gateway, prompts, cache, citations, tracing |
+| [api/](api) | FastAPI service (SSE streaming, schemas, rate limits) and its Python client |
+| [db/](db) | local Chroma store wrapper |
+| [app/](app) | Streamlit app (a client of the API) |
+| [eval/](eval) | pre-registration, runners, metrics, paired comparison, datasets and the split |
+| [scripts/](scripts) | ingestion, lexical index build, artifact builder, diagnostics |
+| [tests/](tests) | unit and property tests |
+| [docs/](docs) | the claims log and working notes |
+| [technical_audit/](technical_audit) | independent audit of the code, with a roadmap |
+| [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md) | decision log: why each choice was made and what it costs |
 
-```bash
-python eval/run_ablation.py
-# Add --max-questions 20 for a quick smoke test
-```
+## Limitations
 
----
-
-## Project Structure
-
-```
-├── config.yaml           # Pipeline configuration (chunking, retrieval, fusion flags)
-├── pyproject.toml        # Project metadata and dependencies
-├── streamlit_app.py      # Interactive Streamlit UI
-├── Makefile              # Convenience targets (lint, test, run)
-├── rag/
-│   ├── retrieval.py      # Query pipeline: retrieve → fuse → generate
-│   ├── pipeline.py       # RAGPipeline orchestration class
-│   ├── chunkers.py       # Semantic and recursive chunking strategies
-│   ├── embeddings.py     # Sentence-transformer embeddings with LRU cache
-│   ├── ingest.py         # Document ingestion: chunk → embed → push
-│   ├── loaders.py        # Document loaders
-│   └── context_builder.py# Deduplication, token budget enforcement
-├── db/
-│   └── vectordb.py       # ChromaDB Cloud client and collection helpers
-├── cache/
-│   └── cache.py          # Redis-backed query response cache
-├── app/
-│   └── main.py           # FastAPI streaming endpoint
-├── observability/
-│   ├── logger_config.py  # Structured logging
-│   └── metrics.py        # Prometheus metrics
-├── eval/
-│   ├── run_eval.py       # Single-config evaluation with P50/P95/P99 latency
-│   └── run_ablation.py   # Runs all 4 configs, prints comparison table
-├── tests/
-│   └── unit/             # Unit tests (fusion, chunkers, retrieval)
-├── scripts/
-│   └── ingest_qasper.py  # QASPER dataset ingestion script
-└── docs/
-    ├── TECHNICAL_DEEP_DIVE.md
-    ├── EVALUATION_REPORT.md
-    └── INTERVIEW_PREP.md
-```
-
----
-
-## Tech Stack
-
-| Component | Technology | Why this choice |
-|-----------|------------|-----------------|
-| Embeddings | sentence-transformers (`all-MiniLM-L6-v2`) | Fast, high-quality, runs entirely on CPU |
-| Vector store | ChromaDB Cloud | Managed, serverless, no infra to maintain |
-| Keyword search | rank_bm25 | Pure Python BM25, no external server needed |
-| Fusion | Custom RRF (k=60) | Proven formula from Cormack et al. (2009), zero latency cost |
-| Reranker | `cross-encoder/ms-marco-MiniLM-L-6-v2` | State-of-the-art passage reranking; GPU-gated |
-| Chunking | Semantic similarity (sentence-transformers) | Semantic boundary detection vs. naive character splits |
-| LLM | Groq `llama-3.1-8b-instant` / Gemini fallback | Fast inference via Groq API |
-| Config | PyYAML | Human-readable pipeline configuration |
-| Eval | Custom harness (numpy, json) | Full control over metrics; no eval vendor lock-in |
-
----
-
-## Documentation
-
-See [Technical Deep Dive](docs/TECHNICAL_DEEP_DIVE.md) for architecture decisions and [Evaluation Report](docs/EVALUATION_REPORT.md) for the full methodology and results.
-
----
-
-## License
-
-MIT
+- **Generation is not validated.** The only answer-quality run is exploratory (40 dev questions, no baseline, an uncalibrated judge) and used an earlier generator. Behaviour on unanswerable questions has not been measured, so the hallucination rate is unknown. The offline judge is the same Gemini model as the generator, so self-preference is possible.
+- **One process, one retrieval lock.** The retriever (SQLite, the embedder) is serialised by one lock, so concurrent questions queue at retrieval. Rate limits and the daily budget are in memory and per process. There is a single optional shared token and no accounts. No concurrency or load test exists.
+- **Prompt injection** is handled by escaping and delimiting untrusted text and by validating what comes back (citations, abstention). That is tested with scripted providers; it has not been measured against a real model.
+- **Corpus scale.** The audit measured the keyword leg growing roughly linearly with corpus size; the corpus here is small (200 papers).
+- **Semantic chunking** did not beat recursive chunking on the test split, and the audit found many of its windows exceeding the embedder's input limit. The served index uses recursive chunks.
+- **Reranker** is off by default because of its latency on CPU.
+- **Docker** is untested, and there is no CI workflow yet.
+- Findings and planned fixes are in [technical_audit/](technical_audit).

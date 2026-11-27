@@ -1,0 +1,1 @@
+{"text": "{\"question\": \"What languages do the experiments cover?\", \"noncommittal\": 0}", "metric": "answer_relevancy", "judge_model": "gemini-2.5-flash", "ragas_version": "0.4.4", "usage": {"prompt_tokens": 500, "output_tokens": 19, "thinking_tokens": 78}, "finish_reason": "FinishReason.STOP"}

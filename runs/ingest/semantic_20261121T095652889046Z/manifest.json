@@ -1,0 +1,91 @@
+{
+  "strategy": "semantic",
+  "started_utc": "2026-11-21T09:56:52.889046+00:00",
+  "dataset": {
+    "path": "<repo>\\eval\\datasets\\qasper_dev\\corpus.json",
+    "sha256": "e6c4f1f94a58460bc4b7116ba1d182e5deeda01fc944de69c3a84387d0905422",
+    "docs_in_corpus": 200,
+    "docs_processed": 200,
+    "limit_docs": null
+  },
+  "code_fingerprint": "11eb366501dfa109dd92f105290aa07c01c595f617ad6e940b5f7810ff6eb1f6",
+  "ingest_signature": "ebbf480e2e4647a23b56bea5d8d6b500e4ee47ed3cfb1bb4b070c3e418a10b94",
+  "embedder": {
+    "class": "SentenceTransformerEmbedder",
+    "name": "sentence-transformers/all-MiniLM-L6-v2",
+    "revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+    "max_seq_length": 256,
+    "token_counter": "wordpiece-real"
+  },
+  "chunking_config": {
+    "max_chunk_chars": 2000,
+    "max_tokens": 256,
+    "recursive_chunk_size": 1000,
+    "recursive_chunk_overlap": 200,
+    "semantic_similarity_threshold": 0.78,
+    "min_chunk_chars": 300,
+    "semantic_window_size": 3
+  },
+  "store": {
+    "location": "%USERPROFILE%\\AppData\\Local\\advrag\\chroma",
+    "collection": "rag_semantic",
+    "count_after": 6442
+  },
+  "lexical": {
+    "path": "%USERPROFILE%\\AppData\\Local\\advrag\\lexical_semantic.sqlite3",
+    "docs_backfilled_from_store": 0,
+    "count_after": 6442
+  },
+  "docs": {
+    "ingested": 200,
+    "skipped_unchanged": 0,
+    "replaced_old_version": 0,
+    "lexical_backfilled": 0
+  },
+  "chunks": {
+    "written_this_run": 6442,
+    "total_in_store_for_processed_docs": 6442,
+    "per_doc": {
+      "min": 10,
+      "median": 31.0,
+      "max": 120
+    }
+  },
+  "offset_confidence_ingested_docs_only": {
+    "exact": 6441,
+    "normalised": 0,
+    "ambiguous": 1,
+    "not_found": 0
+  },
+  "verification": {
+    "store_count": 6442,
+    "sum_of_chunk_counts": 6442,
+    "orphan_doc_ids": 0,
+    "duplicate_chunk_ids": 0,
+    "docs_without_chunks": 0,
+    "docs_with_missing_chunks": 0,
+    "round_trip": {
+      "sampled": 20,
+      "unlocated_skipped": 0,
+      "mismatches": 0
+    },
+    "token_check": {
+      "counter": "wordpiece-real",
+      "max_seq_length": 256,
+      "chunks_checked": 6442,
+      "chunks_over_max_seq_length": 0
+    },
+    "lexical": {
+      "count": 6442,
+      "store_count": 6442,
+      "count_parity": true,
+      "id_set_parity": true,
+      "missing_in_lexical": 0,
+      "extra_in_lexical": 0,
+      "fts_rows": 6442
+    },
+    "ok": true,
+    "problems": []
+  },
+  "duration_s": 1178.15
+}

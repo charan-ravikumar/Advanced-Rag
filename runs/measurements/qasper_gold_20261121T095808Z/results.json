@@ -1,0 +1,92 @@
+{
+  "created_utc": "2026-11-21T09:58:08.097007+00:00",
+  "code_fingerprint": "20cef8f6b2846ab0bb418f3786f2f67079dfe069447a67f87b4500b16bb38994",
+  "inputs": {
+    "raw_dev": ".cache\\qasper\\qasper-dev-v0.3.json",
+    "raw_dev_sha256": "2ae7ee62a65b1c4225791c70de80c2aad4e8998cf1fd4f09a53103db4f21af93",
+    "corpus_sha256": "e6c4f1f94a58460bc4b7116ba1d182e5deeda01fc944de69c3a84387d0905422",
+    "golden_set_sha256": "10fa276b6c417c1ade86bf2bde690a9e2d93fe6923fb7ccf11b5cc04af3949cb"
+  },
+  "raw_dev": {
+    "papers_in_raw_dev": 281,
+    "corpus_papers": 200,
+    "corpus_papers_found_in_raw_dev": 200,
+    "questions_in_corpus_papers": 734
+  },
+  "by_status": {
+    "answerable": 603,
+    "unanswerable": 48,
+    "dropped": 83
+  },
+  "by_reason": {
+    "kept": 603,
+    "all_annotators_unanswerable": 48,
+    "annotators_disagree_on_answerability": 53,
+    "evidence_is_table_or_figure_only": 17,
+    "no_evidence_given": 11,
+    "evidence_not_a_verbatim_paragraph": 2
+  },
+  "answerable_usable": {
+    "total": 603,
+    "papers_with_at_least_one": 195,
+    "per_paper_questions": {
+      "min": 1,
+      "median": 3,
+      "max": 10
+    },
+    "if_capped_per_paper": {
+      "cap_2": 353,
+      "cap_3": 466,
+      "cap_5": 572,
+      "uncapped": 603
+    }
+  },
+  "unanswerable_usable": {
+    "total": 48
+  },
+  "current_golden_set": {
+    "questions": 100,
+    "answerable": 80,
+    "unanswerable": 20,
+    "papers_with_questions": 85
+  },
+  "papers_with_duplicate_section_titles": 0,
+  "gold_span_location_current_golden_answerable": {
+    "questions": 80,
+    "evidence_paragraphs": 155,
+    "evidence_paragraph_location": {
+      "exact": 155,
+      "normalised": 0,
+      "ambiguous": 0,
+      "not_found": 0
+    },
+    "questions_losing_all_evidence": 0,
+    "questions_losing_some_evidence": 0,
+    "excluded_question_ids": [],
+    "partial_question_ids": [],
+    "spans_per_question": {
+      "min": 1,
+      "median": 2.0,
+      "max": 7
+    }
+  },
+  "gold_span_location_all_usable_answerable": {
+    "questions": 603,
+    "evidence_paragraphs": 1204,
+    "evidence_paragraph_location": {
+      "exact": 1199,
+      "normalised": 0,
+      "ambiguous": 5,
+      "not_found": 0
+    },
+    "questions_losing_all_evidence": 0,
+    "questions_losing_some_evidence": 0,
+    "excluded_question_ids": [],
+    "partial_question_ids": [],
+    "spans_per_question": {
+      "min": 1,
+      "median": 1,
+      "max": 19
+    }
+  }
+}

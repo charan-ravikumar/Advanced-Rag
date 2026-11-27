@@ -1,0 +1,12 @@
+{
+  "created_utc": "2026-11-21T12:52:29.402930+00:00",
+  "source_run": "runs\\eval\\20261121T121057Z_b45a6048_dev_paper",
+  "arm": "D",
+  "seed": 0,
+  "sample_size": 25,
+  "sampling": "random.Random(0).sample(sorted miss ids, 25)",
+  "code_fingerprint": "0d717273efc05d993a48b6785b0a6e9f2a3795a8d3bc4341123f4dc46941e878",
+  "golden_set_sha256": "31ff6c7a656378042364fea140ee8f4012f2c71cf510cd9878680855d14bd715",
+  "source_run_config_sha256": "5805e6ef474d0df1b0e8c33371d270e44ebfe49f957a7fdb72fc9c010107d076",
+  "store": "rag_recursive"
+}

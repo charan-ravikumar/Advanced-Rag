@@ -1,0 +1,21 @@
+{
+  "created_utc": "2026-11-21T09:28:41.227285+00:00",
+  "code_fingerprint": "06ba173cdb8281f453ef42ac817b505310ddfebb42c07b59fcd3ecfce89dfa3b",
+  "strategy": "recursive",
+  "lexical_index": "%USERPROFILE%\\AppData\\Local\\advrag\\lexical_recursive.sqlite3",
+  "vector_collection": "rag_recursive",
+  "report": {
+    "docs": 200,
+    "chunks": 7255,
+    "parity": {
+      "store_count": 7255,
+      "lexical_count": 7255,
+      "fts_rows": 7255,
+      "count_parity": true,
+      "id_set_parity": true,
+      "missing_in_lexical": 0,
+      "extra_in_lexical": 0,
+      "ok": true
+    }
+  }
+}

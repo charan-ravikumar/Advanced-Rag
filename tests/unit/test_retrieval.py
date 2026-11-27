@@ -1,15 +1,16 @@
-"""Unit tests for query routing and retrieve_and_build_context (mocked)."""
+"""Unit tests for query routing (rag/router.py)."""
 
 import pytest
-from unittest.mock import patch, MagicMock
+
+from rag.router import classify_by_rules, route_query
 
 
 # ---------------------------------------------------------------------------
-# classify_query
+# router (rules only, no LLM, no clients)
 # ---------------------------------------------------------------------------
 
 class TestClassifyQuery:
-    """Test the fast regex path of classify_query (no LLM calls)."""
+    """The rule-based router: pure, deterministic, no LLM."""
 
     @pytest.mark.parametrize(
         "query",
@@ -24,9 +25,8 @@ class TestClassifyQuery:
         ],
     )
     def test_conversational_queries_route_direct(self, query):
-        from rag.retrieval import classify_query
-        result = classify_query(query)
-        assert result == "direct", f"Expected 'direct' for query: {query!r}"
+        assert classify_by_rules(query) == "direct", f"Expected 'direct' for query: {query!r}"
+        assert route_query(query) == "direct"
 
     @pytest.mark.parametrize(
         "query",
@@ -37,87 +37,41 @@ class TestClassifyQuery:
             "Describe the evaluation methodology used.",
         ],
     )
-    def test_research_queries_route_rag(self, query):
-        """Research queries should route to 'rag' without an LLM call
-        (they don't match conversational patterns)."""
-        from rag.retrieval import classify_query
-        # Patch the LLM call to always return 'rag' so we test deterministically
-        with patch("rag.retrieval.groq_client") as mock_client:
-            mock_choice = MagicMock()
-            mock_choice.choices[0].message.content = "rag"
-            mock_client.chat.completions.create.return_value = mock_choice
-            result = classify_query(query)
-        # Either the regex already says 'rag', or the LLM (mocked) says 'rag'
-        assert result == "rag", f"Expected 'rag' for query: {query!r}"
+    def test_research_queries_are_not_decided_by_rules_and_route_rag(self, query):
+        """The old version of this test mocked the LLM to answer 'rag', so it passed without ever
+        exercising the router. Now it asserts the rules abstain (None) and the LLM-free route is rag."""
+        assert classify_by_rules(query) is None
+        assert route_query(query) == "rag"
 
+    @pytest.mark.parametrize("query", ["hey there", "see you later", "what's up", "Thanks!", "Good evening.", "Thank you very much", "ok"])
+    def test_more_small_talk_phrases(self, query):
+        assert route_query(query) == "direct"
 
-# ---------------------------------------------------------------------------
-# retrieve_and_build_context
-# ---------------------------------------------------------------------------
+    def test_short_query_with_question_mark_is_not_small_talk(self):
+        assert classify_by_rules("BM25?") is None
+        assert route_query("BM25?") == "rag"
 
-class TestRetrieveAndBuildContext:
-    """Smoke-test retrieve_and_build_context with all external I/O mocked."""
+    @pytest.mark.parametrize("query", ["attention mechanism", "BERT", "transformer architecture", "word2vec", "dropout rate",
+                                       "sentiment analysis", "F1 score"])
+    def test_short_keyword_queries_are_research_queries(self, query):
+        """v1 treated any 1-3 word query without a question mark as small talk, so 'attention mechanism' never reached retrieval."""
+        assert classify_by_rules(query) is None
+        assert route_query(query) == "rag"
 
-    def _make_mock_collection(self, n_results=3):
-        mock_col = MagicMock()
-        mock_col.query.return_value = {
-            "ids": [[f"id{i}" for i in range(n_results)]],
-            "documents": [[f"doc content {i}" for i in range(n_results)]],
-            "distances": [[0.1 * i for i in range(n_results)]],
-            "metadatas": [
-                [
-                    {"source": f"paper_{i}", "chunking_strategy": "semantic"}
-                    for i in range(n_results)
-                ]
-            ],
-        }
-        mock_col.count.return_value = n_results
-        return mock_col
+    @pytest.mark.parametrize("query", ["Hello, how does BERT work?", "hi what dataset do they use", "thanks, but what is the baseline?",
+                                       "help me understand the loss function", "hello world benchmark", "no free lunch theorem",
+                                       "yes/no questions in QA"])
+    def test_a_message_that_merely_starts_with_a_greeting_is_still_a_research_query(self, query):
+        assert route_query(query) == "rag"
 
-    def test_returns_required_keys(self):
-        from rag.retrieval import retrieve_and_build_context
+    def test_the_allowlist_is_whole_message_not_prefix_and_ignores_case_punctuation_and_spacing(self):
+        assert route_query("  Hello!!  ") == "direct" and route_query("THANK   YOU.") == "direct" and route_query("what\u2019s up?") == "direct"
+        assert route_query("") == "rag" and route_query("???") == "rag"
 
-        mock_col = self._make_mock_collection()
+    def test_whitespace_and_case_insensitive(self):
+        assert route_query("   HELLO   ") == "direct"
 
-        with (
-            patch("rag.retrieval.collection", mock_col),
-            patch("rag.retrieval.encode_query", return_value=[0.1] * 384),
-        ):
-            result = retrieve_and_build_context("What dataset do they use?")
+    def test_router_module_has_no_side_effect_imports(self):
+        import rag.router as router
 
-        assert "context" in result
-        assert "sources" in result
-        assert "latency_ms" in result
-
-    def test_latency_is_non_negative(self):
-        from rag.retrieval import retrieve_and_build_context
-
-        mock_col = self._make_mock_collection()
-
-        with (
-            patch("rag.retrieval.collection", mock_col),
-            patch("rag.retrieval.encode_query", return_value=[0.1] * 384),
-        ):
-            result = retrieve_and_build_context("How does BM25 work?")
-
-        assert result["latency_ms"] >= 0
-
-    def test_empty_collection_returns_context_string(self):
-        from rag.retrieval import retrieve_and_build_context
-
-        mock_col = self._make_mock_collection(n_results=0)
-        mock_col.query.return_value = {
-            "ids": [[]],
-            "documents": [[]],
-            "distances": [[]],
-            "metadatas": [[]],
-        }
-
-        with (
-            patch("rag.retrieval.collection", mock_col),
-            patch("rag.retrieval.encode_query", return_value=[0.1] * 384),
-        ):
-            result = retrieve_and_build_context("irrelevant query")
-
-        assert isinstance(result["context"], str)
-        assert isinstance(result["sources"], list)
+        assert not hasattr(router, "groq_client") and not hasattr(router, "logger")

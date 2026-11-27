@@ -1,0 +1,842 @@
+{
+ "schema": 1,
+ "source": {
+  "corpus": "eval/datasets/qasper_dev/corpus.json",
+  "corpus_sha256": "e6c4f1f94a58460bc4b7116ba1d182e5deeda01fc944de69c3a84387d0905422",
+  "license": "Qasper, CC BY 4.0 (Dasigi et al., 2021)",
+  "link": "https://allenai.org/data/qasper"
+ },
+ "papers": [
+  {
+   "id": "1503.00841",
+   "title": "Robustly Leveraging Prior Knowledge in Text Classification"
+  },
+  {
+   "id": "1601.02403",
+   "title": "Argumentation Mining in User-Generated Web Discourse"
+  },
+  {
+   "id": "1603.01514",
+   "title": "A Bayesian Model of Multilingual Unsupervised Semantic Role Induction"
+  },
+  {
+   "id": "1603.09631",
+   "title": "Data Collection for Interactive Learning through the Dialog"
+  },
+  {
+   "id": "1604.00400",
+   "title": "Revisiting Summarization Evaluation for Scientific Articles"
+  },
+  {
+   "id": "1604.00727",
+   "title": "Character-Level Question Answering with Attention"
+  },
+  {
+   "id": "1604.05372",
+   "title": "Clustering Comparable Corpora of Russian and Ukrainian Academic Texts: Word Embeddings and Semantic Fingerprints"
+  },
+  {
+   "id": "1604.08504",
+   "title": "Detecting\"Smart\"Spammers On Social Network: A Topic Model Approach"
+  },
+  {
+   "id": "1605.03481",
+   "title": "Tweet2Vec: Character-Based Distributed Representations for Social Media"
+  },
+  {
+   "id": "1605.06083",
+   "title": "Stereotyping and Bias in the Flickr30K Dataset"
+  },
+  {
+   "id": "1606.02891",
+   "title": "Edinburgh Neural Machine Translation Systems for WMT 16"
+  },
+  {
+   "id": "1606.03676",
+   "title": "External Lexical Information for Multilingual Part-of-Speech Tagging"
+  },
+  {
+   "id": "1608.01084",
+   "title": "To Swap or Not to Swap? Exploiting Dependency Word Pairs for Reordering in Statistical Machine Translation"
+  },
+  {
+   "id": "1608.01884",
+   "title": "Winograd Schemas and Machine Translation"
+  },
+  {
+   "id": "1608.06757",
+   "title": "Robust Named Entity Recognition in Idiosyncratic Domains"
+  },
+  {
+   "id": "1609.00559",
+   "title": "Improving Correlation with Human Judgments by Integrating Semantic Similarity with Second--Order Vectors"
+  },
+  {
+   "id": "1610.00956",
+   "title": "Embracing data abundance: BookTest Dataset for Reading Comprehension"
+  },
+  {
+   "id": "1610.07809",
+   "title": "How Document Pre-processing affects Keyphrase Extraction Performance"
+  },
+  {
+   "id": "1610.08815",
+   "title": "A Deeper Look into Sarcastic Tweets Using Deep Convolutional Neural Networks"
+  },
+  {
+   "id": "1610.09225",
+   "title": "Sentiment Analysis of Twitter Data for Predicting Stock Market Movements"
+  },
+  {
+   "id": "1611.02988",
+   "title": "Distant supervision for emotion detection using Facebook reactions"
+  },
+  {
+   "id": "1611.03599",
+   "title": "UTCNN: a Deep Learning Model of Stance Classificationon on Social Media Text"
+  },
+  {
+   "id": "1611.04798",
+   "title": "Toward Multilingual Neural Machine Translation with Universal Encoder and Decoder"
+  },
+  {
+   "id": "1611.08661",
+   "title": "Knowledge Graph Representation with Jointly Structural and Textual Encoding"
+  },
+  {
+   "id": "1612.02482",
+   "title": "Improving the Performance of Neural Machine Translation Involving Morphologically Rich Languages"
+  },
+  {
+   "id": "1612.03226",
+   "title": "Active Learning for Speech Recognition: the Power of Gradients"
+  },
+  {
+   "id": "1612.06685",
+   "title": "Stateology: State-Level Interactive Charting of Language, Feelings, and Values"
+  },
+  {
+   "id": "1612.08205",
+   "title": "Predicting the Industry of Users on Social Media"
+  },
+  {
+   "id": "1701.02962",
+   "title": "Distinguishing Antonyms and Synonyms in a Pattern-based Neural Network"
+  },
+  {
+   "id": "1702.03342",
+   "title": "Learning Concept Embeddings for Efficient Bag-of-Concepts Densification"
+  },
+  {
+   "id": "1702.03856",
+   "title": "Towards speech-to-text translation without speech recognition"
+  },
+  {
+   "id": "1703.04001",
+   "title": "Language Use Matters: Analysis of the Linguistic Structure of Question Texts Can Characterize Answerability in Quora"
+  },
+  {
+   "id": "1703.07090",
+   "title": "Deep LSTM for Large Vocabulary Continuous Speech Recognition"
+  },
+  {
+   "id": "1703.10344",
+   "title": "Automated News Suggestions for Populating Wikipedia Entity Pages"
+  },
+  {
+   "id": "1704.04452",
+   "title": "Bringing Structure into Summaries: Crowdsourcing a Benchmark Corpus of Concept Maps"
+  },
+  {
+   "id": "1704.06194",
+   "title": "Improved Neural Relation Detection for Knowledge Base Question Answering"
+  },
+  {
+   "id": "1705.01214",
+   "title": "A Hybrid Architecture for Multi-Party Conversational Systems"
+  },
+  {
+   "id": "1705.04153",
+   "title": "Dynamic Compositional Neural Networks over Tree Structure"
+  },
+  {
+   "id": "1705.05437",
+   "title": "A Biomedical Information Extraction Primer for NLP Researchers"
+  },
+  {
+   "id": "1706.00139",
+   "title": "Natural Language Generation for Spoken Dialogue System using RNN Encoder-Decoder Networks"
+  },
+  {
+   "id": "1706.01678",
+   "title": "Text Summarization using Abstract Meaning Representation"
+  },
+  {
+   "id": "1706.06894",
+   "title": "Stance Detection in Turkish Tweets"
+  },
+  {
+   "id": "1706.08198",
+   "title": "English-Japanese Neural Machine Translation with Encoder-Decoder-Reconstructor"
+  },
+  {
+   "id": "1707.03569",
+   "title": "Multitask Learning for Fine-Grained Twitter Sentiment Analysis"
+  },
+  {
+   "id": "1707.05236",
+   "title": "Artificial Error Generation with Machine Translation and Syntactic Patterns"
+  },
+  {
+   "id": "1707.06806",
+   "title": "Shallow reading with Deep Learning: Predicting popularity of online content using only its title"
+  },
+  {
+   "id": "1708.01464",
+   "title": "Massively Multilingual Neural Grapheme-to-Phoneme Conversion"
+  },
+  {
+   "id": "1709.05036",
+   "title": "Query-based Attention CNN for Text Similarity Map"
+  },
+  {
+   "id": "1709.07814",
+   "title": "Attention-based Wav2Text with Feature Transfer Learning"
+  },
+  {
+   "id": "1709.10367",
+   "title": "Structured Embedding Models for Grouped Data"
+  },
+  {
+   "id": "1710.07960",
+   "title": "How big is big enough? Unsupervised word sense disambiguation using a very large corpus"
+  },
+  {
+   "id": "1712.00991",
+   "title": "Mining Supervisor Evaluation and Peer Feedback in Performance Appraisals"
+  },
+  {
+   "id": "1801.02073",
+   "title": "Analysis of Wikipedia-based Corpora for Question Answering"
+  },
+  {
+   "id": "1801.05147",
+   "title": "Adversarial Learning for Chinese NER from Crowd Annotations"
+  },
+  {
+   "id": "1802.00396",
+   "title": "Disunited Nations? A Multiplex Network Approach to Detecting Preference Affinity Blocs using Texts and Votes"
+  },
+  {
+   "id": "1802.06024",
+   "title": "Towards a Continuous Knowledge Learning Engine for Chatbots"
+  },
+  {
+   "id": "1802.08636",
+   "title": "Ranking Sentences for Extractive Summarization with Reinforcement Learning"
+  },
+  {
+   "id": "1803.05223",
+   "title": "MCScript: A Novel Dataset for Assessing Machine Comprehension Using Script Knowledge"
+  },
+  {
+   "id": "1803.09123",
+   "title": "Equation Embeddings"
+  },
+  {
+   "id": "1804.00720",
+   "title": "Simple and Effective Semi-Supervised Question Answering"
+  },
+  {
+   "id": "1804.05918",
+   "title": "Improving Implicit Discourse Relation Classification by Modeling Inter-dependencies of Discourse Units in a Paragraph"
+  },
+  {
+   "id": "1804.07789",
+   "title": "Generating Descriptions from Structured Data Using a Bifocal Attention Mechanism and Gated Orthogonalization"
+  },
+  {
+   "id": "1805.01445",
+   "title": "The Fine Line between Linguistic Generalization and Failure in Seq2Seq-Attention Models"
+  },
+  {
+   "id": "1805.03710",
+   "title": "Incorporating Subword Information into Matrix Factorization Word Embeddings"
+  },
+  {
+   "id": "1805.06966",
+   "title": "Neural User Simulation for Corpus-based Policy Optimisation for Spoken Dialogue Systems"
+  },
+  {
+   "id": "1805.07133",
+   "title": "Combining Advanced Methods in Japanese-Vietnamese Neural Machine Translation"
+  },
+  {
+   "id": "1805.10824",
+   "title": "UG18 at SemEval-2018 Task 1: Generating Additional Training Data for Predicting Emotion Intensity in Spanish"
+  },
+  {
+   "id": "1806.00738",
+   "title": "Contextualize, Show and Tell: A Neural Visual Storyteller"
+  },
+  {
+   "id": "1806.03125",
+   "title": "Text Classification based on Word Subspace with Term-Frequency"
+  },
+  {
+   "id": "1806.04330",
+   "title": "Neural Network Models for Paraphrase Identification, Semantic Textual Similarity, Natural Language Inference, and Question Answering"
+  },
+  {
+   "id": "1806.05504",
+   "title": "Entity Commonsense Representation for Neural Abstractive Summarization"
+  },
+  {
+   "id": "1806.05513",
+   "title": "Humor Detection in English-Hindi Code-Mixed Social Media Content : Corpus and Baseline System"
+  },
+  {
+   "id": "1807.07279",
+   "title": "Imparting Interpretability to Word Embeddings while Preserving Semantic Structure"
+  },
+  {
+   "id": "1808.09029",
+   "title": "Pyramidal Recurrent Unit for Language Modeling"
+  },
+  {
+   "id": "1809.00530",
+   "title": "Adaptive Semi-supervised Learning for Cross-domain Sentiment Classification"
+  },
+  {
+   "id": "1809.00540",
+   "title": "Multilingual Clustering of Streaming News"
+  },
+  {
+   "id": "1809.01202",
+   "title": "Causal Explanation Analysis on Social Media"
+  },
+  {
+   "id": "1809.01541",
+   "title": "Copenhagen at CoNLL--SIGMORPHON 2018: Multilingual Inflection in Context with Explicit Morphosyntactic Decoding"
+  },
+  {
+   "id": "1809.02279",
+   "title": "Cell-aware Stacked LSTMs for Modeling Sentences"
+  },
+  {
+   "id": "1809.02286",
+   "title": "Dynamic Compositionality in Recursive Neural Networks with Structure-aware Tag Representations"
+  },
+  {
+   "id": "1809.03449",
+   "title": "Explicit Utilization of General Knowledge in Machine Reading Comprehension"
+  },
+  {
+   "id": "1809.04267",
+   "title": "Knowledge Based Machine Reading Comprehension"
+  },
+  {
+   "id": "1809.06537",
+   "title": "Automatic Judgment Prediction via Legal Reading Comprehension"
+  },
+  {
+   "id": "1810.04428",
+   "title": "Improving Neural Text Simplification Model with Simplified Corpora"
+  },
+  {
+   "id": "1810.05241",
+   "title": "Generating Diverse Numbers of Diverse Keyphrases"
+  },
+  {
+   "id": "1810.08699",
+   "title": "pioNER: Datasets and Baselines for Armenian Named Entity Recognition"
+  },
+  {
+   "id": "1810.12091",
+   "title": "Embedding Geographic Locations for Modelling the Natural Environment using Flickr Tags and Structured Data"
+  },
+  {
+   "id": "1810.12196",
+   "title": "ReviewQA: a relational aspect-based opinion reading dataset"
+  },
+  {
+   "id": "1811.05711",
+   "title": "From Free Text to Clusters of Content in Health Records: An Unsupervised Graph Partitioning Approach"
+  },
+  {
+   "id": "1811.08603",
+   "title": "Neural Collective Entity Linking"
+  },
+  {
+   "id": "1811.12254",
+   "title": "The Effect of Heterogeneous Data for Alzheimer's Disease Detection from Speech"
+  },
+  {
+   "id": "1901.01010",
+   "title": "A Joint Model for Multimodal Document Quality Assessment"
+  },
+  {
+   "id": "1902.09243",
+   "title": "Pretraining-Based Natural Language Generation for Text Summarization"
+  },
+  {
+   "id": "1902.09666",
+   "title": "Predicting the Type and Target of Offensive Posts in Social Media"
+  },
+  {
+   "id": "1903.03530",
+   "title": "Fast Prototyping a Dialogue Comprehension System for Nurse-Patient Conversations on Symptom Monitoring"
+  },
+  {
+   "id": "1903.07406",
+   "title": "Automatic Classification of Pathology Reports using TF-IDF Features"
+  },
+  {
+   "id": "1903.09722",
+   "title": "Pre-trained Language Model Representations for Language Generation"
+  },
+  {
+   "id": "1904.01548",
+   "title": "Understanding language-elicited EEG data by predicting it from a fine-tuned language model"
+  },
+  {
+   "id": "1904.03288",
+   "title": "Jasper: An End-to-End Convolutional Neural Acoustic Model"
+  },
+  {
+   "id": "1904.04358",
+   "title": "Deep Learning the EEG Manifold for Phonological Categorization from Active Thoughts"
+  },
+  {
+   "id": "1904.09535",
+   "title": "NeuronBlocks: Building Your NLP DNN Models Like Playing Lego"
+  },
+  {
+   "id": "1904.10503",
+   "title": "Fine-Grained Named Entity Recognition using ELMo and Wikidata"
+  },
+  {
+   "id": "1905.07791",
+   "title": "Predicting Annotation Difficulty to Improve Task Routing and Model Performance for Biomedical Information Extraction"
+  },
+  {
+   "id": "1905.10851",
+   "title": "When to reply? Context Sensitive Models to Predict Instructor Interventions in MOOC Forums"
+  },
+  {
+   "id": "1905.11268",
+   "title": "Combating Adversarial Misspellings with Robust Word Recognition"
+  },
+  {
+   "id": "1905.12801",
+   "title": "Reducing Gender Bias in Word-Level Language Models with a Gender-Equalizing Loss Function"
+  },
+  {
+   "id": "1906.00790",
+   "title": "Multi-task Pairwise Neural Ranking for Hashtag Segmentation"
+  },
+  {
+   "id": "1906.01040",
+   "title": "A Surprising Density of Illusionable Natural Speech"
+  },
+  {
+   "id": "1906.01081",
+   "title": "Handling Divergent Reference Texts when Evaluating Table-to-Text Generation"
+  },
+  {
+   "id": "1906.07662",
+   "title": "State-of-the-Art Vietnamese Word Segmentation"
+  },
+  {
+   "id": "1906.07701",
+   "title": "Distilling Translations with Visual Awareness"
+  },
+  {
+   "id": "1906.10225",
+   "title": "Compound Probabilistic Context-Free Grammars for Grammar Induction"
+  },
+  {
+   "id": "1907.01468",
+   "title": "How we do things with words: Analyzing text as social and cultural data"
+  },
+  {
+   "id": "1907.03060",
+   "title": "Exploiting Out-of-Domain Parallel Data through Multilingual Transfer Learning for Low-Resource Neural Machine Translation"
+  },
+  {
+   "id": "1907.03187",
+   "title": "Applying a Pre-trained Language Model to Spanish Twitter Humor Prediction"
+  },
+  {
+   "id": "1907.06292",
+   "title": "TWEETQA: A Social Media Focused Question Answering Dataset"
+  },
+  {
+   "id": "1907.09369",
+   "title": "Emotion Detection in Text: Focusing on Latent Representation"
+  },
+  {
+   "id": "1908.01294",
+   "title": "Semi-supervised Thai Sentence Segmentation Using Local and Distant Word Representations"
+  },
+  {
+   "id": "1908.05441",
+   "title": "Multi-class Hierarchical Question Classification for Multiple Choice Science Exams"
+  },
+  {
+   "id": "1908.05828",
+   "title": "Named Entity Recognition for Nepali Language"
+  },
+  {
+   "id": "1908.06264",
+   "title": "EmotionX-IDEA: Emotion BERT -- an Affectional Model for Conversation"
+  },
+  {
+   "id": "1908.06941",
+   "title": "Why So Down? The Role of Negative (and Positive) Pointwise Mutual Information in Distributional Semantics"
+  },
+  {
+   "id": "1908.07195",
+   "title": "ARAML: A Stable Adversarial Training Framework for Text Generation"
+  },
+  {
+   "id": "1908.07245",
+   "title": "GlossBERT: BERT for Word Sense Disambiguation with Gloss Knowledge"
+  },
+  {
+   "id": "1908.08345",
+   "title": "Text Summarization with Pretrained Encoders"
+  },
+  {
+   "id": "1908.09246",
+   "title": "Open Event Extraction from Online Text using a Generative Adversarial Network"
+  },
+  {
+   "id": "1908.11047",
+   "title": "Shallow Syntax in Deep Water"
+  },
+  {
+   "id": "1909.00015",
+   "title": "Adaptively Sparse Transformers"
+  },
+  {
+   "id": "1909.00105",
+   "title": "Generating Personalized Recipes from Historical User Preferences"
+  },
+  {
+   "id": "1909.00175",
+   "title": "Joint Detection and Location of English Puns"
+  },
+  {
+   "id": "1909.00512",
+   "title": "How Contextual are Contextualized Word Representations? Comparing the Geometry of BERT, ELMo, and GPT-2 Embeddings"
+  },
+  {
+   "id": "1909.01362",
+   "title": "Trouble on the Horizon: Forecasting the Derailment of Online Conversations as they Develop"
+  },
+  {
+   "id": "1909.02304",
+   "title": "Table-to-Text Generation with Effective Hierarchical Encoder on Three Dimensions (Row, Column and Time)"
+  },
+  {
+   "id": "1909.05359",
+   "title": "From Textual Information Sources to Linked Data in the Agatha Project"
+  },
+  {
+   "id": "1909.07575",
+   "title": "Bridging the Gap between Pre-Training and Fine-Tuning for End-to-End Speech Translation"
+  },
+  {
+   "id": "1909.08089",
+   "title": "Extractive Summarization of Long Documents by Combining Global and Local Context"
+  },
+  {
+   "id": "1909.08970",
+   "title": "RUN through the Streets: A New Dataset and Baseline Models for Realistic Urban Navigation"
+  },
+  {
+   "id": "1909.09534",
+   "title": "Creative GANs for generating poems, lyrics, and metaphors"
+  },
+  {
+   "id": "1909.09551",
+   "title": "Natural Language Processing via LDA Topic Model in Recommendation Systems"
+  },
+  {
+   "id": "1909.09587",
+   "title": "Zero-shot Reading Comprehension by Cross-lingual Transfer Learning with Multi-lingual Language Representation Model"
+  },
+  {
+   "id": "1909.10012",
+   "title": "Is change the only constant? Profile change perspective on #LokSabhaElections2019"
+  },
+  {
+   "id": "1909.11687",
+   "title": "Extreme Language Model Compression with Optimal Subwords and Shared Projections"
+  },
+  {
+   "id": "1910.01863",
+   "title": "Template-free Data-to-Text Generation of Finnish Sports News"
+  },
+  {
+   "id": "1910.05603",
+   "title": "VAIS ASR: Building a conversational speech recognition system using language model combination"
+  },
+  {
+   "id": "1910.06592",
+   "title": "FacTweet: Profiling Fake News Twitter Accounts"
+  },
+  {
+   "id": "1910.07601",
+   "title": "Contextual Joint Factor Acoustic Embeddings"
+  },
+  {
+   "id": "1910.08293",
+   "title": "Follow Alice into the Rabbit Hole: Giving Dialogue Agents Understanding of Human Level Attributes."
+  },
+  {
+   "id": "1910.09982",
+   "title": "Findings of the NLP4IF-2019 Shared Task on Fine-Grained Propaganda Detection"
+  },
+  {
+   "id": "1910.10781",
+   "title": "Hierarchical Transformers for Long Document Classification"
+  },
+  {
+   "id": "1910.12574",
+   "title": "A BERT-Based Transfer Learning Approach for Hate Speech Detection in Online Social Media"
+  },
+  {
+   "id": "1910.12795",
+   "title": "Learning Data Manipulation for Augmentation and Weighting"
+  },
+  {
+   "id": "1910.14537",
+   "title": "Attention Is All You Need for Chinese Word Segmentation"
+  },
+  {
+   "id": "1911.00841",
+   "title": "Question Answering for Privacy Policies: Combining Computational and Legal Perspectives"
+  },
+  {
+   "id": "1911.02855",
+   "title": "Dice Loss for Data-imbalanced NLP Tasks"
+  },
+  {
+   "id": "1911.03059",
+   "title": "A Comprehensive Comparison of Machine Learning Based Methods Used in Bengali Question Classification"
+  },
+  {
+   "id": "1911.03343",
+   "title": "Negated LAMA: Birds cannot fly"
+  },
+  {
+   "id": "1911.06964",
+   "title": "Learning Autocomplete Systems as a Communication Game"
+  },
+  {
+   "id": "1911.07555",
+   "title": "Short Text Language Identification for Under Resourced Languages"
+  },
+  {
+   "id": "1911.10049",
+   "title": "High Quality ELMo Embeddings for Seven Less-Resourced Languages"
+  },
+  {
+   "id": "1912.00667",
+   "title": "A Human-AI Loop Approach for Joint Keyword Discovery and Expectation Estimation in Micropost Event Detection"
+  },
+  {
+   "id": "1912.00903",
+   "title": "ZuCo 2.0: A Dataset of Physiological Recordings During Natural Reading and Annotation"
+  },
+  {
+   "id": "1912.01214",
+   "title": "Cross-lingual Pre-training Based Transfer for Zero-shot Neural Machine Translation"
+  },
+  {
+   "id": "1912.01852",
+   "title": "PitchNet: Unsupervised Singing Voice Conversion with Pitch Adversarial Network"
+  },
+  {
+   "id": "1912.03627",
+   "title": "A Multi Purpose and Large Scale Speech Corpus in Persian and English for Speaker and Speech Recognition: The Deepmine Database"
+  },
+  {
+   "id": "1912.03804",
+   "title": "Women in ISIS Propaganda: A Natural Language Processing Analysis of Topics and Emotions in a Comparison with Mainstream Religious Group"
+  },
+  {
+   "id": "1912.04961",
+   "title": "Medication Regimen Extraction From Clinical Conversations"
+  },
+  {
+   "id": "1912.06262",
+   "title": "Extracting clinical concepts from user queries"
+  },
+  {
+   "id": "1912.08904",
+   "title": "Macaw: An Extensible Conversational Information Seeking Platform"
+  },
+  {
+   "id": "1912.08960",
+   "title": "Going Beneath the Surface: Evaluating Image Captioning for Grammaticality, Truthfulness and Diversity"
+  },
+  {
+   "id": "2001.01269",
+   "title": "Generating Word and Document Embeddings for Sentiment Analysis"
+  },
+  {
+   "id": "2001.02284",
+   "title": "Multipurpose Intelligent Process Automation via Conversational Assistant"
+  },
+  {
+   "id": "2001.02885",
+   "title": "Resolving the Scope of Speculation and Negation using Transformer-Based Architectures"
+  },
+  {
+   "id": "2001.03131",
+   "title": "Offensive Language Detection: A Comparative Analysis"
+  },
+  {
+   "id": "2001.05865",
+   "title": "Ensemble based discriminative models for Visual Dialog Challenge 2018"
+  },
+  {
+   "id": "2001.07786",
+   "title": "Shared Task: Lexical Semantic Change Detection in German"
+  },
+  {
+   "id": "2001.07820",
+   "title": "Elephant in the Room: An Evaluation Framework for Assessing Adversarial Examples in NLP"
+  },
+  {
+   "id": "2001.09215",
+   "title": "An Iterative Approach for Identifying Complaint Based Tweets in Social Media Platforms"
+  },
+  {
+   "id": "2002.01320",
+   "title": "CoVoST: A Diverse Multilingual Speech-To-Text Translation Corpus"
+  },
+  {
+   "id": "2002.01984",
+   "title": "UNCC Biomedical Semantic Question Answering Systems. BioASQ: Task-7B, Phase-B"
+  },
+  {
+   "id": "2002.02070",
+   "title": "Understanding Car-Speak: Replacing Humans in Dealerships"
+  },
+  {
+   "id": "2002.03407",
+   "title": "Abstractive Summarization for Low Resource Data using Domain Transfer and Data Synthesis"
+  },
+  {
+   "id": "2002.04181",
+   "title": "Performance Comparison of Crowdworkers and NLP Tools onNamed-Entity Recognition and Sentiment Analysis of Political Tweets"
+  },
+  {
+   "id": "2002.07306",
+   "title": "From English To Foreign Languages: Transferring Pre-trained Language Models"
+  },
+  {
+   "id": "2002.08795",
+   "title": "How To Avoid Being Eaten By a Grue: Exploration Strategies for Text-Adventure Agents"
+  },
+  {
+   "id": "2002.11910",
+   "title": "Integrating Boundary Assembling into a DNN Framework for Named Entity Recognition in Chinese Social Media Text"
+  },
+  {
+   "id": "2002.12612",
+   "title": "A multi-layer approach to disinformation detection on Twitter"
+  },
+  {
+   "id": "2003.02249",
+   "title": "jiant: A Software Toolkit for Research on General-Purpose Text Understanding Models"
+  },
+  {
+   "id": "2003.03014",
+   "title": "A Framework for the Computational Linguistic Analysis of Dehumanization"
+  },
+  {
+   "id": "2003.03044",
+   "title": "A Corpus for Detecting High-Context Medical Conditions in Intensive Care Patient Notes Focusing on Frequently Readmitted Patients"
+  },
+  {
+   "id": "2003.03106",
+   "title": "Sensitive Data Detection and Classification in Spanish Clinical Text: Experiments with BERT"
+  },
+  {
+   "id": "2003.08380",
+   "title": "TTTTTackling WinoGrande Schemas"
+  },
+  {
+   "id": "2003.08385",
+   "title": "X-Stance: A Multilingual Multi-Target Dataset for Stance Detection"
+  },
+  {
+   "id": "2003.11562",
+   "title": "Finnish Language Modeling with Deep Transformer Models"
+  },
+  {
+   "id": "2003.11563",
+   "title": "Cost-Sensitive BERT for Generalisable Sentence Classification with Imbalanced Data"
+  },
+  {
+   "id": "2003.13032",
+   "title": "Named Entities in Medical Case Reports: Corpus and Experiments"
+  },
+  {
+   "id": "2004.01853",
+   "title": "STEP: Sequence-to-Sequence Transformer Pre-training for Document Summarization"
+  },
+  {
+   "id": "2004.01862",
+   "title": "Identifying Radiological Findings Related to COVID-19 from Medical Literature"
+  },
+  {
+   "id": "2004.02192",
+   "title": "Arabic Offensive Language on Twitter: Analysis and Experiments"
+  },
+  {
+   "id": "2004.03354",
+   "title": "Inexpensive Domain Adaptation of Pretrained Language Models: A Case Study on Biomedical Named Entity Recognition"
+  },
+  {
+   "id": "2004.04721",
+   "title": "Translation Artifacts in Cross-lingual Transfer Learning"
+  }
+ ],
+ "examples": {
+  "run_folder": "runs/gen/20261122T181541Z_c5fac105_dev_gen_R",
+  "code_fingerprint": "c5fac1051e3f0005bd8dd40408c48b66fbe85d8161a875ea4357d9e44cfc00c0",
+  "items": [
+   {
+    "question_id": "2001.01269:81d193672090295e687bc4f4ac1b7a9c76ea35df",
+    "paper_id": "2001.01269",
+    "paper_title": "Generating Word and Document Embeddings for Sentiment Analysis",
+    "question": "What baseline method is used?"
+   },
+   {
+    "question_id": "1909.10012:d4db7df65aa4ece63e1de813e5ce98ce1b4dbe7f",
+    "paper_id": "1909.10012",
+    "paper_title": "Is change the only constant? Profile change perspective on #LokSabhaElections2019",
+    "question": "How do profile changes vary for influential leads and their followers over the social movement?"
+   },
+   {
+    "question_id": "1907.06292:53dfcd5d7d2a81855ec1728f0d8e6e24c5638f1e",
+    "paper_id": "1907.06292",
+    "paper_title": "TWEETQA: A Social Media Focused Question Answering Dataset",
+    "question": "What evaluation metrics do they use?"
+   },
+   {
+    "question_id": "1909.01362:88e5d37617e14d6976cc602a168332fc23644f19",
+    "paper_id": "1909.01362",
+    "paper_title": "Trouble on the Horizon: Forecasting the Derailment of Online Conversations as they Develop",
+    "question": "What are two datasets model is applied to?"
+   }
+  ],
+  "rule": "public dev questions whose long answer in the generation run cited a valid source and did not abstain; one per paper, ordered by sha256('examples:' + question id). Chosen because they ANSWERED, so they are not representative of the abstention or error rate."
+ }
+}

@@ -1,3 +1,5 @@
+> **UNVERIFIED: written before the rebuild. Do not quote. See docs/CLAIMS_LOG.md.**
+
 # Benchmark Summary — QASPER Evaluation
 Generated: 2026-06-19 17:09 UTC
 

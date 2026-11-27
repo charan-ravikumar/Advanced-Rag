@@ -1,0 +1,50 @@
+{
+  "label": "EXPLORATORY: n=40 long answers of one arm (R), an UNCALIBRATED LLM judge (no human labels): the scores are the judge's opinion, not a measurement of correctness",
+  "n_scored_rows": 2,
+  "selection": {
+    "long_mode_rows": 40,
+    "scored_candidates": 34,
+    "skipped_abstained": 6,
+    "skipped_no_contexts": 0,
+    "skipped_empty_answer": 0
+  },
+  "metrics": {
+    "Faithfulness": {
+      "n": 2,
+      "n_papers": 2,
+      "mean": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0
+    },
+    "AnswerRelevancy": {
+      "n": 2,
+      "n_papers": 2,
+      "mean": 0.6207049361013834,
+      "ci_low": 0.5594451015267325,
+      "ci_high": 0.6819647706760342
+    }
+  },
+  "interval": "95% paper-clustered bootstrap, 5,000 resamples, seed 0 (eval/compare.py::clustered_bootstrap); n is small, the intervals are wide",
+  "judge_usage": {
+    "answer_relevancy": {
+      "calls": 2,
+      "cache_hits": 0,
+      "retries": 0,
+      "prompt_tokens": 1028,
+      "output_tokens": 47,
+      "thinking_tokens": 177
+    },
+    "faithfulness": {
+      "calls": 6,
+      "cache_hits": 0,
+      "retries": 1,
+      "prompt_tokens": 3967,
+      "output_tokens": 842,
+      "thinking_tokens": 2621
+    },
+    "_total_network_calls": 8,
+    "_max_calls": 200
+  },
+  "errors": [],
+  "stopped_reason": "the judge's daily quota is exhausted (HTTP 429, per-day limit): resume tomorrow"
+}

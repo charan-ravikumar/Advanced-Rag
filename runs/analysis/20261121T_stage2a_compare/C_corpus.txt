@@ -1,0 +1,16 @@
+SETTING: EXTENSION: corpus-wide retrieval (not Qasper's canonical task; questions were written about one paper)
+comparisons made in this invocation: 10  (Holm-adjusted at alpha=0.05 on the clustered p-values; bootstrap resamples=5000, seed=0)
+difference = first arm minus second arm. PRIMARY CI = 95% paper-clustered paired bootstrap (papers resampled, their questions kept together); per-q CI = 95% per-question bootstrap, secondary (understates uncertainty). W/L/T = questions where the first arm is better/worse/equal.
+
+pair     metric      n_q n_pap  mean_x  mean_y     diff   PRIMARY CI (clustered)            per-q CI       W/L/T p (clust.) Holm sig
+------------------------------------------------------------------------------------------------------------------------------------
+A vs D   nDCG@10     174    71   0.113   0.119   -0.006         [-0.022, +0.009]    [-0.023, +0.011]  21/ 17/136     0.4803       no
+A vs D   MRR         174    71   0.115   0.117   -0.002         [-0.023, +0.019]    [-0.023, +0.020]  18/ 15/141     0.8710       no
+A vs D   HitRate@5   174    71   0.149   0.178   -0.029         [-0.066, +0.006]    [-0.069, +0.006]   3/  8/163     0.1536       no
+A vs D   EvidenceRecall@10  174    71   0.174   0.196   -0.023         [-0.054, +0.005]    [-0.054, +0.006]   7/ 10/157     0.1132       no
+A vs D   EvidenceF1@5  174    71   0.080   0.096   -0.016         [-0.041, +0.006]    [-0.040, +0.006]  12/ 16/146     0.1764       no
+D vs F   nDCG@10     174    71   0.119   0.116   +0.002         [-0.021, +0.028]    [-0.019, +0.024]  18/ 21/135     0.8842       no
+D vs F   MRR         174    71   0.117   0.116   +0.001         [-0.026, +0.030]    [-0.025, +0.027]  15/ 17/142     0.9754       no
+D vs F   HitRate@5   174    71   0.178   0.184   -0.006         [-0.044, +0.032]    [-0.046, +0.034]   6/  7/161     0.9054       no
+D vs F   EvidenceRecall@10  174    71   0.196   0.192   +0.005         [-0.032, +0.043]    [-0.033, +0.043]  11/  8/155     0.7994       no
+D vs F   EvidenceF1@5  174    71   0.096   0.092   +0.004         [-0.022, +0.032]    [-0.023, +0.032]  21/ 15/138     0.7770       no

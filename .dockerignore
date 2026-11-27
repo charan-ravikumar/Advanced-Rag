@@ -1,0 +1,25 @@
+# Secrets and local state must never enter the build context
+.env
+.env.*
+!.env.example
+runs/
+*.sqlite3*
+
+# Not needed in the image
+.git/
+.vscode/
+.cache/
+.hypothesis/
+.pytest_cache/
+.ruff_cache/
+**/__pycache__/
+*.pyc
+tests/
+docs/
+technical_audit/
+*.md
+*.zip
+*.lock
+!requirements.lock
+Dockerfile
+.dockerignore

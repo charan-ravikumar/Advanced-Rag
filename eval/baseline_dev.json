@@ -1,0 +1,127 @@
+{
+  "frozen_baseline": "MiniLM (all-MiniLM-L6-v2) + Chroma, recursive chunks, arms A (vector only) and D (hybrid RRF k=60, 1.0/0.7), DEV split",
+  "preregistration": "eval/PREREGISTRATION_qwen3_qdrant.md",
+  "status": "FROZEN: never edited; a correction is a new file",
+  "runs": {
+    "paper": {
+      "setting": "PRIMARY: Qasper's canonical single-document task (the question's paper is given; doc_ids filter)",
+      "frozen_run_folder": "runs/eval/20261126T070220Z_41a1d7ae_dev_paper",
+      "determinism_repeat_folder": "runs/eval/20261126T070305Z_41a1d7ae_dev_paper",
+      "code_fingerprint": "41a1d7ae41b7b84e1b25100e9ffb543576e70a3d6406451695a779c6dbf09b8b",
+      "prereg_sha256_original_text": "3af35a50b7070b16e8c3c420acb39a65e35c773fa98c7a12f5041c9ab952085f",
+      "top_k": 50,
+      "candidate_k": 100,
+      "questions": 174,
+      "papers": 71,
+      "store": {
+        "vector_count": 7255,
+        "ingest_signature": "cbe6d0e9c85af6f1a4ec9b01ac18e7137554ed6d84e9ed20e3c5a75dc25ddc12",
+        "embedder_revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41"
+      },
+      "golden_set_sha256": "31ff6c7a656378042364fea140ee8f4012f2c71cf510cd9878680855d14bd715",
+      "split_file_sha256": "7915be07d474583e60607d451042e5f407bafb45caeee701d971530b09202918",
+      "SHA256SUMS": {
+        "config.json": "1c23d2259ba8a196318e913cfacaa8a5e2f28f37c012411f16d494619244d8b7",
+        "per_question.jsonl": "cf0a8ecf94a3315bf27788b93bb456b711b80d4dd7b34192007f9abbc39dacf3",
+        "summary.json": "2f92da937e95a42d165b22d085fa6bf7cd7b9c35766d629c409b1faa3f345d2a"
+      },
+      "means": {
+        "A": {
+          "nDCG@10": 0.45287,
+          "Recall@50": 1.0,
+          "EvidenceRecall@50": 1.0,
+          "MRR": 0.438447,
+          "HitRate@5": 0.643678,
+          "EvidenceRecall@10": 0.722749,
+          "EvidenceF1@5": 0.205003,
+          "DocHit@5": 1.0,
+          "unreachable_questions": 0
+        },
+        "D": {
+          "nDCG@10": 0.499716,
+          "Recall@50": 0.999179,
+          "EvidenceRecall@50": 1.0,
+          "MRR": 0.489244,
+          "HitRate@5": 0.655172,
+          "EvidenceRecall@10": 0.773755,
+          "EvidenceF1@5": 0.200928,
+          "DocHit@5": 1.0,
+          "unreachable_questions": 0
+        }
+      },
+      "retrieval_latency_ms_p50_total": {
+        "A": 23.8,
+        "D": 32.2
+      },
+      "determinism_vs_repeat": {
+        "identical_except_timing": true,
+        "rows_compared": 348,
+        "rows_with_different_metrics": 0,
+        "rows_with_different_retrieved_lists": 0
+      }
+    },
+    "corpus": {
+      "setting": "EXTENSION: corpus-wide retrieval (not Qasper's canonical task; questions were written about one paper)",
+      "frozen_run_folder": "runs/eval/20261126T070342Z_41a1d7ae_dev_corpus",
+      "determinism_repeat_folder": "runs/eval/20261126T070425Z_41a1d7ae_dev_corpus",
+      "code_fingerprint": "41a1d7ae41b7b84e1b25100e9ffb543576e70a3d6406451695a779c6dbf09b8b",
+      "prereg_sha256_original_text": "3af35a50b7070b16e8c3c420acb39a65e35c773fa98c7a12f5041c9ab952085f",
+      "top_k": 50,
+      "candidate_k": 100,
+      "questions": 174,
+      "papers": 71,
+      "store": {
+        "vector_count": 7255,
+        "ingest_signature": "cbe6d0e9c85af6f1a4ec9b01ac18e7137554ed6d84e9ed20e3c5a75dc25ddc12",
+        "embedder_revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41"
+      },
+      "golden_set_sha256": "31ff6c7a656378042364fea140ee8f4012f2c71cf510cd9878680855d14bd715",
+      "split_file_sha256": "7915be07d474583e60607d451042e5f407bafb45caeee701d971530b09202918",
+      "SHA256SUMS": {
+        "config.json": "609ca3bf85eb56227a5f8dda05fa3075b68127a91b5df240eb6cc3155f60e824",
+        "per_question.jsonl": "11a82946e9cbf5417a02ebdb15525d41125d2375ca948a9d701bae126ba6405f",
+        "summary.json": "3858615d62a9265f9d120543855673a9ab961ef4185bf1873df593afd6787d57"
+      },
+      "means": {
+        "A": {
+          "nDCG@10": 0.113109,
+          "Recall@50": 0.328955,
+          "EvidenceRecall@50": 0.355077,
+          "MRR": 0.123709,
+          "HitRate@5": 0.149425,
+          "EvidenceRecall@10": 0.173851,
+          "EvidenceF1@5": 0.080269,
+          "DocHit@5": 0.431034,
+          "unreachable_questions": 0
+        },
+        "D": {
+          "nDCG@10": 0.123768,
+          "Recall@50": 0.380761,
+          "EvidenceRecall@50": 0.408238,
+          "MRR": 0.124618,
+          "HitRate@5": 0.166667,
+          "EvidenceRecall@10": 0.222701,
+          "EvidenceF1@5": 0.069478,
+          "DocHit@5": 0.431034,
+          "unreachable_questions": 0
+        }
+      },
+      "retrieval_latency_ms_p50_total": {
+        "A": 25.9,
+        "D": 52.2
+      },
+      "determinism_vs_repeat": {
+        "identical_except_timing": false,
+        "rows_compared": 348,
+        "rows_with_different_metrics": 2,
+        "rows_with_different_retrieved_lists": 14
+      }
+    }
+  },
+  "notes": [
+    "Dev numbers: development only; never in README.md or docs/CLAIMS_LOG.md.",
+    "Paper mode: Recall@50 is ~1.0 by construction (median 35 chunks per dev paper; 64 of 71 dev papers have <= 50 chunks); it is the corpus-mode Recall@50 that discriminates.",
+    "Corpus-mode repeats differ slightly (Chroma HNSW is not bit-reproducible across processes); the frozen run is the first repeat.",
+    "Depth differs from Stage 2a (top_k 50, candidate_k 100 against 10 and 20): these are different measurements from the Stage 2a dev numbers."
+  ]
+}

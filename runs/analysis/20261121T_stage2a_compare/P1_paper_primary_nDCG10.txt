@@ -1,0 +1,21 @@
+SETTING: PRIMARY: Qasper's canonical single-document task (the question's paper is given; doc_ids filter)
+comparisons made in this invocation: 15  (Holm-adjusted at alpha=0.05 on the clustered p-values; bootstrap resamples=5000, seed=0)
+difference = first arm minus second arm. PRIMARY CI = 95% paper-clustered paired bootstrap (papers resampled, their questions kept together); per-q CI = 95% per-question bootstrap, secondary (understates uncertainty). W/L/T = questions where the first arm is better/worse/equal.
+
+pair     metric      n_q n_pap  mean_x  mean_y     diff   PRIMARY CI (clustered)            per-q CI       W/L/T p (clust.) Holm sig
+------------------------------------------------------------------------------------------------------------------------------------
+A vs C   nDCG@10     174    71   0.453   0.448   +0.005         [-0.015, +0.025]    [-0.018, +0.027]  82/ 40/ 52     0.6587       no
+A vs D   nDCG@10     174    71   0.453   0.500   -0.047         [-0.077, -0.017]    [-0.078, -0.015]  47/ 77/ 50     0.0020      YES
+C vs D   nDCG@10     174    71   0.448   0.500   -0.052         [-0.083, -0.022]    [-0.084, -0.018]  38/ 79/ 57     0.0016      YES
+D vs B   nDCG@10     174    71   0.500   0.387   +0.113         [+0.074, +0.150]    [+0.074, +0.152]  99/ 35/ 40     0.0004      YES
+A vs E   nDCG@10     174    71   0.453   0.454   -0.001         [-0.023, +0.020]    [-0.028, +0.027]  50/ 62/ 62     0.9330       no
+D vs F   nDCG@10     174    71   0.500   0.503   -0.003         [-0.029, +0.023]    [-0.032, +0.026]  55/ 61/ 58     0.8302       no
+D vs G   nDCG@10     174    71   0.500   0.481   +0.019         [-0.023, +0.061]    [-0.018, +0.058]  71/ 59/ 44     0.3551       no
+F vs H   nDCG@10     174    71   0.503   0.512   -0.009         [-0.043, +0.025]    [-0.045, +0.028]  68/ 60/ 46     0.6135       no
+B vs B2  nDCG@10     174    71   0.387   0.410   -0.023         [-0.049, +0.002]    [-0.047, +0.000]  28/ 63/ 83     0.0700       no
+D vs D2  nDCG@10     174    71   0.500   0.498   +0.002         [-0.019, +0.023]    [-0.016, +0.020]  32/ 36/106     0.8534       no
+D vs R20_05 nDCG@10     174    71   0.500   0.495   +0.005         [-0.007, +0.018]    [-0.007, +0.018]  32/ 22/120     0.4135       no
+D vs R20_07 nDCG@10     174    71   0.500   0.501   -0.001         [-0.006, +0.004]    [-0.006, +0.004]  13/ 15/146     0.6599       no
+D vs R20_10 nDCG@10     174    71   0.500   0.489   +0.011         [-0.000, +0.023]    [+0.001, +0.022]  40/ 26/108     0.0552       no
+D vs R60_05 nDCG@10     174    71   0.500   0.502   -0.002         [-0.014, +0.010]    [-0.015, +0.010]  19/ 28/127     0.7395       no
+D vs R60_10 nDCG@10     174    71   0.500   0.494   +0.006         [-0.004, +0.017]    [-0.003, +0.016]  32/ 31/111     0.2272       no

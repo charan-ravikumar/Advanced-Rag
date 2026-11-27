@@ -1,0 +1,9 @@
+SETTING: PRIMARY: Qasper's canonical single-document task (the question's paper is given; doc_ids filter)
+comparisons made in this invocation: 3  (Holm-adjusted at alpha=0.05 on the clustered p-values; bootstrap resamples=5000, seed=0)
+difference = first arm minus second arm. PRIMARY CI = 95% paper-clustered paired bootstrap (papers resampled, their questions kept together); per-q CI = 95% per-question bootstrap, secondary (understates uncertainty). W/L/T = questions where the first arm is better/worse/equal.
+
+pair     metric      n_q n_pap  mean_x  mean_y     diff   PRIMARY CI (clustered)            per-q CI       W/L/T p (clust.) Holm sig
+------------------------------------------------------------------------------------------------------------------------------------
+A vs D   nDCG@10     292   124   0.430   0.456   -0.027         [-0.051, -0.002]    [-0.049, -0.004]  77/125/ 90     0.0320       no
+F vs D   nDCG@10     292   124   0.463   0.456   +0.006         [-0.012, +0.024]    [-0.011, +0.024] 107/ 82/103     0.5035       no
+D vs G   nDCG@10     292   124   0.456   0.514   -0.058         [-0.084, -0.031]    [-0.084, -0.033]  78/136/ 78     0.0004      YES

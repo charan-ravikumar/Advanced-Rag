@@ -1,0 +1,418 @@
+{
+  "created_utc": "2026-11-22T17:20:32.271595+00:00",
+  "code_fingerprint": "993fdc9aa0f7982f0820af33e2ef50362bbd79e39a56b11d01082fd7db46c25d",
+  "preregistration": {
+    "path": "<repo>\\eval\\PREREGISTRATION_gen.md",
+    "sha256_original_text": "4210f585cb23a4b3163bfb1cb9207cc36e61c9cc3704148e5b724db23594b230",
+    "sha256_file": "4210f585cb23a4b3163bfb1cb9207cc36e61c9cc3704148e5b724db23594b230",
+    "has_deviations_section": false,
+    "recorded_sha256": "4210f585cb23a4b3163bfb1cb9207cc36e61c9cc3704148e5b724db23594b230"
+  },
+  "generator": {
+    "model": "openai/gpt-oss-120b",
+    "reasoning_effort": "low",
+    "max_output_tokens": 1024,
+    "short_max_output_tokens": 512,
+    "top_k": 5
+  },
+  "sample": {
+    "question_ids": [
+      "1608.01884:1dc2da5078a7e5ea82ccd1c90d81999a922bc9bf",
+      "1809.06537:aa2948209cc33b071dbf294822e72bb136678345",
+      "1605.03481:127d5ddfabec5c58832e5865cbd8ed0978c25a13",
+      "1908.08345:c17b609b0b090d7e8f99de1445be04f8f66367d4",
+      "1909.08089:b66c9a4021b6c8529cac1a2b54dacd8ec79afa5f"
+    ],
+    "seed": 0,
+    "n_per_arm_and_mode": 5,
+    "note": "real calls to measure cost only; the answers are not analysed or reused"
+  },
+  "counts": {
+    "dev_questions": 193,
+    "answerable": 174,
+    "unanswerable": 19,
+    "answerable_with_a_usable_reference": 174,
+    "answerable_with_an_oracle_context": 174,
+    "answerable_oracle_truncated_to_5_paragraphs": 3,
+    "oracle_evidence_texts_not_found_in_paper": 0
+  },
+  "full_paper_arm_F": {
+    "papers": 72,
+    "estimated_tokens_p50": 8495.0,
+    "estimated_tokens_p95": 11985.0,
+    "estimated_tokens_max": 19920,
+    "estimator": "rag.tokens.estimate_token_count (conservative, over-counts for the generator's BPE tokenizer)"
+  },
+  "measured_per_call": {
+    "R_short": [
+      {
+        "question_id": "1608.01884:1dc2da5078a7e5ea82ccd1c90d81999a922bc9bf",
+        "prompt_tokens": 1264,
+        "completion_tokens": 31,
+        "reasoning_tokens": 17,
+        "total_tokens": 1295,
+        "finish_reason": "stop",
+        "abstained": true,
+        "degraded": false,
+        "n_sources": 5,
+        "latency_total_ms": 22020.331499999884
+      },
+      {
+        "question_id": "1809.06537:aa2948209cc33b071dbf294822e72bb136678345",
+        "prompt_tokens": 841,
+        "completion_tokens": 50,
+        "reasoning_tokens": 32,
+        "total_tokens": 891,
+        "finish_reason": "stop",
+        "abstained": false,
+        "degraded": false,
+        "n_sources": 5,
+        "latency_total_ms": 513.6538000006112
+      },
+      {
+        "question_id": "1605.03481:127d5ddfabec5c58832e5865cbd8ed0978c25a13",
+        "prompt_tokens": 1014,
+        "completion_tokens": 128,
+        "reasoning_tokens": 83,
+        "total_tokens": 1142,
+        "finish_reason": "stop",
+        "abstained": false,
+        "degraded": false,
+        "n_sources": 5,
+        "latency_total_ms": 461.3301000008505
+      },
+      {
+        "question_id": "1908.08345:c17b609b0b090d7e8f99de1445be04f8f66367d4",
+        "prompt_tokens": 1262,
+        "completion_tokens": 50,
+        "reasoning_tokens": 36,
+        "total_tokens": 1312,
+        "finish_reason": "stop",
+        "abstained": true,
+        "degraded": false,
+        "n_sources": 5,
+        "latency_total_ms": 486.0756999987643
+      },
+      {
+        "question_id": "1909.08089:b66c9a4021b6c8529cac1a2b54dacd8ec79afa5f",
+        "prompt_tokens": 1072,
+        "completion_tokens": 60,
+        "reasoning_tokens": 24,
+        "total_tokens": 1132,
+        "finish_reason": "stop",
+        "abstained": false,
+        "degraded": false,
+        "n_sources": 5,
+        "latency_total_ms": 497.5996999983181
+      }
+    ],
+    "O_short": [
+      {
+        "question_id": "1608.01884:1dc2da5078a7e5ea82ccd1c90d81999a922bc9bf",
+        "prompt_tokens": 447,
+        "completion_tokens": 63,
+        "reasoning_tokens": 49,
+        "total_tokens": 510,
+        "finish_reason": "stop",
+        "abstained": true,
+        "degraded": false,
+        "n_sources": 1,
+        "latency_total_ms": 440.5366999999387
+      },
+      {
+        "question_id": "1809.06537:aa2948209cc33b071dbf294822e72bb136678345",
+        "prompt_tokens": 553,
+        "completion_tokens": 51,
+        "reasoning_tokens": 37,
+        "total_tokens": 604,
+        "finish_reason": "stop",
+        "abstained": true,
+        "degraded": false,
+        "n_sources": 3,
+        "latency_total_ms": 434.71499999941443
+      },
+      {
+        "question_id": "1605.03481:127d5ddfabec5c58832e5865cbd8ed0978c25a13",
+        "prompt_tokens": 376,
+        "completion_tokens": 108,
+        "reasoning_tokens": 55,
+        "total_tokens": 484,
+        "finish_reason": "stop",
+        "abstained": false,
+        "degraded": false,
+        "n_sources": 1,
+        "latency_total_ms": 558.8542999994388
+      },
+      {
+        "question_id": "1908.08345:c17b609b0b090d7e8f99de1445be04f8f66367d4",
+        "prompt_tokens": 1116,
+        "completion_tokens": 38,
+        "reasoning_tokens": 24,
+        "total_tokens": 1154,
+        "finish_reason": "stop",
+        "abstained": true,
+        "degraded": false,
+        "n_sources": 2,
+        "latency_total_ms": 448.23949999954493
+      },
+      {
+        "question_id": "1909.08089:b66c9a4021b6c8529cac1a2b54dacd8ec79afa5f",
+        "prompt_tokens": 314,
+        "completion_tokens": 49,
+        "reasoning_tokens": 22,
+        "total_tokens": 363,
+        "finish_reason": "stop",
+        "abstained": false,
+        "degraded": false,
+        "n_sources": 1,
+        "latency_total_ms": 403.81280000110564
+      }
+    ],
+    "T_short": [
+      {
+        "question_id": "1608.01884:1dc2da5078a7e5ea82ccd1c90d81999a922bc9bf",
+        "prompt_tokens": 363,
+        "completion_tokens": 33,
+        "reasoning_tokens": 19,
+        "total_tokens": 396,
+        "finish_reason": "stop",
+        "abstained": true,
+        "degraded": false,
+        "n_sources": 1,
+        "latency_total_ms": 180.32190000121773
+      },
+      {
+        "question_id": "1809.06537:aa2948209cc33b071dbf294822e72bb136678345",
+        "prompt_tokens": 477,
+        "completion_tokens": 44,
+        "reasoning_tokens": 30,
+        "total_tokens": 521,
+        "finish_reason": "stop",
+        "abstained": true,
+        "degraded": false,
+        "n_sources": 1,
+        "latency_total_ms": 238.35569999937434
+      },
+      {
+        "question_id": "1605.03481:127d5ddfabec5c58832e5865cbd8ed0978c25a13",
+        "prompt_tokens": 407,
+        "completion_tokens": 34,
+        "reasoning_tokens": 20,
+        "total_tokens": 441,
+        "finish_reason": "stop",
+        "abstained": true,
+        "degraded": false,
+        "n_sources": 1,
+        "latency_total_ms": 414.82730000097945
+      },
+      {
+        "question_id": "1908.08345:c17b609b0b090d7e8f99de1445be04f8f66367d4",
+        "prompt_tokens": 491,
+        "completion_tokens": 32,
+        "reasoning_tokens": 18,
+        "total_tokens": 523,
+        "finish_reason": "stop",
+        "abstained": true,
+        "degraded": false,
+        "n_sources": 1,
+        "latency_total_ms": 384.0106999996351
+      },
+      {
+        "question_id": "1909.08089:b66c9a4021b6c8529cac1a2b54dacd8ec79afa5f",
+        "prompt_tokens": 425,
+        "completion_tokens": 34,
+        "reasoning_tokens": 20,
+        "total_tokens": 459,
+        "finish_reason": "stop",
+        "abstained": true,
+        "degraded": false,
+        "n_sources": 1,
+        "latency_total_ms": 496.0618000004615
+      }
+    ],
+    "R_long": [
+      {
+        "question_id": "1608.01884:1dc2da5078a7e5ea82ccd1c90d81999a922bc9bf",
+        "prompt_tokens": 1311,
+        "completion_tokens": 32,
+        "reasoning_tokens": 18,
+        "total_tokens": 1343,
+        "finish_reason": "stop",
+        "abstained": true,
+        "degraded": false,
+        "n_sources": 5,
+        "latency_total_ms": 488.1371000010404
+      },
+      {
+        "question_id": "1809.06537:aa2948209cc33b071dbf294822e72bb136678345",
+        "prompt_tokens": 888,
+        "completion_tokens": 32,
+        "reasoning_tokens": 18,
+        "total_tokens": 920,
+        "finish_reason": "stop",
+        "abstained": true,
+        "degraded": false,
+        "n_sources": 5,
+        "latency_total_ms": 421.48180000003777
+      },
+      {
+        "question_id": "1605.03481:127d5ddfabec5c58832e5865cbd8ed0978c25a13",
+        "prompt_tokens": 1061,
+        "completion_tokens": 160,
+        "reasoning_tokens": 63,
+        "total_tokens": 1221,
+        "finish_reason": "stop",
+        "abstained": false,
+        "degraded": false,
+        "n_sources": 5,
+        "latency_total_ms": 534.7989000001689
+      },
+      {
+        "question_id": "1908.08345:c17b609b0b090d7e8f99de1445be04f8f66367d4",
+        "prompt_tokens": 1309,
+        "completion_tokens": 34,
+        "reasoning_tokens": 20,
+        "total_tokens": 1343,
+        "finish_reason": "stop",
+        "abstained": true,
+        "degraded": false,
+        "n_sources": 5,
+        "latency_total_ms": 230.28569999951287
+      },
+      {
+        "question_id": "1909.08089:b66c9a4021b6c8529cac1a2b54dacd8ec79afa5f",
+        "prompt_tokens": 1119,
+        "completion_tokens": 124,
+        "reasoning_tokens": 31,
+        "total_tokens": 1243,
+        "finish_reason": "stop",
+        "abstained": false,
+        "degraded": false,
+        "n_sources": 5,
+        "latency_total_ms": 441.5088999994623
+      }
+    ],
+    "O_long": [
+      {
+        "question_id": "1608.01884:1dc2da5078a7e5ea82ccd1c90d81999a922bc9bf",
+        "prompt_tokens": 494,
+        "completion_tokens": 35,
+        "reasoning_tokens": 21,
+        "total_tokens": 529,
+        "finish_reason": "stop",
+        "abstained": true,
+        "degraded": false,
+        "n_sources": 1,
+        "latency_total_ms": 165.76139999961015
+      },
+      {
+        "question_id": "1809.06537:aa2948209cc33b071dbf294822e72bb136678345",
+        "prompt_tokens": 600,
+        "completion_tokens": 44,
+        "reasoning_tokens": 30,
+        "total_tokens": 644,
+        "finish_reason": "stop",
+        "abstained": true,
+        "degraded": false,
+        "n_sources": 3,
+        "latency_total_ms": 416.3455999987491
+      },
+      {
+        "question_id": "1605.03481:127d5ddfabec5c58832e5865cbd8ed0978c25a13",
+        "prompt_tokens": 423,
+        "completion_tokens": 161,
+        "reasoning_tokens": 63,
+        "total_tokens": 584,
+        "finish_reason": "stop",
+        "abstained": false,
+        "degraded": false,
+        "n_sources": 1,
+        "latency_total_ms": 459.3982000005781
+      },
+      {
+        "question_id": "1908.08345:c17b609b0b090d7e8f99de1445be04f8f66367d4",
+        "prompt_tokens": 1163,
+        "completion_tokens": 39,
+        "reasoning_tokens": 25,
+        "total_tokens": 1202,
+        "finish_reason": "stop",
+        "abstained": true,
+        "degraded": false,
+        "n_sources": 2,
+        "latency_total_ms": 215.15720000024885
+      },
+      {
+        "question_id": "1909.08089:b66c9a4021b6c8529cac1a2b54dacd8ec79afa5f",
+        "prompt_tokens": 361,
+        "completion_tokens": 80,
+        "reasoning_tokens": 31,
+        "total_tokens": 441,
+        "finish_reason": "stop",
+        "abstained": false,
+        "degraded": false,
+        "n_sources": 1,
+        "latency_total_ms": 286.57139999995707
+      }
+    ]
+  },
+  "mean_total_tokens": {
+    "R_short": 1154.4,
+    "O_short": 623.0,
+    "T_short": 468.0,
+    "R_long": 1214.0,
+    "O_long": 680.0
+  },
+  "projection": {
+    "items_calls_and_mean_tokens": {
+      "R_short": [
+        193,
+        1154.4
+      ],
+      "T_short": [
+        193,
+        468.0
+      ],
+      "O_short": [
+        174,
+        623.0
+      ],
+      "R_long": [
+        174,
+        1214.0
+      ],
+      "O_long": [
+        174,
+        680.0
+      ]
+    },
+    "limits": {
+      "rpm": 30,
+      "rpd": 1000,
+      "tpm": 8000,
+      "tpd": 200000,
+      "source": "https://console.groq.com/docs/rate-limits.md (openai/gpt-oss-120b); x-ratelimit-limit-requests=1000 and x-ratelimit-limit-tokens=8000 observed in live response headers"
+    },
+    "full_plan": {
+      "calls": 908,
+      "tokens": 751081.2,
+      "hours_by_limit": {
+        "rpm": 0.5044444444444445,
+        "tpm": 1.5647525,
+        "rpd": 21.792,
+        "tpd": 90.12974399999999
+      },
+      "binding_limit": "tpd",
+      "wall_hours": 90.12974399999999,
+      "days_with_resets": 4
+    },
+    "fraction_of_the_plan_that_fits_in_24h": 0.26628279339171324
+  },
+  "gemini_rpm_probe": {
+    "model": "gemini-2.5-flash",
+    "calls_made": 6,
+    "first_429_after_calls": 6,
+    "quota_text": "429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: [URL] To monitor your current usage, head to: [URL] \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 5, model: gemini-2.5-flash, description: Generate content requests per minute limit exceeded on Free Tier. See [URL] retry in [NUMBER]s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': '[URL]'}]}, {'@type': 'type.googleapis.com/google.rpc.…",
+    "other_errors": [],
+    "seconds": 2.2
+  }
+}

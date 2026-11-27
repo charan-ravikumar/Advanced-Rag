@@ -1,0 +1,112 @@
+{
+  "label": "EXPLORATORY: n=40 answerable dev questions, one arm (R = RAG, configuration D, top-5), one seeded sample; not a published result",
+  "arm": "R",
+  "short_mode": {
+    "AnswerF1": {
+      "n": 40,
+      "n_papers": 37,
+      "mean": 0.4038955631919691,
+      "ci_low": 0.2746450576222486,
+      "ci_high": 0.5340085536496394
+    },
+    "AnswerF1_by_best_reference_type": {
+      "abstractive": {
+        "n": 9,
+        "n_papers": 9,
+        "mean": 0.16566149715403447,
+        "ci_low": 0.07221438746438748,
+        "ci_high": 0.2594315555920031
+      },
+      "extractive": {
+        "n": 25,
+        "n_papers": 22,
+        "mean": 0.5465947621316982,
+        "ci_low": 0.3821089204066804,
+        "ci_high": 0.7034432178699752
+      },
+      "yes_no": {
+        "n": 6,
+        "n_papers": 6,
+        "mean": 0.16666666666666666,
+        "ci_low": 0.0,
+        "ci_high": 0.5
+      }
+    },
+    "YesNoAccuracy": {
+      "n": 6,
+      "n_papers": 6,
+      "mean": 0.16666666666666666,
+      "ci_low": 0.0,
+      "ci_high": 0.5
+    },
+    "AbstentionRate_on_answerable": {
+      "n": 40,
+      "n_papers": 37,
+      "mean": 0.2,
+      "ci_low": 0.07894736842105263,
+      "ci_high": 0.3333333333333333
+    },
+    "n_questions": 40
+  },
+  "long_mode": {
+    "CitationValidity_per_answer": {
+      "n": 33,
+      "n_papers": 30,
+      "mean": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0
+    },
+    "CitationValidity_pooled": {
+      "valid": 50,
+      "cited": 50,
+      "rate": 1.0
+    },
+    "answers_with_no_citation": {
+      "n": 1,
+      "of": 34
+    },
+    "AbstentionRate_on_answerable": {
+      "n": 40,
+      "n_papers": 37,
+      "mean": 0.15,
+      "ci_low": 0.04878048780487805,
+      "ci_high": 0.2702702702702703
+    },
+    "n_questions": 40
+  },
+  "finish_reasons": {
+    "short": {
+      "stop": 40
+    },
+    "long": {
+      "stop": 40
+    }
+  },
+  "usage_tokens": {
+    "short": {
+      "prompt": 45064,
+      "completion": 2678,
+      "reasoning": 1671
+    },
+    "long": {
+      "prompt": 45920,
+      "completion": 4642,
+      "reasoning": 1589
+    }
+  },
+  "usage_note": "token sums cover the generations made in THIS session (cache hits cost nothing and are excluded)",
+  "session": {
+    "calls_made": 80,
+    "cache_hits": 0,
+    "tokens_used_this_session": 98304,
+    "failed": [],
+    "stopped_reason": null,
+    "pending": [],
+    "complete": true,
+    "remaining": [],
+    "tokens_used_in_window_before": 54608,
+    "tokens_used_in_window_after": 152912,
+    "daily_token_budget": 180000,
+    "already_used_tokens_declared": 50000
+  }
+}

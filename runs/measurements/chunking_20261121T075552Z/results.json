@@ -1,0 +1,177 @@
+{
+  "created_utc": "2026-11-21T07:52:38.331100+00:00",
+  "code_fingerprint": "176eaba2a3c4cff275a5490dd6d39fcc6a8dfabf43aca49a0a68f5f7007db34a",
+  "model": "sentence-transformers/all-MiniLM-L6-v2",
+  "revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+  "papers": 20,
+  "paper_ids": [
+    "1601.02403",
+    "1603.01514",
+    "1603.09631",
+    "1604.00727",
+    "1604.08504",
+    "1605.03481",
+    "1605.06083",
+    "1608.01884",
+    "1610.08815",
+    "1611.03599",
+    "1611.04798",
+    "1612.02482",
+    "1612.03226",
+    "1612.06685",
+    "1702.03342",
+    "1703.07090",
+    "1704.06194",
+    "1706.01678",
+    "1706.06894",
+    "1707.06806"
+  ],
+  "chunking": {
+    "max_chunk_chars": 2000,
+    "max_tokens": 256,
+    "recursive_chunk_size": 1000,
+    "recursive_chunk_overlap": 200,
+    "semantic_similarity_threshold": 0.78,
+    "min_chunk_chars": 300,
+    "semantic_window_size": 3
+  },
+  "A_fallback_counter_chunks_real_tokens": {
+    "recursive": {
+      "real_tokens": {
+        "n": 1177,
+        "min": 12,
+        "median": 105,
+        "p95": 163,
+        "max": 231
+      },
+      "over_256": 0,
+      "chars": {
+        "n": 1177,
+        "min": 23,
+        "median": 475,
+        "p95": 712,
+        "max": 767
+      },
+      "regex_tokens": {
+        "n": 1177,
+        "min": 7,
+        "median": 90,
+        "p95": 137,
+        "max": 185
+      }
+    },
+    "layout": {
+      "real_tokens": {
+        "n": 931,
+        "min": 11,
+        "median": 132,
+        "p95": 169,
+        "max": 231
+      },
+      "over_256": 0,
+      "chars": {
+        "n": 931,
+        "min": 23,
+        "median": 611,
+        "p95": 718,
+        "max": 761
+      },
+      "regex_tokens": {
+        "n": 931,
+        "min": 7,
+        "median": 112,
+        "p95": 143,
+        "max": 187
+      }
+    },
+    "semantic": {
+      "real_tokens": {
+        "n": 976,
+        "min": 10,
+        "median": 127.0,
+        "p95": 168,
+        "max": 231
+      },
+      "over_256": 0,
+      "chars": {
+        "n": 976,
+        "min": 23,
+        "median": 585.5,
+        "p95": 717,
+        "max": 761
+      },
+      "regex_tokens": {
+        "n": 976,
+        "min": 7,
+        "median": 109.0,
+        "p95": 141,
+        "max": 181
+      }
+    }
+  },
+  "B_real_embedder_chunks": {
+    "recursive": {
+      "real_tokens": {
+        "n": 764,
+        "min": 13,
+        "median": 160.0,
+        "p95": 233,
+        "max": 256
+      },
+      "over_256": 0,
+      "chars": {
+        "n": 764,
+        "min": 62,
+        "median": 728.0,
+        "p95": 1000,
+        "max": 1200
+      }
+    },
+    "layout": {
+      "real_tokens": {
+        "n": 600,
+        "min": 9,
+        "median": 221.0,
+        "p95": 254,
+        "max": 256
+      },
+      "over_256": 0,
+      "chars": {
+        "n": 600,
+        "min": 24,
+        "median": 981.5,
+        "p95": 1242,
+        "max": 1380
+      }
+    },
+    "semantic": {
+      "real_tokens": {
+        "n": 677,
+        "min": 10,
+        "median": 176,
+        "p95": 251,
+        "max": 256
+      },
+      "over_256": 0,
+      "chars": {
+        "n": 677,
+        "min": 30,
+        "median": 767,
+        "p95": 1225,
+        "max": 1356
+      }
+    }
+  },
+  "C_old_semantic": {
+    "HashEmbedder": {
+      "chunks": 317,
+      "crossing_section_boundary": 140,
+      "share": 0.4416
+    },
+    "MiniLM": {
+      "chunks": 404,
+      "crossing_section_boundary": 127,
+      "share": 0.3144
+    }
+  }
+}

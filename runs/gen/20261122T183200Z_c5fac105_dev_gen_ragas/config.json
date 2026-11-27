@@ -1,0 +1,117 @@
+{
+  "created_utc": "2026-11-22T18:32:00.460239+00:00",
+  "label": "EXPLORATORY: n=40 long answers of one arm (R), an UNCALIBRATED LLM judge (no human labels): the scores are the judge's opinion, not a measurement of correctness",
+  "kind": "ragas_scoring",
+  "preregistration": {
+    "path": "<repo>\\eval\\PREREGISTRATION_gen.md",
+    "sha256_original_text": "4210f585cb23a4b3163bfb1cb9207cc36e61c9cc3704148e5b724db23594b230",
+    "sha256_file": "e94d8d54c6a9bd644c4fec13da1da721fc980d36fa1bafc39116919d24a88690",
+    "has_deviations_section": true,
+    "recorded_sha256": "4210f585cb23a4b3163bfb1cb9207cc36e61c9cc3704148e5b724db23594b230"
+  },
+  "scope_note": "Phase 4 minimal scope: faithfulness and answer relevancy only; no context precision/recall, no calibration (see the dated Deviations in eval/PREREGISTRATION_gen.md)",
+  "generation_run": {
+    "path": "runs\\gen\\20261122T181541Z_c5fac105_dev_gen_R",
+    "per_question_sha256": "cc711caf252a315ce7275e0cf807c504cd5befe83d6b8e0b55d6f80a74b14e60",
+    "label": "EXPLORATORY: n=40 answerable dev questions, one arm (R = RAG, configuration D, top-5), one seeded sample; not a published result",
+    "sample": {
+      "seed": 0,
+      "n_drawn": 40,
+      "question_ids": [
+        "1908.06264:81588e0e207303c2867c896f3911a54a1ef7c874",
+        "1908.09246:56b034c303983b2e276ed6518d6b080f7b8abe6a",
+        "1605.03481:b85fc420eb2f77f6f14f375cc1fcc5155eb5c0a8",
+        "1809.04267:d9b6c61fc6d29ad399d27b931b6cb7b1117b314a",
+        "1911.07555:92dfacbbfa732ecea006e251be415a6f89fb4ec6",
+        "1910.06592:483a699563efcb8804e1861b18809279f21c7610",
+        "1908.08345:97d1ac71eed13d4f51f29aac0e1a554007907df8",
+        "1903.03530:dd53baf26dad3d74872f2d8956c9119a27269bd5",
+        "1910.01863:abe2393415e533cb06311e74ed1c5674cff8571f",
+        "1907.06292:869feb7f47606105005efdb6bea1c549824baea0",
+        "2001.01269:81d193672090295e687bc4f4ac1b7a9c76ea35df",
+        "1803.05223:ad1be65c4f0655ac5c902d17f05454c0d4c4a15d",
+        "1911.03343:78292bc57ee68fdb93ed45430d80acca25a9e916",
+        "1702.03342:f4496316ddd35ee2f0ccc6475d73a66abf87b611",
+        "1902.09666:1b72aa2ec3ce02131e60626639f0cf2056ec23ca",
+        "2002.07306:d571e0b0f402a3d36fb30d70cdcd2911df883bc7",
+        "1610.07809:06eb9f2320451df83e27362c22eb02f4a426a018",
+        "1809.01202:4cbe5a36b492b99f9f9fea8081fe4ba10a7a0e94",
+        "1912.00667:a74190189a6ced2a2d5b781e445e36f4e527e82a",
+        "2002.02070:6bf93968110c6e3e3640360440607744007a5228",
+        "1703.07090:c0af8b7bf52dc15e0b33704822c4a34077e09cd1",
+        "1905.10851:81dbe9a9ddaa5d02b02e01a306d898015a56ffb6",
+        "1610.07809:2a3e36c220e7b47c1b652511a4fdd7238a74a68f",
+        "1608.01884:7fa3c2c0cf7f559d43e84076a9113a390c5ba03a",
+        "1905.12801:73bddaaf601a4f944a3182ca0f4de85a19cdc1d2",
+        "1909.10012:d4db7df65aa4ece63e1de813e5ce98ce1b4dbe7f",
+        "1912.06262:4477bb513d56e57732fba126944073d414d1f75f",
+        "2001.03131:a778b8204a415b295f73b93623d09599f242f202",
+        "1907.06292:53dfcd5d7d2a81855ec1728f0d8e6e24c5638f1e",
+        "1909.01362:88e5d37617e14d6976cc602a168332fc23644f19",
+        "1905.10851:9bb7ae50bff91571a945c1af025ed2e67714a788",
+        "1802.08636:f03112b868b658c954db62fc64430bebbaa7d9e0",
+        "1912.03804:6bbbb9933aab97ce2342200447c6322527427061",
+        "2003.03044:46c9e5f335b2927db995a55a18b7c7621fd3d051",
+        "1909.02304:03c967763e51ef2537793db7902e2c9c17e43e95",
+        "1911.10049:603fee7314fa65261812157ddfc2c544277fcf90",
+        "2003.03106:c0bee6539eb6956a7347daa9d2419b367bd02064",
+        "1606.03676:0a5ffe4697913a57fda1fd5a188cd5ed59bdc5c7",
+        "1604.00400:184b0082e10ce191940c1d24785b631828a9f714",
+        "1610.00956:e5bc73974c79d96eee2b688e578a9de1d0eb38fd"
+      ]
+    },
+    "generator": {
+      "model": "openai/gpt-oss-120b",
+      "provider": "groq",
+      "reasoning_effort": "low",
+      "temperature": 0.0,
+      "max_output_tokens": {
+        "long": 1024,
+        "short": 512
+      },
+      "top_k": 5,
+      "max_attempts": 4,
+      "tracing": "off (trace_evaluation=false)"
+    },
+    "code_fingerprint": "c5fac1051e3f0005bd8dd40408c48b66fbe85d8161a875ea4357d9e44cfc00c0"
+  },
+  "judge": {
+    "model": "gemini-2.5-flash",
+    "temperature": 0.0,
+    "thinking_budget": 1024,
+    "max_output_tokens": 4096,
+    "api_version": "v1beta",
+    "provider": "gemini",
+    "family_note": "a different model family from the generator (Groq gpt-oss-120b); NOT calibrated against human labels",
+    "strictness": 1,
+    "strictness_note": "answer relevancy asks for one generated question (at temperature 0 more would be near-identical)"
+  },
+  "ragas_version": "0.4.4",
+  "libraries": {
+    "ragas": "0.4.4",
+    "google-genai": "3.6.1",
+    "instructor": "1.17.0",
+    "openai": "2.54.0",
+    "sentence-transformers": "6.3.0"
+  },
+  "embeddings": "local sentence-transformers/all-MiniLM-L6-v2 at its pinned revision (local cache only), used by answer relevancy",
+  "judge_input_preprocessing": "the answer is scored with [S#] citation markers removed; contexts = the passages sent to the generator (used_sources), in order",
+  "judge_cache": {
+    "dir": "<repo>\\runs\\gen\\judge_cache",
+    "key": "sha256(judge model, temperature, thinking budget, output limit, API version, metric, ragas version, prompt, response schema)"
+  },
+  "max_judge_calls_this_session": 200,
+  "n_candidates": 34,
+  "n_attempted_this_session": 34,
+  "code_fingerprint": "c5fac1051e3f0005bd8dd40408c48b66fbe85d8161a875ea4357d9e44cfc00c0",
+  "hardware": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "machine": "AMD64",
+    "processor": "AMD64 Family 25 Model 17 Stepping 1, AuthenticAMD",
+    "cpu_count_logical": 4,
+    "ram_gb": 16.0,
+    "python": "3.13.14",
+    "sqlite": "3.50.4"
+  },
+  "complete": false
+}

@@ -38,6 +38,7 @@ logs/
 
 # Local env variants
 .env.*
+!.env.example
 
 # Docs to ignore
 docs/INTERVIEW_PREP.md

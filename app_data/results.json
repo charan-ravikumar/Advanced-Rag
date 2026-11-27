@@ -1,0 +1,1300 @@
+{
+ "schema": 1,
+ "built_utc": "2026-11-23T05:20:56+00:00",
+ "sources": {
+  "claims_log_sha256": "d362707be6d25117e2b3dddc113e6370da1dbd96041ded83b4dbac58781b55a1",
+  "claims_log_rows": 25
+ },
+ "retrieval_test": {
+  "scope": {
+   "label": "TEST",
+   "split": "test",
+   "setting": "PRIMARY: Qasper's canonical single-document task (the question's paper is given; doc_ids filter)",
+   "n_questions": 292,
+   "n_papers": 124,
+   "run_folder": "runs/eval/20261122T144233Z_3afc204d_test_paper",
+   "code_fingerprint": "3afc204dec26c731a999c16b6fcfa86cedaa76e8144de5e21fe89b2871a3566c",
+   "created_utc": "2026-11-22T14:42:33.882484+00:00",
+   "note": "The frozen configuration D and the pre-registered comparisons; this split was run once."
+  },
+  "arms": [
+   {
+    "arm": "A",
+    "description": "recursive, vector",
+    "metrics": {
+     "nDCG@10": {
+      "mean": 0.42965474054056835,
+      "n": 292,
+      "ci_low": 0.38962754765631263,
+      "ci_high": 0.47058558071201484,
+      "n_papers": 124
+     },
+     "MRR": {
+      "mean": 0.3969708088714938,
+      "n": 292,
+      "ci_low": 0.35216879506494125,
+      "ci_high": 0.44189237671969084,
+      "n_papers": 124
+     },
+     "HitRate@5": {
+      "mean": 0.613013698630137,
+      "n": 292,
+      "ci_low": 0.5518308536761519,
+      "ci_high": 0.6746596080011376,
+      "n_papers": 124
+     },
+     "EvidenceRecall@10": {
+      "mean": 0.7056472126767729,
+      "n": 292,
+      "ci_low": 0.6542499023914088,
+      "ci_high": 0.7549601754316166,
+      "n_papers": 124
+     },
+     "EvidenceF1@5": {
+      "mean": 0.18677543026948218,
+      "n": 292,
+      "ci_low": 0.16480593280910477,
+      "ci_high": 0.20904397926635784,
+      "n_papers": 124
+     }
+    },
+    "latency": {
+     "total_p50_ms": 30.576050000036048,
+     "total_p95_ms": 51.178394999988065,
+     "n_measured": 292
+    }
+   },
+   {
+    "arm": "D",
+    "description": "recursive, hybrid (rrf), k=60, weights 1/0.7",
+    "metrics": {
+     "nDCG@10": {
+      "mean": 0.456191747252741,
+      "n": 292,
+      "ci_low": 0.4148560492693495,
+      "ci_high": 0.49879482584587154,
+      "n_papers": 124
+     },
+     "MRR": {
+      "mean": 0.4338755707762557,
+      "n": 292,
+      "ci_low": 0.3884064131744544,
+      "ci_high": 0.4811365357047922,
+      "n_papers": 124
+     },
+     "HitRate@5": {
+      "mean": 0.6815068493150684,
+      "n": 292,
+      "ci_low": 0.6241598838592984,
+      "ci_high": 0.738255033557047,
+      "n_papers": 124
+     },
+     "EvidenceRecall@10": {
+      "mean": 0.7047006201160851,
+      "n": 292,
+      "ci_low": 0.6533457639670394,
+      "ci_high": 0.7555046475278374,
+      "n_papers": 124
+     },
+     "EvidenceF1@5": {
+      "mean": 0.2103973565608896,
+      "n": 292,
+      "ci_low": 0.18863816163657077,
+      "ci_high": 0.23259258672312444,
+      "n_papers": 124
+     }
+    },
+    "latency": {
+     "total_p50_ms": 59.7974999999451,
+     "total_p95_ms": 286.0542850000112,
+     "n_measured": 292
+    }
+   },
+   {
+    "arm": "F",
+    "description": "semantic, hybrid (rrf), k=60, weights 1/0.7",
+    "metrics": {
+     "nDCG@10": {
+      "mean": 0.4625927926822951,
+      "n": 292,
+      "ci_low": 0.42370110656523857,
+      "ci_high": 0.5012632754009655,
+      "n_papers": 124
+     },
+     "MRR": {
+      "mean": 0.43555936073059365,
+      "n": 292,
+      "ci_low": 0.39118968153367617,
+      "ci_high": 0.4797640133289086,
+      "n_papers": 124
+     },
+     "HitRate@5": {
+      "mean": 0.708904109589041,
+      "n": 292,
+      "ci_low": 0.6531952174809318,
+      "ci_high": 0.7622198928084644,
+      "n_papers": 124
+     },
+     "EvidenceRecall@10": {
+      "mean": 0.737273776751967,
+      "n": 292,
+      "ci_low": 0.6879591562614668,
+      "ci_high": 0.7843430432930657,
+      "n_papers": 124
+     },
+     "EvidenceF1@5": {
+      "mean": 0.19709672641056636,
+      "n": 292,
+      "ci_low": 0.17955178119708265,
+      "ci_high": 0.2144646189532508,
+      "n_papers": 124
+     }
+    },
+    "latency": {
+     "total_p50_ms": 42.82839999996213,
+     "total_p95_ms": 61.90460500004063,
+     "n_measured": 292
+    }
+   },
+   {
+    "arm": "G",
+    "description": "recursive, hybrid (rrf), k=60, weights 1/0.7, + cross-encoder rerank",
+    "metrics": {
+     "nDCG@10": {
+      "mean": 0.514357036389885,
+      "n": 292,
+      "ci_low": 0.47663044523474285,
+      "ci_high": 0.5519868402772042,
+      "n_papers": 124
+     },
+     "MRR": {
+      "mean": 0.5018835616438356,
+      "n": 292,
+      "ci_low": 0.4565923931300915,
+      "ci_high": 0.5445802550895267,
+      "n_papers": 124
+     },
+     "HitRate@5": {
+      "mean": 0.7363013698630136,
+      "n": 292,
+      "ci_low": 0.6821347402597403,
+      "ci_high": 0.7898305084745763,
+      "n_papers": 124
+     },
+     "EvidenceRecall@10": {
+      "mean": 0.7620705523147845,
+      "n": 292,
+      "ci_low": 0.7156588259902804,
+      "ci_high": 0.8071033583274844,
+      "n_papers": 124
+     },
+     "EvidenceF1@5": {
+      "mean": 0.22554693791795663,
+      "n": 292,
+      "ci_low": 0.20475805059076008,
+      "ci_high": 0.24654125885834488,
+      "n_papers": 124
+     }
+    },
+    "latency": {
+     "total_p50_ms": 1242.4004500001047,
+     "total_p95_ms": 1942.4649649999535,
+     "n_measured": 292,
+     "rerank_p50_ms": 1190.6834000000117,
+     "rerank_p95_ms": 1848.0874600000789
+    }
+   }
+  ],
+  "comparisons": [
+   {
+    "pair": "A vs D",
+    "metric": "nDCG@10",
+    "n": 292,
+    "n_papers": 124,
+    "mean_x": 0.42965474054056835,
+    "mean_y": 0.456191747252741,
+    "diff": -0.026537006712172642,
+    "ci_low": -0.051238114765886196,
+    "ci_high": -0.0022839862487524123,
+    "p_value": 0.03199360127974405,
+    "holm_significant": false,
+    "wins": 77,
+    "losses": 125,
+    "ties": 90
+   },
+   {
+    "pair": "F vs D",
+    "metric": "nDCG@10",
+    "n": 292,
+    "n_papers": 124,
+    "mean_x": 0.462592792682295,
+    "mean_y": 0.456191747252741,
+    "diff": 0.006401045429554083,
+    "ci_low": -0.01188268593136838,
+    "ci_high": 0.02412629397222602,
+    "p_value": 0.503499300139972,
+    "holm_significant": false,
+    "wins": 107,
+    "losses": 82,
+    "ties": 103
+   },
+   {
+    "pair": "D vs G",
+    "metric": "nDCG@10",
+    "n": 292,
+    "n_papers": 124,
+    "mean_x": 0.456191747252741,
+    "mean_y": 0.514357036389885,
+    "diff": -0.05816528913714393,
+    "ci_low": -0.08429296638072917,
+    "ci_high": -0.030702994370519498,
+    "p_value": 0.0003999200159968006,
+    "holm_significant": true,
+    "wins": 78,
+    "losses": 136,
+    "ties": 78
+   }
+  ],
+  "comparison_method": {
+   "interval": "95% paper-clustered paired bootstrap",
+   "resamples": 5000,
+   "seed": 0,
+   "holm_family_size": 3,
+   "alpha": 0.05,
+   "difference": "first arm minus second arm"
+  },
+  "reranker": {
+   "class": "CrossEncoderReranker",
+   "name": "cross-encoder/ms-marco-MiniLM-L-6-v2",
+   "revision": "233902d25c440f23af6f7d6e94d2946bac0bee0a",
+   "max_length": 512,
+   "batch_size": 16,
+   "device": "cpu",
+   "local_files_only": true
+  },
+  "embedder": {
+   "class": "SentenceTransformerEmbedder",
+   "name": "sentence-transformers/all-MiniLM-L6-v2",
+   "revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+   "max_seq_length": 256
+  }
+ },
+ "retrieval_dev": {
+  "scope": {
+   "label": "DEV",
+   "split": "dev",
+   "setting": "PRIMARY: Qasper's canonical single-document task (the question's paper is given; doc_ids filter)",
+   "n_questions": 174,
+   "n_papers": 71,
+   "run_folder": "runs/eval/20261121T125301Z_0d717273_dev_paper",
+   "code_fingerprint": "0d717273efc05d993a48b6785b0a6e9f2a3795a8d3bc4341123f4dc46941e878",
+   "created_utc": "2026-11-21T12:53:01.467877+00:00",
+   "note": "Development split: used to choose among configurations, so these numbers are optimistic by construction. Not a result."
+  },
+  "arms": [
+   {
+    "arm": "A",
+    "description": "recursive, vector",
+    "metrics": {
+     "nDCG@10": {
+      "mean": 0.45286990480185396,
+      "n": 174
+     },
+     "MRR": {
+      "mean": 0.4282726692209451,
+      "n": 174
+     },
+     "HitRate@5": {
+      "mean": 0.6436781609195402,
+      "n": 174
+     },
+     "EvidenceRecall@10": {
+      "mean": 0.7227490421455939,
+      "n": 174
+     },
+     "EvidenceF1@5": {
+      "mean": 0.20500267612336578,
+      "n": 174
+     }
+    },
+    "latency": {
+     "total_p50_ms": 30.804050002188887,
+     "total_p95_ms": 52.66065999785496,
+     "n_measured": 174
+    }
+   },
+   {
+    "arm": "B",
+    "description": "recursive, lexical",
+    "metrics": {
+     "nDCG@10": {
+      "mean": 0.38699415256834924,
+      "n": 174
+     },
+     "MRR": {
+      "mean": 0.32616995073891625,
+      "n": 174
+     },
+     "HitRate@5": {
+      "mean": 0.5919540229885057,
+      "n": 174
+     },
+     "EvidenceRecall@10": {
+      "mean": 0.6932950191570881,
+      "n": 174
+     },
+     "EvidenceF1@5": {
+      "mean": 0.17279059213643394,
+      "n": 174
+     }
+    },
+    "latency": {
+     "total_p50_ms": 21.32454999809852,
+     "total_p95_ms": 51.935739997134064,
+     "n_measured": 174
+    }
+   },
+   {
+    "arm": "C",
+    "description": "recursive, hybrid (naive)",
+    "metrics": {
+     "nDCG@10": {
+      "mean": 0.44789650082992205,
+      "n": 174
+     },
+     "MRR": {
+      "mean": 0.4132822477650064,
+      "n": 174
+     },
+     "HitRate@5": {
+      "mean": 0.6206896551724138,
+      "n": 174
+     },
+     "EvidenceRecall@10": {
+      "mean": 0.732088122605364,
+      "n": 174
+     },
+     "EvidenceF1@5": {
+      "mean": 0.19302584388791286,
+      "n": 174
+     }
+    },
+    "latency": {
+     "total_p50_ms": 51.76614999800222,
+     "total_p95_ms": 87.21993500221288,
+     "n_measured": 174
+    }
+   },
+   {
+    "arm": "D",
+    "description": "recursive, hybrid (rrf), k=60, weights 1/0.7",
+    "metrics": {
+     "nDCG@10": {
+      "mean": 0.5001399801655824,
+      "n": 174
+     },
+     "MRR": {
+      "mean": 0.48043012224046705,
+      "n": 174
+     },
+     "HitRate@5": {
+      "mean": 0.6551724137931034,
+      "n": 174
+     },
+     "EvidenceRecall@10": {
+      "mean": 0.7720785440613027,
+      "n": 174
+     },
+     "EvidenceF1@5": {
+      "mean": 0.20023077647317,
+      "n": 174
+     }
+    },
+    "latency": {
+     "total_p50_ms": 50.35409999982221,
+     "total_p95_ms": 70.38356000120983,
+     "n_measured": 174
+    }
+   },
+   {
+    "arm": "E",
+    "description": "semantic, vector",
+    "metrics": {
+     "nDCG@10": {
+      "mean": 0.45380946356223556,
+      "n": 174
+     },
+     "MRR": {
+      "mean": 0.4188286808976464,
+      "n": 174
+     },
+     "HitRate@5": {
+      "mean": 0.6494252873563219,
+      "n": 174
+     },
+     "EvidenceRecall@10": {
+      "mean": 0.7332375478927203,
+      "n": 174
+     },
+     "EvidenceF1@5": {
+      "mean": 0.17765793643742828,
+      "n": 174
+     }
+    },
+    "latency": {
+     "total_p50_ms": 31.470349997107405,
+     "total_p95_ms": 76.4549950014043,
+     "n_measured": 174
+    }
+   },
+   {
+    "arm": "F",
+    "description": "semantic, hybrid (rrf), k=60, weights 1/0.7",
+    "metrics": {
+     "nDCG@10": {
+      "mean": 0.5030896807600344,
+      "n": 174
+     },
+     "MRR": {
+      "mean": 0.46825852946542595,
+      "n": 174
+     },
+     "HitRate@5": {
+      "mean": 0.7011494252873564,
+      "n": 174
+     },
+     "EvidenceRecall@10": {
+      "mean": 0.789080459770115,
+      "n": 174
+     },
+     "EvidenceF1@5": {
+      "mean": 0.18572347276975226,
+      "n": 174
+     }
+    },
+    "latency": {
+     "total_p50_ms": 48.30759999822476,
+     "total_p95_ms": 80.18069000063404,
+     "n_measured": 174
+    }
+   },
+   {
+    "arm": "G",
+    "description": "recursive, hybrid (rrf), k=60, weights 1/0.7, + cross-encoder rerank",
+    "metrics": {
+     "nDCG@10": {
+      "mean": 0.48066533149892565,
+      "n": 174
+     },
+     "MRR": {
+      "mean": 0.43952973909870463,
+      "n": 174
+     },
+     "HitRate@5": {
+      "mean": 0.7183908045977011,
+      "n": 174
+     },
+     "EvidenceRecall@10": {
+      "mean": 0.7644157088122605,
+      "n": 174
+     },
+     "EvidenceF1@5": {
+      "mean": 0.21724032924123668,
+      "n": 174
+     }
+    },
+    "latency": {
+     "total_p50_ms": 1414.5651499966334,
+     "total_p95_ms": 1954.2491150019482,
+     "n_measured": 174,
+     "rerank_p50_ms": 1371.948349999002,
+     "rerank_p95_ms": 1888.1235249988088
+    }
+   },
+   {
+    "arm": "H",
+    "description": "semantic, hybrid (rrf), k=60, weights 1/0.7, + cross-encoder rerank",
+    "metrics": {
+     "nDCG@10": {
+      "mean": 0.5116151082898579,
+      "n": 174
+     },
+     "MRR": {
+      "mean": 0.4712598066046342,
+      "n": 174
+     },
+     "HitRate@5": {
+      "mean": 0.7471264367816092,
+      "n": 174
+     },
+     "EvidenceRecall@10": {
+      "mean": 0.7938697318007663,
+      "n": 174
+     },
+     "EvidenceF1@5": {
+      "mean": 0.1978523271153272,
+      "n": 174
+     }
+    },
+    "latency": {
+     "total_p50_ms": 1269.9421999968763,
+     "total_p95_ms": 1630.3394999966254,
+     "n_measured": 174,
+     "rerank_p50_ms": 1225.2402500016615,
+     "rerank_p95_ms": 1525.0602800009797
+    }
+   },
+   {
+    "arm": "R20_05",
+    "description": "recursive, hybrid (rrf), k=20, weights 1/0.5",
+    "metrics": {
+     "nDCG@10": {
+      "mean": 0.4947969553991529,
+      "n": 174
+     },
+     "MRR": {
+      "mean": 0.4710659551176793,
+      "n": 174
+     },
+     "HitRate@5": {
+      "mean": 0.6551724137931034,
+      "n": 174
+     },
+     "EvidenceRecall@10": {
+      "mean": 0.7682471264367817,
+      "n": 174
+     },
+     "EvidenceF1@5": {
+      "mean": 0.20145890658061047,
+      "n": 174
+     }
+    },
+    "latency": {
+     "total_p50_ms": 41.27765000157524,
+     "total_p95_ms": 72.95898500124167,
+     "n_measured": 174
+    }
+   },
+   {
+    "arm": "R20_07",
+    "description": "recursive, hybrid (rrf), k=20, weights 1/0.7",
+    "metrics": {
+     "nDCG@10": {
+      "mean": 0.5011355213344745,
+      "n": 174
+     },
+     "MRR": {
+      "mean": 0.48400383141762454,
+      "n": 174
+     },
+     "HitRate@5": {
+      "mean": 0.6609195402298851,
+      "n": 174
+     },
+     "EvidenceRecall@10": {
+      "mean": 0.7663314176245211,
+      "n": 174
+     },
+     "EvidenceF1@5": {
+      "mean": 0.2025975029778275,
+      "n": 174
+     }
+    },
+    "latency": {
+     "total_p50_ms": 41.11920000286773,
+     "total_p95_ms": 65.55027499634889,
+     "n_measured": 174
+    }
+   },
+   {
+    "arm": "R20_10",
+    "description": "recursive, hybrid (rrf), k=20, weights 1/1",
+    "metrics": {
+     "nDCG@10": {
+      "mean": 0.48892399418578597,
+      "n": 174
+     },
+     "MRR": {
+      "mean": 0.4698298668126254,
+      "n": 174
+     },
+     "HitRate@5": {
+      "mean": 0.6609195402298851,
+      "n": 174
+     },
+     "EvidenceRecall@10": {
+      "mean": 0.7572318007662835,
+      "n": 174
+     },
+     "EvidenceF1@5": {
+      "mean": 0.20261035730102667,
+      "n": 174
+     }
+    },
+    "latency": {
+     "total_p50_ms": 42.34215000178665,
+     "total_p95_ms": 69.91545000200857,
+     "n_measured": 174
+    }
+   },
+   {
+    "arm": "R60_05",
+    "description": "recursive, hybrid (rrf), k=60, weights 1/0.5",
+    "metrics": {
+     "nDCG@10": {
+      "mean": 0.5019627698668385,
+      "n": 174
+     },
+     "MRR": {
+      "mean": 0.48150656814449916,
+      "n": 174
+     },
+     "HitRate@5": {
+      "mean": 0.6609195402298851,
+      "n": 174
+     },
+     "EvidenceRecall@10": {
+      "mean": 0.7816570881226054,
+      "n": 174
+     },
+     "EvidenceF1@5": {
+      "mean": 0.2031894716732445,
+      "n": 174
+     }
+    },
+    "latency": {
+     "total_p50_ms": 41.380250000656815,
+     "total_p95_ms": 63.22901999956227,
+     "n_measured": 174
+    }
+   },
+   {
+    "arm": "R60_10",
+    "description": "recursive, hybrid (rrf), k=60, weights 1/1",
+    "metrics": {
+     "nDCG@10": {
+      "mean": 0.4938854371252989,
+      "n": 174
+     },
+     "MRR": {
+      "mean": 0.475307881773399,
+      "n": 174
+     },
+     "HitRate@5": {
+      "mean": 0.6494252873563219,
+      "n": 174
+     },
+     "EvidenceRecall@10": {
+      "mean": 0.762978927203065,
+      "n": 174
+     },
+     "EvidenceF1@5": {
+      "mean": 0.1981233691933489,
+      "n": 174
+     }
+    },
+    "latency": {
+     "total_p50_ms": 41.890950000379235,
+     "total_p95_ms": 61.469405002935645,
+     "n_measured": 174
+    }
+   },
+   {
+    "arm": "B2",
+    "description": "recursive, lexical, stopword-filtered lexical",
+    "metrics": {
+     "nDCG@10": {
+      "mean": 0.40997044568003954,
+      "n": 174
+     },
+     "MRR": {
+      "mean": 0.365004105090312,
+      "n": 174
+     },
+     "HitRate@5": {
+      "mean": 0.6436781609195402,
+      "n": 174
+     },
+     "EvidenceRecall@10": {
+      "mean": 0.6813218390804597,
+      "n": 174
+     },
+     "EvidenceF1@5": {
+      "mean": 0.1856774451602038,
+      "n": 174
+     }
+    },
+    "latency": {
+     "total_p50_ms": 11.284299998806091,
+     "total_p95_ms": 24.09122999852114,
+     "n_measured": 174
+    }
+   },
+   {
+    "arm": "D2",
+    "description": "recursive, hybrid (rrf), k=60, weights 1/0.7, stopword-filtered lexical",
+    "metrics": {
+     "nDCG@10": {
+      "mean": 0.4978703799765388,
+      "n": 174
+     },
+     "MRR": {
+      "mean": 0.47702745849297573,
+      "n": 174
+     },
+     "HitRate@5": {
+      "mean": 0.6666666666666666,
+      "n": 174
+     },
+     "EvidenceRecall@10": {
+      "mean": 0.7739942528735633,
+      "n": 174
+     },
+     "EvidenceF1@5": {
+      "mean": 0.20477593925869786,
+      "n": 174
+     }
+    },
+    "latency": {
+     "total_p50_ms": 35.09575000134646,
+     "total_p95_ms": 44.84965999836277,
+     "n_measured": 174
+    }
+   }
+  ]
+ },
+ "setting_comparison": {
+  "scope": {
+   "label": "DEV",
+   "split": "dev",
+   "setting": "EXTENSION: corpus-wide vs the primary single-paper setting",
+   "n_questions": 174,
+   "n_papers": 71,
+   "run_folder": "runs/eval/20261121T131902Z_0d717273_dev_corpus",
+   "code_fingerprint": "0d717273efc05d993a48b6785b0a6e9f2a3795a8d3bc4341123f4dc46941e878",
+   "created_utc": "2026-11-21T13:19:02.430761+00:00",
+   "note": "Same 174 dev questions in both settings; corpus-wide numbers from runs/eval/20261121T131902Z_0d717273_dev_corpus, single-paper numbers from runs/eval/20261121T125301Z_0d717273_dev_paper."
+  },
+  "entries": [
+   {
+    "setting": "paper (the question's paper is given)",
+    "arm": "A",
+    "run_folder": "runs/eval/20261121T125301Z_0d717273_dev_paper",
+    "code_fingerprint": "0d717273efc05d993a48b6785b0a6e9f2a3795a8d3bc4341123f4dc46941e878",
+    "metrics": {
+     "nDCG@10": {
+      "mean": 0.45286990480185396
+     },
+     "HitRate@5": {
+      "mean": 0.6436781609195402
+     },
+     "DocHit@5": {
+      "mean": 1.0
+     }
+    }
+   },
+   {
+    "setting": "paper (the question's paper is given)",
+    "arm": "D",
+    "run_folder": "runs/eval/20261121T125301Z_0d717273_dev_paper",
+    "code_fingerprint": "0d717273efc05d993a48b6785b0a6e9f2a3795a8d3bc4341123f4dc46941e878",
+    "metrics": {
+     "nDCG@10": {
+      "mean": 0.5001399801655824
+     },
+     "HitRate@5": {
+      "mean": 0.6551724137931034
+     },
+     "DocHit@5": {
+      "mean": 1.0
+     }
+    }
+   },
+   {
+    "setting": "corpus-wide (all papers searched, no filter)",
+    "arm": "A",
+    "run_folder": "runs/eval/20261121T131902Z_0d717273_dev_corpus",
+    "code_fingerprint": "0d717273efc05d993a48b6785b0a6e9f2a3795a8d3bc4341123f4dc46941e878",
+    "metrics": {
+     "nDCG@10": {
+      "mean": 0.11310866082442646
+     },
+     "HitRate@5": {
+      "mean": 0.14942528735632185
+     },
+     "DocHit@5": {
+      "mean": 0.43103448275862066
+     }
+    }
+   },
+   {
+    "setting": "corpus-wide (all papers searched, no filter)",
+    "arm": "D",
+    "run_folder": "runs/eval/20261121T131902Z_0d717273_dev_corpus",
+    "code_fingerprint": "0d717273efc05d993a48b6785b0a6e9f2a3795a8d3bc4341123f4dc46941e878",
+    "metrics": {
+     "nDCG@10": {
+      "mean": 0.11874437885726537
+     },
+     "HitRate@5": {
+      "mean": 0.1781609195402299
+     },
+     "DocHit@5": {
+      "mean": 0.40229885057471265
+     }
+    }
+   }
+  ]
+ },
+ "generation": {
+  "scope": {
+   "label": "EXPLORATORY",
+   "split": "dev",
+   "setting": "PRIMARY setting (paper mode, the question's paper is given); retrieval = frozen configuration D, top-5 chunks to the generator (a design default)",
+   "n_questions": 40,
+   "n_papers": 37,
+   "run_folder": "runs/gen/20261122T181541Z_c5fac105_dev_gen_R",
+   "code_fingerprint": "c5fac1051e3f0005bd8dd40408c48b66fbe85d8161a875ea4357d9e44cfc00c0",
+   "created_utc": "2026-11-22T18:15:41.534814+00:00",
+   "note": "EXPLORATORY: n=40 answerable dev questions, one arm (R = RAG, configuration D, top-5), one seeded sample; not a published result"
+  },
+  "generator": {
+   "model": "openai/gpt-oss-120b",
+   "provider": "groq",
+   "reasoning_effort": "low",
+   "temperature": 0.0,
+   "top_k": 5
+  },
+  "sample": {
+   "seed": 0,
+   "n_drawn": 40
+  },
+  "short_mode": {
+   "AnswerF1": {
+    "n": 40,
+    "n_papers": 37,
+    "mean": 0.4038955631919691,
+    "ci_low": 0.2746450576222486,
+    "ci_high": 0.5340085536496394
+   },
+   "AnswerF1_by_best_reference_type": {
+    "abstractive": {
+     "n": 9,
+     "n_papers": 9,
+     "mean": 0.16566149715403447,
+     "ci_low": 0.07221438746438748,
+     "ci_high": 0.2594315555920031
+    },
+    "extractive": {
+     "n": 25,
+     "n_papers": 22,
+     "mean": 0.5465947621316982,
+     "ci_low": 0.3821089204066804,
+     "ci_high": 0.7034432178699752
+    },
+    "yes_no": {
+     "n": 6,
+     "n_papers": 6,
+     "mean": 0.16666666666666666,
+     "ci_low": 0.0,
+     "ci_high": 0.5
+    }
+   },
+   "YesNoAccuracy": {
+    "n": 6,
+    "n_papers": 6,
+    "mean": 0.16666666666666666,
+    "ci_low": 0.0,
+    "ci_high": 0.5
+   },
+   "AbstentionRate_on_answerable": {
+    "n": 40,
+    "n_papers": 37,
+    "mean": 0.2,
+    "ci_low": 0.07894736842105263,
+    "ci_high": 0.3333333333333333
+   },
+   "n_questions": 40
+  },
+  "long_mode": {
+   "CitationValidity_per_answer": {
+    "n": 33,
+    "n_papers": 30,
+    "mean": 1.0,
+    "ci_low": 1.0,
+    "ci_high": 1.0
+   },
+   "CitationValidity_pooled": {
+    "valid": 50,
+    "cited": 50,
+    "rate": 1.0
+   },
+   "answers_with_no_citation": {
+    "n": 1,
+    "of": 34
+   },
+   "AbstentionRate_on_answerable": {
+    "n": 40,
+    "n_papers": 37,
+    "mean": 0.15,
+    "ci_low": 0.04878048780487805,
+    "ci_high": 0.2702702702702703
+   },
+   "n_questions": 40
+  },
+  "finish_reasons": {
+   "short": {
+    "stop": 40
+   },
+   "long": {
+    "stop": 40
+   }
+  },
+  "metrics_note": "Answer-F1 is the maximum token F1 over the annotators' references (SQuAD normalisation); an abstention scores 0. Intervals: 95% paper-clustered bootstrap."
+ },
+ "ragas": {
+  "scope": {
+   "label": "EXPLORATORY",
+   "split": null,
+   "setting": "RAGAS faithfulness and answer relevancy of the long answers, UNCALIBRATED Gemini judge",
+   "n_questions": 2,
+   "n_papers": 2,
+   "run_folder": "runs/gen/20261122T183200Z_c5fac105_dev_gen_ragas",
+   "code_fingerprint": "c5fac1051e3f0005bd8dd40408c48b66fbe85d8161a875ea4357d9e44cfc00c0",
+   "created_utc": "2026-11-22T18:32:00.460239+00:00",
+   "note": "EXPLORATORY: n=40 long answers of one arm (R), an UNCALIBRATED LLM judge (no human labels): the scores are the judge's opinion, not a measurement of correctness"
+  },
+  "complete": false,
+  "n_scored": 2,
+  "n_scorable": 34,
+  "selection": {
+   "long_mode_rows": 40,
+   "scored_candidates": 34,
+   "skipped_abstained": 6,
+   "skipped_no_contexts": 0,
+   "skipped_empty_answer": 0
+  },
+  "judge": {
+   "model": "gemini-2.5-flash",
+   "temperature": 0.0,
+   "thinking_budget": 1024,
+   "max_output_tokens": 4096,
+   "strictness": 1
+  },
+  "ragas_version": "0.4.4",
+  "stopped_reason": "the judge's daily quota is exhausted (HTTP 429, per-day limit): resume tomorrow"
+ },
+ "chunker_findings": [
+  {
+   "metric": "v1 semantic chunker: share of non-whitespace section characters not covered by any chunk",
+   "value": "0.18% (800 of 435,269 characters)",
+   "run_folders": [
+    "runs/measurements/chunk_coverage_20261121T090107Z"
+   ],
+   "code_fingerprint": "8378f80568a7ba8b8e8ce5fdceeaf37ba6416f93e95e74f978a7c2c1c0ad3842",
+   "scope_note": "First 20 corpus papers; real MiniLM at the pinned revision; v1 chunker from the snapshot, unmodified; all 404 v1 chunks were located. Small in volume. Describes the v1 chunker only."
+  },
+  {
+   "metric": "v1 semantic chunker: papers with any uncovered text",
+   "value": "5 of 20",
+   "run_folders": [
+    "runs/measurements/chunk_coverage_20261121T090107Z"
+   ],
+   "code_fingerprint": "8378f80568a7ba8b8e8ce5fdceeaf37ba6416f93e95e74f978a7c2c1c0ad3842",
+   "scope_note": "First 20 corpus papers. The loss is consistent with the dropped-group merge bug (reproduced by a constructed property-test input); the individual snippets were not traced to it, so this is not proven per snippet."
+  },
+  {
+   "metric": "Current semantic chunker: uncovered non-whitespace characters",
+   "value": "0 of 435,269 (0 of 20 papers affected)",
+   "run_folders": [
+    "runs/measurements/chunk_coverage_20261121T090107Z"
+   ],
+   "code_fingerprint": "8378f80568a7ba8b8e8ce5fdceeaf37ba6416f93e95e74f978a7c2c1c0ad3842",
+   "scope_note": "First 20 corpus papers; real MiniLM; per-section chunking (677 chunks). Same papers and characters as the v1 rows above."
+  },
+  {
+   "metric": "Chunks over the 256-token window when the cap is a plain regex word counter (measured with the real WordPiece tokenizer)",
+   "value": "layout 246 of 532; semantic 213 of 620; recursive 22 of 748; longest chunk 357 real tokens",
+   "run_folders": [
+    "runs/measurements/chunk_coverage_20261121T090107Z"
+   ],
+   "code_fingerprint": "8378f80568a7ba8b8e8ce5fdceeaf37ba6416f93e95e74f978a7c2c1c0ad3842",
+   "scope_note": "First 20 corpus papers; current chunkers run with a regex-counting embedder stand-in (reproduces the old regex fallback). Not a claim about the v1 code itself."
+  },
+  {
+   "metric": "Chunks over the 256-token window with the conservative estimator fallback",
+   "value": "0 of 1,177 recursive, 0 of 931 layout, 0 of 976 semantic; longest 231 real tokens",
+   "run_folders": [
+    "runs/measurements/chunk_coverage_20261121T090107Z"
+   ],
+   "code_fingerprint": "8378f80568a7ba8b8e8ce5fdceeaf37ba6416f93e95e74f978a7c2c1c0ad3842",
+   "scope_note": "First 20 corpus papers; ordinary scientific text only. The estimator is known to undercount accented/CJK stress text, which this sample does not contain."
+  },
+  {
+   "metric": "Chunks over the 256-token window with the real tokenizer as the counter",
+   "value": "0 of 764 recursive, 0 of 600 layout, 0 of 677 semantic; longest 256",
+   "run_folders": [
+    "runs/measurements/chunk_coverage_20261121T090107Z"
+   ],
+   "code_fingerprint": "8378f80568a7ba8b8e8ce5fdceeaf37ba6416f93e95e74f978a7c2c1c0ad3842",
+   "scope_note": "First 20 corpus papers; real MiniLM at the pinned revision."
+  },
+  {
+   "metric": "Recursive chunker effective size cap",
+   "value": "Configured bound 1,299 characters (`recursive_chunk_size` 1000 + `min_chunk_chars` 300 − 1). Observed longest chunk 1,290; raw splitter longest 1,000; 298 of 7,255 chunks (4.1%) exceed 1,000",
+   "run_folders": [
+    "runs/measurements/chunk_coverage_20261121T090107Z"
+   ],
+   "code_fingerprint": "8378f80568a7ba8b8e8ce5fdceeaf37ba6416f93e95e74f978a7c2c1c0ad3842",
+   "scope_note": "All 200 corpus papers (first 20 papers only: longest 1,200; 35 of 764 chunks over 1,000). Bound depends on the two config values."
+  },
+  {
+   "metric": "v1 semantic chunker: share of chunks crossing a section boundary, real MiniLM",
+   "value": "31.4% (127 of 404 chunks)",
+   "run_folders": [
+    "runs/measurements/chunking_20261121T075552Z"
+   ],
+   "code_fingerprint": "176eaba2a3c4cff275a5490dd6d39fcc6a8dfabf43aca49a0a68f5f7007db34a",
+   "scope_note": "First 20 corpus papers; the OLD whole-document v1 chunker (no longer used). Describes old behaviour, not a property of semantic chunking."
+  },
+  {
+   "metric": "v1 semantic chunker: same share with HashEmbedder",
+   "value": "44.2% (140 of 317 chunks)",
+   "run_folders": [
+    "runs/measurements/chunking_20261121T075552Z"
+   ],
+   "code_fingerprint": "176eaba2a3c4cff275a5490dd6d39fcc6a8dfabf43aca49a0a68f5f7007db34a",
+   "scope_note": "First 20 corpus papers; HashEmbedder (a hashing stand-in), not representative of the real model. Kept only so the earlier figure is accounted for."
+  }
+ ],
+ "claims_log": [
+  {
+   "metric": "v1 semantic chunker: share of non-whitespace section characters not covered by any chunk",
+   "value": "0.18% (800 of 435,269 characters)",
+   "run_folders": [
+    "runs/measurements/chunk_coverage_20261121T090107Z"
+   ],
+   "code_fingerprint": "8378f80568a7ba8b8e8ce5fdceeaf37ba6416f93e95e74f978a7c2c1c0ad3842",
+   "scope_note": "First 20 corpus papers; real MiniLM at the pinned revision; v1 chunker from the snapshot, unmodified; all 404 v1 chunks were located. Small in volume. Describes the v1 chunker only."
+  },
+  {
+   "metric": "v1 semantic chunker: papers with any uncovered text",
+   "value": "5 of 20",
+   "run_folders": [
+    "runs/measurements/chunk_coverage_20261121T090107Z"
+   ],
+   "code_fingerprint": "8378f80568a7ba8b8e8ce5fdceeaf37ba6416f93e95e74f978a7c2c1c0ad3842",
+   "scope_note": "First 20 corpus papers. The loss is consistent with the dropped-group merge bug (reproduced by a constructed property-test input); the individual snippets were not traced to it, so this is not proven per snippet."
+  },
+  {
+   "metric": "Current semantic chunker: uncovered non-whitespace characters",
+   "value": "0 of 435,269 (0 of 20 papers affected)",
+   "run_folders": [
+    "runs/measurements/chunk_coverage_20261121T090107Z"
+   ],
+   "code_fingerprint": "8378f80568a7ba8b8e8ce5fdceeaf37ba6416f93e95e74f978a7c2c1c0ad3842",
+   "scope_note": "First 20 corpus papers; real MiniLM; per-section chunking (677 chunks). Same papers and characters as the v1 rows above."
+  },
+  {
+   "metric": "Chunks over the 256-token window when the cap is a plain regex word counter (measured with the real WordPiece tokenizer)",
+   "value": "layout 246 of 532; semantic 213 of 620; recursive 22 of 748; longest chunk 357 real tokens",
+   "run_folders": [
+    "runs/measurements/chunk_coverage_20261121T090107Z"
+   ],
+   "code_fingerprint": "8378f80568a7ba8b8e8ce5fdceeaf37ba6416f93e95e74f978a7c2c1c0ad3842",
+   "scope_note": "First 20 corpus papers; current chunkers run with a regex-counting embedder stand-in (reproduces the old regex fallback). Not a claim about the v1 code itself."
+  },
+  {
+   "metric": "Chunks over the 256-token window with the conservative estimator fallback",
+   "value": "0 of 1,177 recursive, 0 of 931 layout, 0 of 976 semantic; longest 231 real tokens",
+   "run_folders": [
+    "runs/measurements/chunk_coverage_20261121T090107Z"
+   ],
+   "code_fingerprint": "8378f80568a7ba8b8e8ce5fdceeaf37ba6416f93e95e74f978a7c2c1c0ad3842",
+   "scope_note": "First 20 corpus papers; ordinary scientific text only. The estimator is known to undercount accented/CJK stress text, which this sample does not contain."
+  },
+  {
+   "metric": "Chunks over the 256-token window with the real tokenizer as the counter",
+   "value": "0 of 764 recursive, 0 of 600 layout, 0 of 677 semantic; longest 256",
+   "run_folders": [
+    "runs/measurements/chunk_coverage_20261121T090107Z"
+   ],
+   "code_fingerprint": "8378f80568a7ba8b8e8ce5fdceeaf37ba6416f93e95e74f978a7c2c1c0ad3842",
+   "scope_note": "First 20 corpus papers; real MiniLM at the pinned revision."
+  },
+  {
+   "metric": "Recursive chunker effective size cap",
+   "value": "Configured bound 1,299 characters (`recursive_chunk_size` 1000 + `min_chunk_chars` 300 − 1). Observed longest chunk 1,290; raw splitter longest 1,000; 298 of 7,255 chunks (4.1%) exceed 1,000",
+   "run_folders": [
+    "runs/measurements/chunk_coverage_20261121T090107Z"
+   ],
+   "code_fingerprint": "8378f80568a7ba8b8e8ce5fdceeaf37ba6416f93e95e74f978a7c2c1c0ad3842",
+   "scope_note": "All 200 corpus papers (first 20 papers only: longest 1,200; 35 of 764 chunks over 1,000). Bound depends on the two config values."
+  },
+  {
+   "metric": "v1 semantic chunker: share of chunks crossing a section boundary, real MiniLM",
+   "value": "31.4% (127 of 404 chunks)",
+   "run_folders": [
+    "runs/measurements/chunking_20261121T075552Z"
+   ],
+   "code_fingerprint": "176eaba2a3c4cff275a5490dd6d39fcc6a8dfabf43aca49a0a68f5f7007db34a",
+   "scope_note": "First 20 corpus papers; the OLD whole-document v1 chunker (no longer used). Describes old behaviour, not a property of semantic chunking."
+  },
+  {
+   "metric": "v1 semantic chunker: same share with HashEmbedder",
+   "value": "44.2% (140 of 317 chunks)",
+   "run_folders": [
+    "runs/measurements/chunking_20261121T075552Z"
+   ],
+   "code_fingerprint": "176eaba2a3c4cff275a5490dd6d39fcc6a8dfabf43aca49a0a68f5f7007db34a",
+   "scope_note": "First 20 corpus papers; HashEmbedder (a hashing stand-in), not representative of the real model. Kept only so the earlier figure is accounted for."
+  },
+  {
+   "metric": "TEST frozen configuration D (recursive chunks, hybrid RRF k=60, weights 1.0/0.7, no reranker): nDCG@10",
+   "value": "0.456",
+   "run_folders": [
+    "runs/eval/20261122T144233Z_3afc204d_test_paper"
+   ],
+   "code_fingerprint": "3afc204dec26c731a999c16b6fcfa86cedaa76e8144de5e21fe89b2871a3566c",
+   "scope_note": "TEST split, evaluated once (`eval/test_ledger.jsonl`: 1 line). PAPER mode (Qasper's single-document task: the question's paper is given), 292 answerable questions from 124 papers; retrieval only, top_k=10; span-based relevance; MiniLM `all-MiniLM-L6-v2` at the pinned revision; local Chroma store `chroma_v2`. Not an answer-quality metric and not corpus-wide retrieval. Pre-registered primary metric (`eval/PREREGISTRATION.md`, sha256 `90dbf0e1…3531`)."
+  },
+  {
+   "metric": "TEST frozen configuration D: MRR",
+   "value": "0.434",
+   "run_folders": [
+    "runs/eval/20261122T144233Z_3afc204d_test_paper"
+   ],
+   "code_fingerprint": "3afc204dec26c731a999c16b6fcfa86cedaa76e8144de5e21fe89b2871a3566c",
+   "scope_note": "Same scope as the nDCG@10 row. Pre-registered secondary metric."
+  },
+  {
+   "metric": "TEST frozen configuration D: HitRate@5",
+   "value": "0.682",
+   "run_folders": [
+    "runs/eval/20261122T144233Z_3afc204d_test_paper"
+   ],
+   "code_fingerprint": "3afc204dec26c731a999c16b6fcfa86cedaa76e8144de5e21fe89b2871a3566c",
+   "scope_note": "Same scope. Share of questions with a relevant chunk among the top 5 (a chunk is relevant if its character overlap with an evidence span is at least 0.5 × the shorter of the two). Pre-registered secondary metric."
+  },
+  {
+   "metric": "TEST frozen configuration D: EvidenceRecall@10",
+   "value": "0.705",
+   "run_folders": [
+    "runs/eval/20261122T144233Z_3afc204d_test_paper"
+   ],
+   "code_fingerprint": "3afc204dec26c731a999c16b6fcfa86cedaa76e8144de5e21fe89b2871a3566c",
+   "scope_note": "Same scope. Mean share of a question's gold evidence spans covered by some top-10 chunk. Pre-registered secondary metric."
+  },
+  {
+   "metric": "TEST frozen configuration D: EvidenceF1@5",
+   "value": "0.210",
+   "run_folders": [
+    "runs/eval/20261122T144233Z_3afc204d_test_paper"
+   ],
+   "code_fingerprint": "3afc204dec26c731a999c16b6fcfa86cedaa76e8144de5e21fe89b2871a3566c",
+   "scope_note": "Same scope. Paragraph-level F1 of the retrieved paragraphs against each annotator's evidence paragraphs, max over annotators (Qasper's definition applied to retrieval); questions whose annotators cited only tables or figures are left out. Pre-registered secondary metric."
+  },
+  {
+   "metric": "TEST arm A (recursive, vector-only): nDCG@10",
+   "value": "0.430",
+   "run_folders": [
+    "runs/eval/20261122T144233Z_3afc204d_test_paper"
+   ],
+   "code_fingerprint": "3afc204dec26c731a999c16b6fcfa86cedaa76e8144de5e21fe89b2871a3566c",
+   "scope_note": "Same scope as the D rows (test, paper mode, 292 questions, 124 papers)."
+  },
+  {
+   "metric": "TEST arm F (semantic chunks, hybrid RRF k=60, 1.0/0.7): nDCG@10",
+   "value": "0.463",
+   "run_folders": [
+    "runs/eval/20261122T144233Z_3afc204d_test_paper"
+   ],
+   "code_fingerprint": "3afc204dec26c731a999c16b6fcfa86cedaa76e8144de5e21fe89b2871a3566c",
+   "scope_note": "Same scope. Different chunking strategy from D, so the comparison with D is a comparison of two systems, not of one factor."
+  },
+  {
+   "metric": "TEST arm G (D + cross-encoder rerank of the top 20 fused candidates, `cross-encoder/ms-marco-MiniLM-L-6-v2` at revision `233902d2…bf0e0a`): nDCG@10",
+   "value": "0.514",
+   "run_folders": [
+    "runs/eval/20261122T144233Z_3afc204d_test_paper"
+   ],
+   "code_fingerprint": "3afc204dec26c731a999c16b6fcfa86cedaa76e8144de5e21fe89b2871a3566c",
+   "scope_note": "Same scope. G is not the frozen configuration; it is in the run only because the pre-registration requires \"frozen vs frozen + reranker\"."
+  },
+  {
+   "metric": "TEST comparison A vs D, nDCG@10 (pre-registered)",
+   "value": "−0.027 for A relative to D (A 0.430, D 0.456); paper-clustered 95% CI [−0.051, −0.002]; W/L/T (A better/worse/equal) 77/125/90; clustered p = 0.0320; **not significant after Holm** (m = 3)",
+   "run_folders": [
+    "runs/eval/20261122T144233Z_3afc204d_test_paper",
+    "runs/analysis/20261122_test_freeze_compare/test_preregistered_comparisons_nDCG10.txt"
+   ],
+   "code_fingerprint": "3afc204dec26c731a999c16b6fcfa86cedaa76e8144de5e21fe89b2871a3566c",
+   "scope_note": "Test, paper mode, 292 questions, 124 papers; 5,000 paper-clustered bootstrap resamples, seed 0; one Holm family of the 3 pre-registered comparisons. The unadjusted interval excludes 0 but the result does not survive the multiple-comparison correction, so it is not claimed as a difference."
+  },
+  {
+   "metric": "TEST comparison F vs D, nDCG@10 (pre-registered)",
+   "value": "+0.006 for F relative to D (F 0.463, D 0.456); clustered 95% CI [−0.012, +0.024]; W/L/T 107/82/103; p = 0.5035; not significant",
+   "run_folders": [
+    "runs/eval/20261122T144233Z_3afc204d_test_paper",
+    "runs/analysis/20261122_test_freeze_compare/test_preregistered_comparisons_nDCG10.txt"
+   ],
+   "code_fingerprint": "3afc204dec26c731a999c16b6fcfa86cedaa76e8144de5e21fe89b2871a3566c",
+   "scope_note": "Same scope and Holm family. No detectable difference between D and F."
+  },
+  {
+   "metric": "TEST comparison D vs G (frozen vs frozen + reranker), nDCG@10 (pre-registered)",
+   "value": "−0.058 for D relative to G (D 0.456, G 0.514); clustered 95% CI [−0.084, −0.031]; W/L/T (D better/worse/equal) 78/136/78; p = 0.0004; **significant after Holm** (m = 3): the reranker arm is higher",
+   "run_folders": [
+    "runs/eval/20261122T144233Z_3afc204d_test_paper",
+    "runs/analysis/20261122_test_freeze_compare/test_preregistered_comparisons_nDCG10.txt"
+   ],
+   "code_fingerprint": "3afc204dec26c731a999c16b6fcfa86cedaa76e8144de5e21fe89b2871a3566c",
+   "scope_note": "Same scope and Holm family. The dev split had shown no significant difference (D 0.500, G 0.481); the test result does not confirm that. Quality only: the reranker adds about 1.2 s per query on this CPU (next row)."
+  },
+  {
+   "metric": "TEST retrieval latency of D (retrieval only, not end-to-end): p50 / p95",
+   "value": "60 ms / 286 ms (max 3,466 ms)",
+   "run_folders": [
+    "runs/eval/20261122T144233Z_3afc204d_test_paper"
+   ],
+   "code_fingerprint": "3afc204dec26c731a999c16b6fcfa86cedaa76e8144de5e21fe89b2871a3566c",
+   "scope_note": "`retrieval_latency_ms` inside `Retriever.retrieve` for 292 questions per arm after 5 warm-up requests, paper-mode filter, CPU only (4 logical CPUs, 16 GB RAM, Windows 11, no GPU), shared laptop under normal load, so the tail (p95, max) is noisy. Excludes any LLM call."
+  },
+  {
+   "metric": "TEST retrieval latency of G (D + rerank): total p50 / p95; rerank stage p50 / p95",
+   "value": "total 1,242 ms / 1,942 ms; rerank stage 1,191 ms / 1,848 ms",
+   "run_folders": [
+    "runs/eval/20261122T144233Z_3afc204d_test_paper"
+   ],
+   "code_fingerprint": "3afc204dec26c731a999c16b6fcfa86cedaa76e8144de5e21fe89b2871a3566c",
+   "scope_note": "Same scope as the D latency row; rerank of 20 candidates by the cross-encoder on CPU."
+  },
+  {
+   "metric": "EXPLORATORY (dev, n=40, arm R only, no baseline, no noise floor): Answer-F1, short mode (max over annotator references), mean with 95% paper-clustered bootstrap CI",
+   "value": "0.404 (CI 0.275 to 0.534; 40 questions, 37 papers)",
+   "run_folders": [
+    "runs/gen/20261122T181541Z_c5fac105_dev_gen_R"
+   ],
+   "code_fingerprint": "c5fac1051e3f0005bd8dd40408c48b66fbe85d8161a875ea4357d9e44cfc00c0",
+   "scope_note": "DEV split, one seeded sample (seed 0) of 40 answerable questions, Groq gpt-oss-120b at reasoning effort low, top-5 retrieved chunks (config D, paper mode). Abstentions count as F1 0. Not a published result: no oracle or title-only baseline, no repeat to estimate run-to-run noise."
+  },
+  {
+   "metric": "EXPLORATORY (same run): abstention rate on answerable questions, short mode",
+   "value": "0.200 (CI 0.079 to 0.333; 8 of 40)",
+   "run_folders": [
+    "runs/gen/20261122T181541Z_c5fac105_dev_gen_R"
+   ],
+   "code_fingerprint": "c5fac1051e3f0005bd8dd40408c48b66fbe85d8161a875ea4357d9e44cfc00c0",
+   "scope_note": "Same scope as the Answer-F1 row. Four of the eight abstentions are yes/no questions."
+  },
+  {
+   "metric": "EXPLORATORY (same run): citation validity in long mode, pooled valid cited labels over cited labels",
+   "value": "50 of 50 valid; 1 of 34 non-abstained answers cited nothing",
+   "run_folders": [
+    "runs/gen/20261122T181541Z_c5fac105_dev_gen_R"
+   ],
+   "code_fingerprint": "c5fac1051e3f0005bd8dd40408c48b66fbe85d8161a875ea4357d9e44cfc00c0",
+   "scope_note": "Same scope. A valid marker only means the cited source was provided to the model, not that it supports the claim (faithfulness would test that; the RAGAS scoring is incomplete: 2 of 34 answers scored before the judge's daily quota ended, so no RAGAS number is logged). The parser accepts the lenticular brackets the model used."
+  }
+ ]
+}

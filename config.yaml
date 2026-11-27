@@ -1,31 +1,99 @@
-pipeline:
-  chunking: "semantic"            # options: "semantic", "recursive"
-  retrieval: "hybrid"             # options: "vector", "bm25", "hybrid"
-  fusion: "rrf"                   # options: "rrf", "none"
-  reranker_enabled: false         # false by default — +11.7s on CPU, enable only with GPU
+pipeline:                         # the ONE home of every retrieval knob: the Retriever's defaults and the answer path (rag_core RagConfig.from_config) both read it
+  retrieval: "hybrid"             # options: "vector", "lexical", "hybrid"   (answer path)
+  fusion: "rrf"                   # options: "rrf", "none"                   (answer path)
+  reranker_enabled: false         # documentation only: nothing reads it. The reranker is switched per call (rerank=True: the app sidebar, evaluation arms G/H).
+                                  # Measured on this CPU: rerank stage p50 1.19 s, p95 1.85 s (arm G, n=292, runs/eval/20261122T144233Z_3afc204d_test_paper/summary.json)
   reranker_model: "cross-encoder/ms-marco-MiniLM-L-6-v2"
-  top_k: 5
-  candidate_k: 20
+  reranker_revision: "233902d25c440f23af6f7d6e94d2946bac0bee0a"   # pinned HuggingFace commit, local cache only
+  top_k: 5                        # passages kept (and sent to the LLM by the app): a DESIGN DEFAULT, not tuned. Evaluation runs pass their own top_k (frozen D: 10)
+  candidate_k: 20                 # candidates taken from each leg before fusion
+  rerank_k: 20                    # fused list is cut to this before the reranker sees it (used only when rerank=True; arms G/H and the app use 20). Untuned.
   rrf_k: 60
   vector_weight: 1.0
-  bm25_weight: 0.7
-  vector_threshold: 0.35
-  bm25_threshold: 0.15
+  bm25_weight: 0.7                # weight of the lexical (SQLite FTS5) leg in the weighted RRF
 
 embedding:
   model: "sentence-transformers/all-MiniLM-L6-v2"
-  cache_enabled: true
-  cache_dir: ".cache/embeddings"
-  lru_cache_size: 512             # max cached query embeddings
+  revision: "1110a243fdf4706b3f48f1d95db1a4f5529b4d41"   # pinned HuggingFace commit
+  max_seq_length: 256             # tokens; text beyond this is truncated at embed time
 
-eval:
-  dataset_path: "eval/data/qasper_subset.json"
-  metrics:
-    - "recall@5"
-    - "mrr"
-    - "p50_latency_ms"
-    - "p95_latency_ms"
-    - "p99_latency_ms"
-  results_dir: "eval/results"
-  n_questions: 100
-  random_seed: 42
+embedding_gemini:                 # Stage 2b arm only; key from the GEMINI_API_KEY environment variable, never from a file
+  model: "gemini-embedding-001"   # confirmed (or changed) at the dry run, then fixed
+  version: "001"
+  dims: 768
+  documents_task: "RETRIEVAL_DOCUMENT"
+  queries_task: "RETRIEVAL_QUERY"
+  chroma_dir: "%LOCALAPPDATA%/advrag/chroma_gemini"   # same recursive chunks as chroma_v2, Gemini vectors
+
+store:
+  chroma_dir: "%LOCALAPPDATA%/advrag/chroma"   # local PersistentClient, outside OneDrive
+  collection_prefix: "rag_"                    # one collection per chunking strategy
+  upsert_batch_size: 300
+
+chunking:
+  max_chunk_chars: 2000           # hard cap on any chunk, all strategies
+  max_tokens: 256                 # hard cap on any chunk; must be <= embedding.max_seq_length
+  recursive_chunk_size: 1000
+  recursive_chunk_overlap: 200
+  semantic_similarity_threshold: 0.78
+  min_chunk_chars: 300
+  semantic_window_size: 3
+
+generation:                       # rag_core (the answer path); the API key comes ONLY from GEMINI_API_KEY (GROQ_API_KEY is still allowed in the environment but nothing reads it). Retrieval knobs (top_k, candidate_k, ...) live under pipeline.
+  max_context_tokens: 3000        # conservative estimate (rag_core/context.py), not a real generator tokenizer
+  max_question_chars: 500
+  temperature: 0.0
+  max_output_tokens: 1024         # reasoning tokens count toward the cap (they are inside completion_tokens), so the caps leave room for reasoning + answer. Design defaults, not tuned.
+  short_max_output_tokens: 512
+  providers: ["gemini"]           # Gemini only: no generation failover. The gateway itself still supports a provider list (rag_core/gateway.py).
+  judge:                          # OFFLINE evaluation judge only; never used on the answer path
+    provider: "gemini"
+    model: "gemini-3.5-flash-lite"
+    temperature: 0.0
+    # Gemini 2.5 thinking models: thinking_budget in tokens (0 = off, -1 = automatic; allowed range is model dependent). Thinking tokens count
+    # toward max_output_tokens, so the output limit must leave room for the answer (a tiny limit gave EMPTY text in the first live check).
+    # Both are design defaults, not tuned; they are recorded in every scoring run's config.json.
+    thinking_budget: 1024
+    max_output_tokens: 4096
+  prices: {}                      # per MILLION tokens: {"<model id>": {input: 0.0, output: 0.0}} with source and date in a comment. Empty = no cost is ever computed.
+  gemini_model: "gemini-3.5-flash-lite"   # the model of EVERY LLM call (answers and the judge); present in the live model list (scripts/check_model_ids.py)
+  timeout_s: 30
+  max_attempts: 3
+  breaker_threshold: 3
+  breaker_cooldown_s: 30
+  cache_max_entries: 256
+  cache_ttl_s: 3600
+
+prompts:                          # rag_core/prompt_store.py
+  mode: "langfuse"                # app default; tests and evaluation use "local" (templates from rag_core/prompts.py)
+  pin: {}                         # {"rag-answer-long": <version>}: use exactly that Langfuse version (evaluation runs: local or pinned)
+  cache_ttl_seconds: 60           # the SDK's prompt cache TTL
+  fetch_timeout_seconds: 2        # short: a slow Langfuse must never delay an answer; any failure falls back to the local template
+  failure_cache_seconds: 60       # after a failed fetch the local template is used for this long WITHOUT asking Langfuse again (else every request pays the timeout)
+  max_chars: 20000                # a fetched prompt longer than this is rejected
+
+tracing:                          # rag_core/tracing.py
+  enabled: true                   # still needs LANGFUSE_PUBLIC_KEY and LANGFUSE_SECRET_KEY in the environment
+  sample_rate: 1.0
+  daily_request_cap: 150          # requests traced per day (in memory): ~10 units each x 150 x 30 days ~ the 50k units/month free tier (docs/langfuse_notes.md)
+  capture: "masked"               # masked | full | none  (see PROJECT_CONTEXT: what we send to Langfuse)
+  trace_evaluation: false         # answer_short() and other evaluation paths do not trace unless true
+  flush_timeout_seconds: 3
+
+app:                              # the Streamlit app (app/guards.py reads every limit from here; nothing is hard-coded in the UI)
+  strategy: "recursive"           # the chunking strategy of the served index (the frozen configuration D uses recursive chunks)
+  daily_request_cap: 80           # answers that may call the LLM per UTC day, ALL sessions together; beyond it only the retrieved passages are shown.
+                                  # Sized from the generation run (about 1.2K tokens per call across short and long answers, long ones cost more) against the
+                                  # documented 200K tokens/day of the generator: 80 x ~1.3K is about half of it, leaving room for evaluation runs.
+  session_request_cap: 20         # answers per browser session
+  rate_limit_requests: 4          # per session, per window below
+  rate_limit_window_seconds: 60
+  access_code_attempts: 5         # wrong access codes per session before a lockout
+  access_code_lockout_seconds: 60
+  metrics_ttl_seconds: 3600       # the Observability snapshot is shared by all visitors; the free Metrics API allows about 100 requests/day
+  results_path: "app_data/results.json"       # built by scripts/build_app_artifacts.py; the Evaluation tab reads only this
+  papers_path: "app_data/papers.json"         # paper ids and titles (public Qasper metadata), built by the same script
+  manifest_dir: "runs/ingest"                 # ingest manifests: the self-check compares the store's chunk count with the latest manifest of the strategy
+  warmup_query: "warm up"
+  index_version_ttl_seconds: 30               # how often the index version in the cache keys is re-read (a re-ingest changes it)
+  feedback_path: "%LOCALAPPDATA%/advrag/feedback.sqlite3"   # thumbs are saved here FIRST (comment masked), then sent to Langfuse when the answer has a trace id

@@ -1,21 +1,17 @@
-.PHONY: install install-dev lint format test run-app run-api ingest help
+.PHONY: install lint format test run-app ingest help
 
 help:
 	@echo "Available targets:"
-	@echo "  install      Install core dependencies"
-	@echo "  install-dev  Install core + dev dependencies"
+	@echo "  install      Install the locked environment (requirements.lock) and the project (editable)"
 	@echo "  lint         Run ruff linter"
 	@echo "  format       Auto-fix ruff lint issues"
 	@echo "  test         Run test suite"
-	@echo "  run-app      Start the Streamlit UI"
-	@echo "  run-api      Start the FastAPI server"
-	@echo "  ingest       Ingest QASPER documents into ChromaDB"
+	@echo "  run-app      Start the Streamlit UI (set ADVRAG_INDEX_DIR first)"
+	@echo "  ingest       Ingest the Qasper corpus into the LOCAL store (STRATEGY=recursive|semantic|layout)"
 
 install:
-	pip install -e .
-
-install-dev:
-	pip install -e ".[dev,eval]"
+	pip install -r requirements.lock
+	pip install -e . --no-deps
 
 lint:
 	ruff check .
@@ -27,10 +23,8 @@ test:
 	pytest
 
 run-app:
-	streamlit run streamlit_app.py
+	streamlit run app/streamlit_app.py
 
-run-api:
-	uvicorn app.main:app --reload
-
+STRATEGY ?= recursive
 ingest:
-	python scripts/ingest_qasper.py
+	python scripts/ingest.py --strategy $(STRATEGY)

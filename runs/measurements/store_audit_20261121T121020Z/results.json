@@ -1,0 +1,17 @@
+{
+  "created_utc": "2026-11-21T12:10:14.373021+00:00",
+  "code_fingerprint": "b45a6048bcf38e67d7055079b729910e3cf17efc3a77e11016857da0a48e17a6",
+  "corpus_sha256": "e6c4f1f94a58460bc4b7116ba1d182e5deeda01fc944de69c3a84387d0905422",
+  "docs": 200,
+  "strategies": {
+    "semantic": {
+      "collection": "rag_semantic",
+      "chunks": 6442,
+      "chunks_whose_text_differs_from_section_slice": 0,
+      "chunks_unlocated": 0,
+      "nonwhitespace_source_chars": 4007452,
+      "uncovered_chars": 0,
+      "docs_with_any_uncovered_char": 0
+    }
+  }
+}

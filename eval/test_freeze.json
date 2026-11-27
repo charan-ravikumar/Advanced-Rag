@@ -1,0 +1,69 @@
+{
+  "frozen_arm": "D",
+  "frozen_description": "recursive chunks, hybrid RRF (k=60, vector weight 1.0, lexical weight 0.7), MiniLM vectors, no reranker, top_k=10, candidate_k=20",
+  "frozen_by": "owner instruction, 2026-11-22",
+  "preregistration_sha256_original_text": "90dbf0e1625ba6dfcc399c93257b1ef042e1ca791199f2d4b3bfc225a1a13531",
+  "setting": "paper mode (PRIMARY); metric nDCG@10; the test split is run once",
+  "note": "'arms' lists the arms of the single pre-registered test invocation: A, D (the frozen configuration), F, and G (= D + reranker, present only because the pre-registration requires 'frozen vs frozen + reranker'). 'rerank' is the run-level flag of that invocation (G reranks); the frozen configuration D itself has rerank=false.",
+  "arms": {
+    "A": {
+      "name": "A",
+      "strategy": "recursive",
+      "mode": "vector",
+      "fusion": null,
+      "rrf_k": null,
+      "vector_weight": null,
+      "lexical_weight": null,
+      "lexical": "fts",
+      "rerank": false,
+      "rerank_k": null,
+      "backend": "minilm",
+      "route_m": null
+    },
+    "D": {
+      "name": "D",
+      "strategy": "recursive",
+      "mode": "hybrid",
+      "fusion": "rrf",
+      "rrf_k": 60,
+      "vector_weight": 1.0,
+      "lexical_weight": 0.7,
+      "lexical": "fts",
+      "rerank": false,
+      "rerank_k": null,
+      "backend": "minilm",
+      "route_m": null
+    },
+    "F": {
+      "name": "F",
+      "strategy": "semantic",
+      "mode": "hybrid",
+      "fusion": "rrf",
+      "rrf_k": 60,
+      "vector_weight": 1.0,
+      "lexical_weight": 0.7,
+      "lexical": "fts",
+      "rerank": false,
+      "rerank_k": null,
+      "backend": "minilm",
+      "route_m": null
+    },
+    "G": {
+      "name": "G",
+      "strategy": "recursive",
+      "mode": "hybrid",
+      "fusion": "rrf",
+      "rrf_k": 60,
+      "vector_weight": 1.0,
+      "lexical_weight": 0.7,
+      "lexical": "fts",
+      "rerank": true,
+      "rerank_k": 20,
+      "backend": "minilm",
+      "route_m": null
+    }
+  },
+  "top_k": 10,
+  "candidate_k": 20,
+  "rerank": true
+}

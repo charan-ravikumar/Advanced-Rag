@@ -1,0 +1,108 @@
+{
+  "created_utc": "2026-11-21T08:28:41.174899+00:00",
+  "code_fingerprint": "70fa03b21a13011af39abc1035ac229ed12dec704ce502238ec3f199d83cf531",
+  "model": "sentence-transformers/all-MiniLM-L6-v2",
+  "revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+  "paper_ids": [
+    "1601.02403",
+    "1603.01514",
+    "1603.09631",
+    "1604.00727",
+    "1604.08504",
+    "1605.03481",
+    "1605.06083",
+    "1608.01884",
+    "1610.08815",
+    "1611.03599",
+    "1611.04798",
+    "1612.02482",
+    "1612.03226",
+    "1612.06685",
+    "1702.03342",
+    "1703.07090",
+    "1704.06194",
+    "1706.01678",
+    "1706.06894",
+    "1707.06806"
+  ],
+  "coverage_v1_vs_current_semantic": {
+    "v1_snapshot_chunker": "<repo>__v1_snapshot\\rag\\chunkers.py",
+    "papers": 20,
+    "v1": {
+      "chunks": 404,
+      "chunks_not_located": 0,
+      "nonwhitespace_chars": 435269,
+      "uncovered_chars": 800,
+      "uncovered_fraction": 0.0018379438921678319,
+      "papers_with_any_loss": 5,
+      "examples": [
+        {
+          "paper": "1601.02403",
+          "section": "Identification of argument components",
+          "snippet": "Boundary similarity BIBREF125 — Using this metric, the problem is treated solely"
+        },
+        {
+          "paper": "1603.01514",
+          "section": "Unsupervised SRL Pipeline",
+          "snippet": "The task we model, unsupervised semantic role induction, is the step 4 of this p"
+        },
+        {
+          "paper": "1605.06083",
+          "section": "Unwarranted inferences",
+          "snippet": "[leftmargin=0cm]\n\nWe've seen an example of this in the introduction, where the `"
+        }
+      ]
+    },
+    "current": {
+      "chunks": 677,
+      "nonwhitespace_chars": 435269,
+      "uncovered_chars": 0,
+      "uncovered_fraction": 0.0,
+      "papers_with_any_loss": 0,
+      "examples": []
+    },
+    "note": "v1 chunks that could not be located are excluded from coverage, so the v1 loss is an upper bound by that many chunks"
+  },
+  "recursive_size_cap_first_20": {
+    "papers": 20,
+    "recursive_chunk_size": 1000,
+    "min_chunk_chars": 300,
+    "max_chunk_chars_hard_cap": 2000,
+    "theoretical_effective_cap_chars": 1299,
+    "raw_splitter_chunks": {
+      "n": 784,
+      "max_len": 1000,
+      "over_chunk_size": 0
+    },
+    "final_chunks": {
+      "n": 764,
+      "max_len": 1200,
+      "median": 728.0,
+      "over_chunk_size": 35,
+      "share_over_chunk_size": 0.04581151832460733
+    },
+    "max_len_within_theoretical_cap": true,
+    "conclusion_check": "chunks longer than recursive_chunk_size can only come from the within-section merge of a tail shorter than min_chunk_chars"
+  },
+  "recursive_size_cap_all_papers": {
+    "papers": 200,
+    "recursive_chunk_size": 1000,
+    "min_chunk_chars": 300,
+    "max_chunk_chars_hard_cap": 2000,
+    "theoretical_effective_cap_chars": 1299,
+    "raw_splitter_chunks": {
+      "n": 7347,
+      "max_len": 1000,
+      "over_chunk_size": 0
+    },
+    "final_chunks": {
+      "n": 7255,
+      "max_len": 1290,
+      "median": 697,
+      "over_chunk_size": 298,
+      "share_over_chunk_size": 0.04107512060647829
+    },
+    "max_len_within_theoretical_cap": true,
+    "conclusion_check": "chunks longer than recursive_chunk_size can only come from the within-section merge of a tail shorter than min_chunk_chars"
+  }
+}

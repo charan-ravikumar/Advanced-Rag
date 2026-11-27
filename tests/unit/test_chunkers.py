@@ -4,7 +4,9 @@ import pytest
 from unittest.mock import MagicMock
 
 from schemas import Chunk, Document, Section
+from rag.embedders import HashEmbedder
 
+EMB = HashEmbedder()  # no model download needed; the real model is covered by @pytest.mark.model tests
 
 def _make_document(content: str, source: str = "test_paper") -> MagicMock:
     """Build a minimal mock Document compatible with the chunkers."""
@@ -115,31 +117,31 @@ class TestSemanticChunk:
     def test_returns_list(self):
         from rag.chunkers import semantic_chunk
         doc = _make_document(LONG_TEXT)
-        result = semantic_chunk(doc)
+        result = semantic_chunk(doc, embedder=EMB)
         assert isinstance(result, list)
 
     def test_chunks_are_chunk_instances(self):
         from rag.chunkers import semantic_chunk
         doc = _make_document(LONG_TEXT)
-        result = semantic_chunk(doc)
+        result = semantic_chunk(doc, embedder=EMB)
         assert all(isinstance(c, Chunk) for c in result)
 
     def test_chunking_strategy_metadata(self):
         from rag.chunkers import semantic_chunk
         doc = _make_document(LONG_TEXT)
-        result = semantic_chunk(doc)
+        result = semantic_chunk(doc, embedder=EMB)
         for chunk in result:
             assert chunk.metadata["chunking_strategy"] == "semantic"
 
     def test_empty_content_returns_empty(self):
         from rag.chunkers import semantic_chunk
         doc = _make_document("")
-        result = semantic_chunk(doc)
+        result = semantic_chunk(doc, embedder=EMB)
         assert result == []
 
     def test_min_chunk_size_respected(self):
         from rag.chunkers import semantic_chunk
         doc = _make_document(LONG_TEXT)
-        result = semantic_chunk(doc, min_chunk_chars=10)
+        result = semantic_chunk(doc, min_chunk_chars=10, embedder=EMB)
         for chunk in result:
             assert len(chunk.content) >= 10 or len(result) == 1
