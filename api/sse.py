@@ -6,7 +6,7 @@ One event is ``event: <name>\\ndata: <one line of JSON>\\n\\n``. Comment lines (
 from __future__ import annotations
 
 import json
-from typing import Iterable, Iterator
+from collections.abc import Iterable, Iterator
 
 from pydantic import BaseModel
 

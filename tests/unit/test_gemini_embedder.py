@@ -7,8 +7,16 @@ import numpy as np
 import pytest
 
 from rag.embedders import HashEmbedder, embed_documents, embed_query
-from rag.gemini_embedder import (EmbeddingCache, GeminiEmbedder, GeminiError, KEY_ENV, QuotaExhausted, TASK_DOCUMENT, TASK_QUERY,
-                                 default_cache_path)
+from rag.gemini_embedder import (
+    KEY_ENV,
+    TASK_DOCUMENT,
+    TASK_QUERY,
+    EmbeddingCache,
+    GeminiEmbedder,
+    GeminiError,
+    QuotaExhausted,
+    default_cache_path,
+)
 
 SECRET = "AIzaSy-THIS-IS-A-FAKE-TEST-KEY-1234567890"
 DIMS = 8

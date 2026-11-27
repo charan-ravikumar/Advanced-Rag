@@ -118,7 +118,7 @@ def main() -> int:
         for r in rows:
             if getattr(r, "type", None) == "GENERATION":
                 print(f"  generation  : model={getattr(r, 'model', None)} level={getattr(r, 'level', None)} prompt={getattr(r, 'prompt_name', None)} "
-                      f"v{getattr(r, 'prompt_version', None)} usage_keys={sorted((getattr(r, 'usage_details', None) or {}))}")
+                      f"v{getattr(r, 'prompt_version', None)} usage_keys={sorted(getattr(r, 'usage_details', None) or {})}")
         if rows:
             roots = [r for r in rows if not getattr(r, "parent_observation_id", None)]
             print(f"  root        : {[(r.name, getattr(r, 'level', None)) for r in roots]}")

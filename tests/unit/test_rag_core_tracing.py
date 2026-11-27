@@ -14,8 +14,21 @@ from types import SimpleNamespace
 import pytest
 
 from rag_core.config import TracingConfig
-from rag_core.tracing import (ANSWER_MAX_CHARS, QUESTION_MAX_CHARS, Capture, DailyCap, FakeTracer, NoopTracer, SafeTracer, build_tracer, configured_exporters,
-                              cost_details, mask_text, redact_deep, redact_keys)
+from rag_core.tracing import (
+    ANSWER_MAX_CHARS,
+    QUESTION_MAX_CHARS,
+    Capture,
+    DailyCap,
+    FakeTracer,
+    NoopTracer,
+    SafeTracer,
+    build_tracer,
+    configured_exporters,
+    cost_details,
+    mask_text,
+    redact_deep,
+    redact_keys,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 KEYS = ["gsk_abcdefghijklmnop1234", "AIzaSyA1234567890abcdefghijKLMNOP", "sk-lf-1234abcd-5678", "pk-lf-1234abcd-5678", "sk-proj_abcdefgh12345678",

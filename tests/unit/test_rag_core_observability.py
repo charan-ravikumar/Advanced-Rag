@@ -1,13 +1,30 @@
 """rag_core.scores (feedback) and rag_core.observability_reader (Metrics API v2 read side). Scripted HTTP, fake clock, FakeLangfuse: no network, no keys."""
 
-import json
 from datetime import datetime, timezone
 
 import pytest
 
-from rag_core.observability_reader import DAILY_QUERY_BUDGET, ERROR_TTL_S, ROW_LIMIT, TTL_S, ObservabilityReader, Panel, sample_data
-from rag_core.scores import (ANSWER_F1, COMMENT_MAX_CHARS, JUDGE_AGREEMENT, RAGAS_ANSWER_RELEVANCY, RAGAS_FAITHFULNESS, SCORES, USER_FEEDBACK, submit_feedback,
-                             submit_score, validate_score)
+from rag_core.observability_reader import (
+    DAILY_QUERY_BUDGET,
+    ERROR_TTL_S,
+    ROW_LIMIT,
+    TTL_S,
+    ObservabilityReader,
+    Panel,
+    sample_data,
+)
+from rag_core.scores import (
+    ANSWER_F1,
+    COMMENT_MAX_CHARS,
+    JUDGE_AGREEMENT,
+    RAGAS_ANSWER_RELEVANCY,
+    RAGAS_FAITHFULNESS,
+    SCORES,
+    USER_FEEDBACK,
+    submit_feedback,
+    submit_score,
+    validate_score,
+)
 from tests.unit.rag_core_fakes import FakeClock, FakeHttp, FakeLangfuse
 
 ENV = {"LANGFUSE_PUBLIC_KEY": "pk-lf-test", "LANGFUSE_SECRET_KEY": "sk-lf-test", "LANGFUSE_BASE_URL": "https://lf.example.test/"}

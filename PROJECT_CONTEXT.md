@@ -1332,3 +1332,21 @@ after each task, using the template below. (The older free-form diary lives in
 - **Evidence it works (test or measurement, with file path):** `tests/unit/test_docker_files.py` (static). By hand on 2026-11-27, linux/arm64 (printed output, no saved run): image built; torch `2.15.0+cpu`, no NVIDIA package; ingest verified 7255 chunks with store/lexical parity; `compose up --wait` made both services healthy; `/v1/ready` true; `/v1/retrieve` returned 5 passages; `/v1/answer` without a key degraded to passages; the UI script ran in the container with no exception (Streamlit AppTest, not a browser).
 - **Likely interview questions and strong answers:** *"Why isn't the model in the image?"* — "Images should carry code and pinned packages. Models are large, pinned by revision and mounted read-only, so the container can't download or change them."
 - **Honest limitations:** No live Gemini or Langfuse call and no reranking in a container. UI not looked at in a real browser. No CI build.
+
+### Deferred: baseline generation evaluation (B0, B1, B4) until paid model quota
+- **What we did:** Nothing was run. The task, the owner's decisions (judge `gemini-3.8-flash`; all 48 unanswerable questions for this evaluation only; no free-tier run) and the missing pieces are in `docs/TODO.md`. Return point: commit `cbf0897`.
+- **Why (the problem it solves):** A full run with a repeat is a few thousand model calls; free-tier quota would stretch it over days.
+- **Alternatives considered and why rejected:** A pilot or a seeded sample on free-tier quota: the owner chose to wait.
+- **Trade-offs / what it costs:** Generation quality of the current model stays unmeasured.
+- **Evidence it works (test or measurement, with file path):** None: no run.
+- **Likely interview questions and strong answers:** *"What is your hallucination rate?"* — "Not measured yet for the current model. The plan and its baselines are written down; I don't quote a number without a run."
+- **Honest limitations:** The 48-question plan reuses 29 unanswerable questions of an already-opened test split, and the judge shares the generator's model family.
+
+### CI with GitHub Actions
+- **What we did:** Added `.github/workflows/ci.yml` (push and pull_request): `ruff check .`; `mypy` on `rag_core`; `pytest --fast`; a Docker build with `scripts/ci_smoke.sh` (downloads the pinned MiniLM revision in CI only, indexes 5 papers, `compose up`, requires `/v1/ready` ready and a non-empty `/v1/retrieve`); `pip-audit` on `requirements.lock` (blocking) and on the eval lock (report only). pip and Docker layers are cached. Fixed the findings so the checks start green: ruff (163, mostly automatic import and annotation changes) and mypy (60, annotations and explicit None narrowing in `rag_core`). Tool pins in `requirements-ci.txt` (mypy and pip-audit are new dependencies, CI only). README badge.
+- **Why (the problem it solves):** Nothing checked a change automatically.
+- **Alternatives considered and why rejected:** A narrower ruff rule set or blanket mypy ignores (a green badge that means less); failing the build on the eval lock (its two extra findings would need dependency upgrades the owner has not approved); skipping the model download (then `/v1/ready` could never be ready).
+- **Trade-offs / what it costs:** Four chromadb server advisories with no published fix are ignored by id, with the reason in `.github/pip-audit-ignore.txt`. Action versions are pinned to major tags, not commit hashes. The smoke test indexes 5 papers, so it proves wiring, not quality.
+- **Evidence it works (test or measurement, with file path):** `tests/unit/test_ci_workflow.py`; the GitHub Actions runs of the repository (green on the branch, red on the deliberately failing pull request).
+- **Likely interview questions and strong answers:** *"What does your green badge mean?"* — "Lint, types on the core package, the fast tests, an image that builds and becomes ready on a real index, and no known vulnerability in the runtime lock apart from four listed server-side ones. It says nothing about answer quality."
+- **Honest limitations:** No slow or model tests, no x86-vs-arm matrix, no live LLM call.

@@ -13,7 +13,8 @@ optionally ``evidence_idx``), so ``rag.retriever.Hit``, ``rag.schemas_ingest.Chu
 from __future__ import annotations
 
 import math
-from typing import Iterable, NamedTuple, Sequence
+from collections.abc import Iterable, Sequence
+from typing import NamedTuple
 
 OVERLAP_FRACTION = 0.5
 KS = (1, 5, 10)

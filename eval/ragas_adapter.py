@@ -15,7 +15,14 @@ import os
 
 os.environ.setdefault("RAGAS_DO_NOT_TRACK", "true")  # before any ragas import (ragas posts usage analytics otherwise)
 
-from eval.judge_core import CachingJudge, JudgeError, JudgeSettings, JudgeStats, RawJudgeResult, classify_http_error  # noqa: E402
+from eval.judge_core import (  # noqa: E402
+    CachingJudge,
+    JudgeError,
+    JudgeSettings,
+    JudgeStats,
+    RawJudgeResult,
+    classify_http_error,
+)
 
 
 def package_version(name: str) -> str | None:

@@ -21,8 +21,9 @@ citation without a source) are skipped and counted, never guessed.
 from __future__ import annotations
 
 import html
+from collections.abc import Sequence
 from dataclasses import dataclass, field
-from typing import Any, Sequence
+from typing import Any
 
 from pydantic_core import from_json
 
@@ -195,10 +196,11 @@ class StreamRenderer:
         if not isinstance(obj, dict) or obj.get("status") != STATUS_ANSWERED:
             return ""
         raw = [c for c in (obj.get("claims") or []) if isinstance(c, dict)] if isinstance(obj.get("claims"), list) else []
-        parts = []
+        parts: list[tuple[str, list[str], bool]] = []
         for i, claim in enumerate(raw):
-            text = claim.get("text") if isinstance(claim.get("text"), str) else ""
-            cites = claim.get("citations") if isinstance(claim.get("citations"), list) else []
+            raw_text, raw_cites = claim.get("text"), claim.get("citations")
+            text = raw_text if isinstance(raw_text, str) else ""
+            cites: list = raw_cites if isinstance(raw_cites, list) else []
             labels = [c["source"] for c in cites if isinstance(c, dict) and isinstance(c.get("source"), str)]
             parts.append((text, labels, i < len(raw) - 1))
         display = _join(parts)

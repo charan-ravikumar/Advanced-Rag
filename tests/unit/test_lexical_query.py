@@ -3,7 +3,12 @@
 import pytest
 
 from rag.lexical import SqliteFtsIndex
-from rag.lexical_query import STOPWORDS, StopwordFilteredLexical, filter_stopwords, stopword_match_query
+from rag.lexical_query import (
+    STOPWORDS,
+    StopwordFilteredLexical,
+    filter_stopwords,
+    stopword_match_query,
+)
 from rag.schemas_ingest import Chunk
 
 

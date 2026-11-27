@@ -26,10 +26,9 @@ import json
 import os
 import random
 import sys
-import time
+from collections.abc import Callable, Sequence
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Callable, Sequence
 
 os.environ.setdefault("RAGAS_DO_NOT_TRACK", "true")  # set before anything could import ragas
 os.environ.setdefault("HF_HUB_OFFLINE", "1")
@@ -39,10 +38,11 @@ if str(ROOT) not in sys.path:
 
 from eval.answer_metrics import score_long, score_short, summarize_long, summarize_short  # noqa: E402
 from eval.disk_cache import DiskCache  # noqa: E402
-from eval.gen_arms import ContextHit, FixedContextRetriever, context_hash, usable_references  # noqa: E402
+from eval.gen_arms import FixedContextRetriever, context_hash, usable_references  # noqa: E402
 from eval.quota_plan import Pacer  # noqa: E402
+from rag_core.claims import MIN_QUOTE_WORDS  # noqa: E402
+from rag_core.claims import SCHEMA_VERSION as CLAIMS_SCHEMA_VERSION  # noqa: E402
 from rag_core.schemas import AnswerResult  # noqa: E402
-from rag_core.claims import MIN_QUOTE_WORDS, SCHEMA_VERSION as CLAIMS_SCHEMA_VERSION  # noqa: E402
 
 LABEL = "EXPLORATORY: n=40 answerable dev questions, one arm (R = RAG, configuration D, top-5), one seeded sample; not a published result"
 PREREG_FILE = ROOT / "eval" / "PREREGISTRATION_gen.md"
@@ -285,7 +285,12 @@ def main(argv=None, *, retriever=None, gateway=None, index_version: str | None =
 
     if args.split == "test":
         check_test_guard(confirmed=args.final, freeze_path=Path(args.freeze_file))
-    from eval.run_retrieval_eval import hardware_info, preregistration_info, verify_checksums, write_run  # lazy: numpy and the retrieval metrics
+    from eval.run_retrieval_eval import (  # lazy: numpy and the retrieval metrics
+        hardware_info,
+        preregistration_info,
+        verify_checksums,
+        write_run,
+    )
 
     prereg = preregistration_info(Path(args.prereg), Path(args.prereg_hash_file))  # refuses if the pre-registered text changed
     golden_path, split_path = Path(args.golden), Path(args.split_file)

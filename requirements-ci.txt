@@ -1,0 +1,4 @@
+# Tools used by CI only (.github/workflows/ci.yml), pinned. Not part of requirements.lock or the Docker image.
+ruff==0.17.6
+mypy==2.4.1
+pip-audit==2.10.1

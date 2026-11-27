@@ -14,7 +14,7 @@ from rag_core.cache import InMemoryTTLCache
 from rag_core.config import RagConfig
 from rag_core.gateway import LLMGateway
 from rag_core.service import RagService, index_version_for
-from tests.unit.rag_core_fakes import answer_json, FakeClock, ok, ScriptedProvider
+from tests.unit.rag_core_fakes import FakeClock, ScriptedProvider, answer_json, ok
 
 TOPICS = ["alpha model training dataset", "network latency server cache", "protein cell enzyme sequence", "river delta soil water", "market price trade supply"]
 EMB = HashEmbedder()

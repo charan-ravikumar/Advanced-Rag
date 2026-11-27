@@ -17,11 +17,10 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
-from schemas import Document, Section
-
 from config import cfg
 from rag.chunkers import CHUNKER_MAP
 from rag.schemas_ingest import Chunk, sha256_text
+from schemas import Document, Section
 
 STRATEGIES = ("recursive", "layout", "semantic")
 CONFIDENCES = ("exact", "normalised", "ambiguous", "not_found")

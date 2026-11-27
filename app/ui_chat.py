@@ -18,15 +18,15 @@ from __future__ import annotations
 
 import re
 import uuid
+from collections.abc import Iterable, Iterator
 from dataclasses import dataclass, field
-from typing import Any, Iterable, Iterator
 
 import streamlit as st
 
 from app.artifacts import cross_paper_facts, fmt_ms, rerank_facts
 from app.guards import SessionGuard, check_question
 from rag_core.errors import InvalidQuestion
-from rag_core.schemas import AnswerResult, Claim, SpanCitation, Source
+from rag_core.schemas import AnswerResult, Claim, Source, SpanCitation
 
 SESSION_GUARD_KEY = "__session_guard__"
 TURN_KEY = "turn"

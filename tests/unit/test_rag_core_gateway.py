@@ -3,11 +3,18 @@ and the two thin SDK wrappers (with fake clients and the REAL SDK exception clas
 
 from types import SimpleNamespace
 
-import httpx
 import pytest
 
 from rag_core.errors import AllProvidersFailed, MidStreamError, ProviderError
-from rag_core.gateway import CircuitBreaker, Delta, Final, GeminiProvider, LLMGateway, StreamDone, as_provider_error
+from rag_core.gateway import (
+    CircuitBreaker,
+    Delta,
+    Final,
+    GeminiProvider,
+    LLMGateway,
+    StreamDone,
+    as_provider_error,
+)
 from tests.unit.rag_core_fakes import FakeClock, ScriptedProvider, fail, ok
 
 MSGS = [{"role": "system", "content": "s"}, {"role": "user", "content": "u"}]

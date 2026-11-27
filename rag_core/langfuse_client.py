@@ -12,7 +12,8 @@ from __future__ import annotations
 import base64
 import os
 import threading
-from typing import Any, Mapping
+from collections.abc import Mapping
+from typing import Any
 
 PUBLIC_KEY_ENV = "LANGFUSE_PUBLIC_KEY"
 SECRET_KEY_ENV = "LANGFUSE_SECRET_KEY"
@@ -63,7 +64,7 @@ def langfuse_span_exporter(env: Mapping[str, str] | None = None, *, timeout_s: i
         return None
     from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
 
-    auth = base64.b64encode(f"{env[PUBLIC_KEY_ENV]}:{env[SECRET_KEY_ENV]}".encode("utf-8")).decode("ascii")
+    auth = base64.b64encode(f"{env[PUBLIC_KEY_ENV]}:{env[SECRET_KEY_ENV]}".encode()).decode("ascii")
     # ingestion version 4 = metadata values arrive JSON-encoded, as rag_core.otel_tracing writes them (the same header the v5 SDK sends)
     return OTLPSpanExporter(endpoint=otlp_endpoint(env), headers={"Authorization": f"Basic {auth}", "x-langfuse-ingestion-version": "4"}, timeout=timeout_s)
 

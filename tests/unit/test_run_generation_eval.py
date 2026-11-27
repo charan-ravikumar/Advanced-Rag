@@ -10,13 +10,22 @@ import pytest
 
 import eval.run_generation_eval as rg
 from eval.compare import load_rows, metric_by_question
-from eval.run_generation_eval import (GenerationCache, GuardRefused, TokenGovernor, TokenLedger, build_retrieve, check_test_guard, eligible_questions, generation_key,
-                                      select_sample)
+from eval.run_generation_eval import (
+    GenerationCache,
+    GuardRefused,
+    TokenGovernor,
+    TokenLedger,
+    build_retrieve,
+    check_test_guard,
+    eligible_questions,
+    generation_key,
+    select_sample,
+)
 from rag_core.config import RagConfig
 from rag_core.gateway import Delta, Final, LLMGateway
 from rag_core.prompts import SYSTEM_SHORT
 from rag_core.service import RagService
-from tests.unit.rag_core_fakes import answer_json, fail, FakeClock, FakeRetriever, make_hit
+from tests.unit.rag_core_fakes import FakeClock, FakeRetriever, answer_json, fail, make_hit
 
 START = datetime(2026, 11, 22, 12, 0, tzinfo=timezone.utc)
 

@@ -12,7 +12,7 @@ Import-safe: no I/O at import. The stopword list is fixed here (a standard Engli
 from __future__ import annotations
 
 import re
-from typing import Sequence
+from collections.abc import Sequence
 
 from rag.lexical import escape_query
 

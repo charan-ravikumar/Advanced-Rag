@@ -2,7 +2,13 @@
 
 import pytest
 
-from rag_core.cache import InMemoryTTLCache, config_hash, is_cacheable, make_cache_key, normalise_question
+from rag_core.cache import (
+    InMemoryTTLCache,
+    config_hash,
+    is_cacheable,
+    make_cache_key,
+    normalise_question,
+)
 from rag_core.schemas import AnswerResult, ErrorInfo, Source
 from tests.unit.rag_core_fakes import FakeClock
 

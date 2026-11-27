@@ -19,7 +19,12 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 from rag.chunkers import _paragraph_spans
 from rag.splitting import recursive_split_spans
-from rag.tokens import estimate_token_count, split_to_fit, split_to_fit_spans, split_to_fit_with_offsets
+from rag.tokens import (
+    estimate_token_count,
+    split_to_fit,
+    split_to_fit_spans,
+    split_to_fit_with_offsets,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 CORPUS = ROOT / "eval" / "datasets" / "qasper_dev" / "corpus.json"

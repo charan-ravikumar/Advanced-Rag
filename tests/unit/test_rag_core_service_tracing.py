@@ -11,7 +11,17 @@ from rag_core.errors import InvalidQuestion
 from rag_core.prompt_store import LangfusePromptStore, LocalPromptStore
 from rag_core.prompts import PROMPT_NAMES, PROMPT_VERSION
 from rag_core.tracing import FakeTracer
-from tests.unit.rag_core_fakes import ABSTAIN_JSON, FakePrompt, FakePromptClient, FakeRetriever, answer_json, chat_messages, fail, make_hit, ok
+from tests.unit.rag_core_fakes import (
+    ABSTAIN_JSON,
+    FakePrompt,
+    FakePromptClient,
+    FakeRetriever,
+    answer_json,
+    chat_messages,
+    fail,
+    make_hit,
+    ok,
+)
 from tests.unit.test_rag_core_service import Q, done_of, events, make
 
 KEY = "gsk_abcdefghijklmnop1234567890"

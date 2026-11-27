@@ -21,9 +21,10 @@ import random
 import re
 import threading
 import time
+from collections.abc import Callable, Iterator, Sequence
 from contextlib import contextmanager
-from datetime import datetime, timezone
-from typing import Any, Callable, Iterator, Protocol, Sequence
+from datetime import date, datetime, timezone
+from typing import Any, Protocol
 
 from rag_core.config import TracingConfig
 
@@ -166,7 +167,7 @@ class _NoopHandle:
 
 
 class NoopTrace:
-    trace_id = None
+    trace_id: str | None = None
 
     @contextmanager
     def span(self, name: str, **attrs: Any) -> Iterator[SpanHandle]:
@@ -189,7 +190,7 @@ class NoopTracer:
 
     enabled = False
 
-    def start_request(self, name: str, **kw: Any) -> NoopTrace:
+    def start_request(self, name: str, *, session_id: str | None = None, input: Any = None, metadata: dict | None = None) -> NoopTrace:
         return NoopTrace()
 
     def flush(self, timeout_s: float | None = None) -> None:
@@ -321,7 +322,7 @@ class _FakeHandle:
 
 
 class FakeTrace:
-    def __init__(self, tracer: "FakeTracer", trace_id: str, root: dict):
+    def __init__(self, tracer: FakeTracer, trace_id: str, root: dict):
         self._tracer, self.trace_id, self.observations = tracer, trace_id, [root]
 
     def _add(self, name: str, otype: str, parent: str, attrs: dict, **extra: Any) -> dict:
@@ -383,7 +384,8 @@ class FakeTracer:
     enabled = True
 
     def __init__(self, *, raise_on_call: bool = False):
-        self.raise_on_call, self.traces, self.flushes = raise_on_call, [], 0
+        self.raise_on_call, self.flushes = raise_on_call, 0
+        self.traces: list[FakeTrace] = []
 
     def start_request(self, name: str, *, session_id: str | None = None, input: Any = None, metadata: dict | None = None) -> FakeTrace:
         if self.raise_on_call:
@@ -405,7 +407,8 @@ class DailyCap:
     """At most ``limit`` requests per UTC day, counted in memory (a restart resets it; it is a cost guard, not an accounting system)."""
 
     def __init__(self, limit: int, clock: Callable[[], float] = time.time):
-        self.limit, self._clock, self._day, self._count, self._lock = limit, clock, None, 0, threading.Lock()
+        self.limit, self._clock, self._count, self._lock = limit, clock, 0, threading.Lock()
+        self._day: date | None = None
 
     def allow(self) -> bool:
         day = datetime.fromtimestamp(self._clock(), tz=timezone.utc).date()

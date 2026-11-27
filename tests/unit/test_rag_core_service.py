@@ -5,17 +5,40 @@ import re
 
 import pytest
 
-import rag_core.service as service_module
 from rag_core.cache import InMemoryTTLCache
 from rag_core.config import RagConfig
 from rag_core.errors import InvalidQuestion
 from rag_core.gateway import LLMGateway
 from rag_core.prompt_store import LocalPromptStore
-from rag_core.prompts import INSUFFICIENT_CONTEXT, PROMPT_VERSION, SYSTEM_LONG, SYSTEM_SHORT, local_template
+from rag_core.prompts import (
+    INSUFFICIENT_CONTEXT,
+    PROMPT_VERSION,
+    SYSTEM_LONG,
+    SYSTEM_SHORT,
+    local_template,
+)
 from rag_core.schemas import AnswerResult
-from rag_core.service import ABSTAIN_MESSAGE, DEGRADED_MESSAGE, DIRECT_REPLY, NO_RESULTS_MESSAGE, RagService, clean_short_answer, index_version_for
-from tests.unit.rag_core_fakes import (ABSTAIN_JSON, FakeClock, FakeRetriever, ScriptedProvider, TickingPerf, answer_json, default_quote, fail, make_hit,
-                                      ok)
+from rag_core.service import (
+    ABSTAIN_MESSAGE,
+    DEGRADED_MESSAGE,
+    DIRECT_REPLY,
+    NO_RESULTS_MESSAGE,
+    RagService,
+    clean_short_answer,
+    index_version_for,
+)
+from tests.unit.rag_core_fakes import (
+    ABSTAIN_JSON,
+    FakeClock,
+    FakeRetriever,
+    ScriptedProvider,
+    TickingPerf,
+    answer_json,
+    default_quote,
+    fail,
+    make_hit,
+    ok,
+)
 
 Q = "What does the attention mechanism compute?"
 

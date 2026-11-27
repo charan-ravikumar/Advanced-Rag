@@ -11,9 +11,19 @@ answer at all: connection refused, timeout, a dropped stream). Nothing here prin
 
 from __future__ import annotations
 
-from typing import Any, Iterator
+from collections.abc import Iterator
+from typing import Any
 
-from api.schemas import (AskRequest, FeedbackRequest, FeedbackResponse, MetaResponse, ObservabilityResponse, ReadyResponse, RetrieveRequest, RetrieveResponse)
+from api.schemas import (
+    AskRequest,
+    FeedbackRequest,
+    FeedbackResponse,
+    MetaResponse,
+    ObservabilityResponse,
+    ReadyResponse,
+    RetrieveRequest,
+    RetrieveResponse,
+)
 from api.sse import decode_service_event, iter_sse
 from rag_core.schemas import AnswerResult
 

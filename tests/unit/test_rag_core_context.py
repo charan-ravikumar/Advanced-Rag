@@ -2,11 +2,16 @@
 
 from types import SimpleNamespace
 
-import pytest
-
 from rag.tokens import estimate_token_count
-from rag_core.context import (DEFAULT_MAX_CHUNKS, DEFAULT_MAX_TOKENS, MIN_TRUNCATED_TOKENS, PER_SOURCE_OVERHEAD_TOKENS, TRUNCATION_MARK,
-                              build_context, truncate_to_tokens)
+from rag_core.context import (
+    DEFAULT_MAX_CHUNKS,
+    DEFAULT_MAX_TOKENS,
+    MIN_TRUNCATED_TOKENS,
+    PER_SOURCE_OVERHEAD_TOKENS,
+    TRUNCATION_MARK,
+    build_context,
+    truncate_to_tokens,
+)
 from tests.unit.rag_core_fakes import make_hit
 
 

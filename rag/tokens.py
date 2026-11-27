@@ -5,7 +5,7 @@ character offsets can still be recovered by the adapter.
 """
 
 import re
-from typing import Callable
+from collections.abc import Callable
 
 from config import cfg
 

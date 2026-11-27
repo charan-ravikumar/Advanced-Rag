@@ -16,7 +16,7 @@ def sha256_text(text: str) -> str:
 
 
 def make_chunk_id(doc_id: str, strategy: str, chunk_idx: int, text_hash: str) -> str:
-    return hashlib.sha1(f"{doc_id}|{strategy}|{chunk_idx}|{text_hash}".encode("utf-8")).hexdigest()[:16]
+    return hashlib.sha1(f"{doc_id}|{strategy}|{chunk_idx}|{text_hash}".encode()).hexdigest()[:16]
 
 
 @dataclass(frozen=True)
@@ -44,7 +44,7 @@ class Chunk:
         strategy: str,
         text: str,
         doc_version: str,
-    ) -> "Chunk":
+    ) -> Chunk:
         text_hash = sha256_text(text)
         return cls(
             chunk_id=make_chunk_id(doc_id, strategy, chunk_idx, text_hash),
@@ -74,7 +74,7 @@ class Chunk:
         }
 
     @classmethod
-    def from_metadata_and_text(cls, metadata: dict[str, Any], text: str) -> "Chunk":
+    def from_metadata_and_text(cls, metadata: dict[str, Any], text: str) -> Chunk:
         return cls(
             chunk_id=str(metadata["chunk_id"]),
             doc_id=str(metadata["doc_id"]),

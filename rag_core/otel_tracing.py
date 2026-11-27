@@ -31,9 +31,10 @@ import json
 import random
 import threading
 import time
+from collections.abc import Callable, Iterator, Sequence
 from contextlib import contextmanager
 from datetime import datetime, timedelta
-from typing import Any, Callable, Iterator, Sequence
+from typing import Any
 
 from rag_core.config import TracingConfig
 from rag_core.tracing import DailyCap, NoopTrace, TraceStats

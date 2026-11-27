@@ -11,7 +11,6 @@ Coverage is evaluated on absolute document offsets (side channel of the adapter)
 so chunks that cross a section boundary still count for both sections.
 """
 
-import os
 import re
 
 import pytest

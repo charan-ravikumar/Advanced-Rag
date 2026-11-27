@@ -10,7 +10,7 @@ from config import cfg
 from db.store import build_store
 from rag.embedders import HashEmbedder
 from rag.lexical import SqliteFtsIndex
-from rag.retriever import Retriever, RetrievalResult
+from rag.retriever import RetrievalResult, Retriever
 from rag.schemas_ingest import Chunk
 
 EMB = HashEmbedder()
@@ -67,7 +67,7 @@ def multi_doc(tmp_path_factory):
 def needle(tmp_path_factory):
     """12 filler chunks plus ONE chunk reachable only through a rare word (lexical), not through meaning (vector)."""
     w = World(tmp_path_factory.mktemp("needle"))
-    w.add_many((("fill", i, f"{FILLER} filler number {i} one two three") for i in range(12)))
+    w.add_many(("fill", i, f"{FILLER} filler number {i} one two three") for i in range(12))
     w.rare = w.add("rare_doc", 0, "zyxwv " + " ".join(f"unrelated{j} word{j} other{j}" for j in range(12)))
     w.query = "dataset model training zyxwv"
     yield w

@@ -28,14 +28,22 @@ import hashlib
 import threading
 import time
 import uuid
+from collections.abc import Callable, Iterator, Sequence
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Callable, Iterator, Sequence
+from typing import Any
 
 from rag.router import route_query
 from rag_core.cache import CacheBackend, config_hash, is_cacheable, make_cache_key
 from rag_core.citations import could_become_abstention, is_abstention
-from rag_core.claims import SCHEMA_VERSION, ParsedAnswer, StreamRenderer, answer_schema, parse_answer, render_answer
+from rag_core.claims import (
+    SCHEMA_VERSION,
+    ParsedAnswer,
+    StreamRenderer,
+    answer_schema,
+    parse_answer,
+    render_answer,
+)
 from rag_core.config import RagConfig, TracingConfig
 from rag_core.context import build_context
 from rag_core.errors import AllProvidersFailed, AnswerTooLong, InvalidQuestion, MidStreamError
@@ -167,6 +175,7 @@ class RagService:
         for event in self._run(cleaned, doc_ids, rerank, mode, None, traced=traced):
             if event["type"] == "done":
                 result = event["result"]
+        assert result is not None  # the pipeline always ends with exactly one "done"
         return result
 
     def _retrieval_kwargs(self, doc_ids, rerank: bool) -> dict:
@@ -308,7 +317,7 @@ class RagService:
 
         # 3. cache
         key = self._cache_key(question, doc_ids, rerank, mode, resolved) if self.cache is not None else None
-        if key is not None:
+        if key is not None and self.cache is not None:
             hit = self.cache.get(key)
             trace.event("cache.hit" if hit is not None else "cache.miss")
             if hit is not None:
@@ -340,6 +349,7 @@ class RagService:
             yield {"type": "error", "error": result.errors[-1]}
             yield {"type": "done", "result": result}
             return
+        assert retrieved is not None  # no failure means the retriever returned
         retrieve_ms = (self._perf() - t) * 1000.0
         hits = list(retrieved.hits)
         result.retrieved_sources = [Source(chunk_id=h.chunk_id, doc_id=h.doc_id, section=h.section or "", text=h.text, rank=h.rank,
@@ -412,7 +422,7 @@ class RagService:
                 result.partial, result.finish_reason = True, "error"
                 result.provider, result.model, result.attempts = exc.provider, exc.model, exc.attempts
                 result.used_sources = list(ctx.sources)
-                if structured:  # keep the claims that arrived (the JSON is parsed as far as it goes)
+                if renderer is not None:  # structured: keep the claims that arrived (the JSON is parsed as far as it goes)
                     self._apply_claims(result, parse_answer(text, ctx.sources))
                     tail = renderer.finish(result.answer)
                     if tail:
@@ -458,9 +468,10 @@ class RagService:
             # 7. validate and assemble
             text = "".join(parts)
             result.used_sources = list(ctx.sources)  # exactly what the model saw
+            assert done is not None  # the gateway ends a successful stream with StreamDone
             result.provider, result.model, result.finish_reason = done.provider, done.model, done.finish_reason
             parsed: ParsedAnswer | None = None
-            if structured:
+            if renderer is not None:  # structured
                 parsed = parse_answer(text, ctx.sources)
                 abstained = self._apply_claims(result, parsed)
                 if not abstained:
@@ -486,7 +497,7 @@ class RagService:
             result.usage = Usage(prompt_tokens=done.prompt_tokens, completion_tokens=done.completion_tokens, reasoning_tokens=done.reasoning_tokens)
             result.attempts = done.attempts
             result.latency_ms = Latency(retrieve=retrieve_ms, first_token=first_token_ms, total=elapsed())
-            update = {"output": self.capture.answer(result.answer), "provider": done.provider, "model": done.model, "finish_reason": done.finish_reason,
+            update: dict[str, Any] = {"output": self.capture.answer(result.answer), "provider": done.provider, "model": done.model, "finish_reason": done.finish_reason,
                       "reasoning_tokens": done.reasoning_tokens,
                       "completion_start_time": first_token_wall, "attempts": attempts_meta(done.attempts), "abstained": result.abstained,
                       "citations": len(result.citations), "invalid_citations": len(result.invalid_citations)}
@@ -502,7 +513,7 @@ class RagService:
             if cost is not None:
                 update["cost_details"] = cost
             gen.update(**update)
-            if key is not None and is_cacheable(result, expected_model=self.gateway.primary_model):
+            if key is not None and self.cache is not None and is_cacheable(result, expected_model=self.gateway.primary_model):
                 self.cache.set(key, result)
             yield {"type": "done", "result": result}
         finally:

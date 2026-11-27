@@ -6,7 +6,7 @@ Importing this module loads nothing. The model is loaded on first call, from the
 
 from __future__ import annotations
 
-from typing import Sequence
+from collections.abc import Sequence
 
 
 class CrossEncoderReranker:
@@ -20,7 +20,7 @@ class CrossEncoderReranker:
         self._model = None
 
     @classmethod
-    def from_config(cls, cfg, **kwargs) -> "CrossEncoderReranker":
+    def from_config(cls, cfg, **kwargs) -> CrossEncoderReranker:
         return cls(cfg.pipeline.reranker_model, cfg.pipeline.reranker_revision, **kwargs)
 
     @property

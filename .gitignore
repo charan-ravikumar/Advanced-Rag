@@ -42,3 +42,10 @@ logs/
 
 # Docs to ignore
 docs/INTERVIEW_PREP.md
+
+# Personal planning documents (kept locally, never committed)
+PROJECT_TRANSFORMATION_BLUEPRINT.md
+Project_Transformation_Roadmap.xlsx
+
+# Virtualenv in the repo folder
+.venv/

@@ -1,0 +1,100 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:   # a newer push to the same branch cancels the older run
+  group: ci-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: ruff
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements-ci.txt
+      - run: pip install "$(grep -E '^ruff==' requirements-ci.txt)"
+      - run: ruff check .
+
+  types:
+    name: mypy (rag_core)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/python
+      - run: pip install "$(grep -E '^mypy==' requirements-ci.txt)"
+      - run: mypy
+
+  tests:
+    name: pytest (fast)
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/python
+      # --fast skips the tests marked slow (and runs 8 Hypothesis examples). No model is cached, so model tests skip too.
+      - run: pytest --fast -p no:cacheprovider -q -rs
+
+  docker:
+    name: Docker build and smoke test
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      HF_CACHE_DIR: ${{ github.workspace }}/.ci-hf
+    steps:
+      - uses: actions/checkout@v7
+      - uses: docker/setup-buildx-action@v4
+      - uses: docker/build-push-action@v7
+        with:
+          context: .
+          load: true
+          tags: advrag:local
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - uses: actions/cache@v6
+        id: model
+        with:
+          path: .ci-hf
+          key: embedding-model-${{ hashFiles('config.yaml', 'scripts/ci_fetch_model.py') }}
+      - name: Download the pinned embedding model (public, once per cache key)
+        if: steps.model.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p "$HF_CACHE_DIR"
+          docker run --rm --user "$(id -u):$(id -g)" -e CI=true -e HOME=/tmp -e HF_HUB_OFFLINE=0 -e TRANSFORMERS_OFFLINE=0 \
+            -v "$HF_CACHE_DIR:/models" advrag:local python scripts/ci_fetch_model.py
+          chmod -R a+rX "$HF_CACHE_DIR"
+      - name: Compose up and check /v1/ready
+        run: bash scripts/ci_smoke.sh
+
+  audit:
+    name: pip-audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements-ci.txt
+      - run: pip install "$(grep -E '^pip-audit==' requirements-ci.txt)"
+      - name: Audit the runtime lock (fails the build)
+        run: |
+          ignore=$(sed -e 's/#.*//' -e '/^\s*$/d' .github/pip-audit-ignore.txt | awk '{printf " --ignore-vuln %s", $1}')
+          pip-audit -r requirements.lock --no-deps --disable-pip $ignore
+      - name: Audit the offline evaluation lock (report only)
+        continue-on-error: true
+        run: |
+          ignore=$(sed -e 's/#.*//' -e '/^\s*$/d' .github/pip-audit-ignore.txt | awk '{printf " --ignore-vuln %s", $1}')
+          pip-audit -r requirements-eval.lock --no-deps --disable-pip $ignore

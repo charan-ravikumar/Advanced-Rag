@@ -22,8 +22,8 @@ import sqlite3
 import time
 import urllib.error
 import urllib.request
+from collections.abc import Callable, Sequence
 from pathlib import Path
-from typing import Callable, Sequence
 
 import numpy as np
 
@@ -273,6 +273,6 @@ class GeminiEmbedder:
                 "cache_path": str(getattr(self._cache, "path", self._cache_path or default_cache_path()))}
 
     @classmethod
-    def from_config(cls, cfg, **kwargs) -> "GeminiEmbedder":
+    def from_config(cls, cfg, **kwargs) -> GeminiEmbedder:
         g = cfg.embedding_gemini
         return cls(g.model, g.version, g.dims, **kwargs)

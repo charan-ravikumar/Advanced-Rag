@@ -1,10 +1,9 @@
 """Unit tests for the chunking strategies."""
 
-import pytest
 from unittest.mock import MagicMock
 
-from schemas import Chunk, Document, Section
 from rag.embedders import HashEmbedder
+from schemas import Chunk
 
 EMB = HashEmbedder()  # no model download needed; the real model is covered by @pytest.mark.model tests
 

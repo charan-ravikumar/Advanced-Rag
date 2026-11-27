@@ -19,8 +19,27 @@ from app.artifacts import Artifacts
 from app.bootstrap import Check, Resources, SelfCheck
 from rag_core.scores import FeedbackResult, FeedbackStore, record_feedback
 from rag_core.service import BUDGET_MESSAGE, DEGRADED_MESSAGE, DIRECT_REPLY
-from tests.unit.app_fakes import ENTRY, EXAMPLES, PAPER_ID, PAPERS, ROOT, FakeReader, all_text, ask, fixture_artifacts, make_resources, real_artifacts, run_app
-from tests.unit.rag_core_fakes import ABSTAIN_JSON, FakeLangfuse, answer_json, default_quote, fail, ok
+from tests.unit.app_fakes import (
+    ENTRY,
+    PAPER_ID,
+    PAPERS,
+    ROOT,
+    FakeReader,
+    all_text,
+    ask,
+    fixture_artifacts,
+    make_resources,
+    real_artifacts,
+    run_app,
+)
+from tests.unit.rag_core_fakes import (
+    ABSTAIN_JSON,
+    FakeLangfuse,
+    answer_json,
+    default_quote,
+    fail,
+    ok,
+)
 
 Q = "What does the attention mechanism compute?"
 Q2 = "How are the heads combined in the model?"
@@ -123,7 +142,7 @@ def test_one_snapshot_is_shared_by_all_sessions_and_reruns_within_the_ttl():
     res = make_resources(reader=reader)
     a = clean(run_app(res))
     a.run()
-    b = clean(run_app(make_resources(reader=reader)))  # another visitor, same process
+    clean(run_app(make_resources(reader=reader)))  # another visitor, same process
     assert reader.calls == 1
     st.cache_data.clear()
     clean(run_app(make_resources(reader=reader)))

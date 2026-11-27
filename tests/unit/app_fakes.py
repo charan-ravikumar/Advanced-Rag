@@ -3,7 +3,6 @@ No network, no keys, no real index."""
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
 from streamlit.testing.v1 import AppTest
@@ -15,7 +14,7 @@ from rag_core.config import RagConfig, TracingConfig
 from rag_core.observability_reader import Panel
 from rag_core.scores import record_feedback
 from rag_core.tracing import FakeTracer
-from tests.unit.rag_core_fakes import answer_json, FakeLangfuse, make_hit, ok
+from tests.unit.rag_core_fakes import answer_json, ok
 from tests.unit.test_rag_core_service import make
 
 ROOT = Path(__file__).resolve().parents[2]

@@ -24,13 +24,14 @@ import os
 import sqlite3
 import threading
 import time
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Callable, Mapping
+from typing import Any
 
 from app.artifacts import Artifacts, load_artifacts
 from app.guards import AccessGate, AppConfig, DailyBudget
-from rag_core.env import load_env, present
+from rag_core.env import load_env
 
 ROOT = Path(__file__).resolve().parents[1]
 SECRET_NAMES = ("GROQ_API_KEY", "GEMINI_API_KEY", "LANGFUSE_PUBLIC_KEY", "LANGFUSE_SECRET_KEY", "LANGFUSE_BASE_URL", "APP_ACCESS_CODE", "ADVRAG_API_URL", "ADVRAG_API_TOKEN")
