@@ -116,10 +116,10 @@ def test_citation_markers_are_not_part_of_the_short_answer():
 
 def test_citation_validity_is_valid_over_cited_and_none_when_nothing_is_cited():
     assert citation_counts(["S1", "S2"], ["S9"]) == (2, 3) and citation_counts(["S1", "S1"], []) == (1, 1) and citation_counts([], []) == (0, 0)
-    assert score_long(["S1", "S2"], ["S9"], False) == {"CitationValidity": pytest.approx(2 / 3), "HasCitation": 1.0, "Abstained": 0.0}
-    assert score_long([], [], False) == {"CitationValidity": None, "HasCitation": 0.0, "Abstained": 0.0}
+    assert score_long(["S1", "S2"], ["S9"], False) == {"CitationValidity": pytest.approx(2 / 3), "HasCitation": 1.0, "QuoteVerified": None, "Abstained": 0.0}
+    assert score_long([], [], False) == {"CitationValidity": None, "HasCitation": 0.0, "QuoteVerified": None, "Abstained": 0.0}
     assert score_long([], ["S7"], False)["CitationValidity"] == 0.0
-    assert score_long(["S1"], [], True) == {"CitationValidity": None, "HasCitation": None, "Abstained": 1.0}
+    assert score_long(["S1"], [], True) == {"CitationValidity": None, "HasCitation": None, "QuoteVerified": None, "Abstained": 1.0}
 
 
 # ---- summaries with paper-clustered intervals ---------------------------------------------------------------------------------------
@@ -167,3 +167,25 @@ def test_summarize_long_pools_citations_and_counts_answers_without_any():
 
 def test_summarize_metric_ignores_rows_where_the_metric_is_none():
     assert summarize_metric(rows_for([None, None], ["a", "b"]), "AnswerF1")["n"] == 0
+
+
+def test_quote_verified_is_the_share_of_quotes_found_in_their_source_and_none_without_quotes():
+    from eval.answer_metrics import quote_counts, score_long
+
+    claims = [{"text": "a", "citations": [{"source": "S1", "verified": True}, {"source": "S2", "verified": False}]},
+              {"text": "b", "citations": [{"source": "S1", "verified": True}]}]
+    assert quote_counts(claims) == (2, 3)
+    assert score_long(["S1", "S2"], [], False, claims)["QuoteVerified"] == 2 / 3
+    assert score_long([], [], False, [])["QuoteVerified"] is None and score_long([], [], True, claims)["QuoteVerified"] is None
+
+
+def test_summarize_long_pools_verified_quotes_over_answered_rows():
+    from eval.answer_metrics import summarize_long
+
+    claim = lambda *v: {"text": "x", "citations": [{"source": "S1", "verified": b} for b in v]}  # noqa: E731
+    rows = [{"paper_id": "p1", "abstained": False, "citations": ["S1"], "invalid_citations": [], "claims": [claim(True, True)],
+             "metrics": {"CitationValidity": 1.0, "QuoteVerified": 1.0, "Abstained": 0.0}},
+            {"paper_id": "p2", "abstained": False, "citations": ["S1"], "invalid_citations": [], "claims": [claim(False)],
+             "metrics": {"CitationValidity": 1.0, "QuoteVerified": 0.0, "Abstained": 0.0}}]
+    s = summarize_long(rows, n_resamples=200)
+    assert s["QuoteVerified_pooled"] == {"verified": 2, "quotes": 3, "rate": 2 / 3} and s["QuoteVerified_per_answer"]["mean"] == 0.5

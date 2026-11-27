@@ -48,7 +48,7 @@ generation:                       # rag_core (the answer path); the API key come
   providers: ["gemini"]           # Gemini only: no generation failover. The gateway itself still supports a provider list (rag_core/gateway.py).
   judge:                          # OFFLINE evaluation judge only; never used on the answer path
     provider: "gemini"
-    model: "gemini-3.5-flash-lite"
+    model: "gemini-3.8-flash"     # a DIFFERENT model from the generator, but the SAME family (Gemini): family-level self-preference is still possible
     temperature: 0.0
     # Gemini 2.5 thinking models: thinking_budget in tokens (0 = off, -1 = automatic; allowed range is model dependent). Thinking tokens count
     # toward max_output_tokens, so the output limit must leave room for the answer (a tiny limit gave EMPTY text in the first live check).
@@ -56,7 +56,7 @@ generation:                       # rag_core (the answer path); the API key come
     thinking_budget: 1024
     max_output_tokens: 4096
   prices: {}                      # per MILLION tokens: {"<model id>": {input: 0.0, output: 0.0}} with source and date in a comment. Empty = no cost is ever computed.
-  gemini_model: "gemini-3.5-flash-lite"   # the model of EVERY LLM call (answers and the judge); present in the live model list (scripts/check_model_ids.py)
+  gemini_model: "gemini-3.5-flash-lite"   # the model of every ANSWER; the judge is generation.judge.model. Both are in the live model list (scripts/check_model_ids.py)
   timeout_s: 30
   max_attempts: 3
   breaker_threshold: 3
@@ -79,6 +79,7 @@ tracing:                          # rag_core/tracing.py
   capture: "masked"               # masked | full | none  (see PROJECT_CONTEXT: what we send to Langfuse)
   trace_evaluation: false         # answer_short() and other evaluation paths do not trace unless true
   flush_timeout_seconds: 3
+  exporters: ["langfuse"]         # OpenTelemetry spans over OTLP: "langfuse" (its OTLP endpoint, the LLM-trace view) and/or "otlp" (any backend, set by OTEL_EXPORTER_OTLP_* variables)
 
 app:                              # the Streamlit app (app/guards.py reads every limit from here; nothing is hard-coded in the UI)
   strategy: "recursive"           # the chunking strategy of the served index (the frozen configuration D uses recursive chunks)

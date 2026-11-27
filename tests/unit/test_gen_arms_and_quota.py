@@ -108,10 +108,10 @@ def test_an_oracle_service_feeds_the_generator_only_the_gold_paragraphs():
     from rag_core.config import RagConfig
     from rag_core.gateway import LLMGateway
     from rag_core.service import RagService
-    from tests.unit.rag_core_fakes import FakeClock, ScriptedProvider, ok
+    from tests.unit.rag_core_fakes import FakeClock, ScriptedProvider, answer_json, ok
 
     clock = FakeClock()
-    provider = ScriptedProvider("groq", "m", [ok("Because [S1].")])
+    provider = ScriptedProvider("groq", "m", [ok(answer_json(("Because of the method.", ["S1"])))])
     gateway = LLMGateway([provider], sleep=clock.sleep, clock=clock, rng=lambda: 1.0)
     fixed = FixedContextRetriever("oracle")
     oc = oracle_context("p1", [ref(evidence=["methods one", "intro two"])], PARAS)

@@ -14,7 +14,8 @@ from rag_core.prompt_store import LocalPromptStore
 from rag_core.prompts import INSUFFICIENT_CONTEXT, PROMPT_VERSION, SYSTEM_LONG, SYSTEM_SHORT, local_template
 from rag_core.schemas import AnswerResult
 from rag_core.service import ABSTAIN_MESSAGE, DEGRADED_MESSAGE, DIRECT_REPLY, NO_RESULTS_MESSAGE, RagService, clean_short_answer, index_version_for
-from tests.unit.rag_core_fakes import FakeClock, FakeRetriever, ScriptedProvider, TickingPerf, fail, make_hit, ok
+from tests.unit.rag_core_fakes import (ABSTAIN_JSON, FakeClock, FakeRetriever, ScriptedProvider, TickingPerf, answer_json, default_quote, fail, make_hit,
+                                      ok)
 
 Q = "What does the attention mechanism compute?"
 
@@ -22,8 +23,8 @@ Q = "What does the attention mechanism compute?"
 def make(primary=None, secondary=None, *, hits=None, cache=True, cfg=None, retriever=None, index_version="idx-1", perf=None, breaker_threshold=3,
          max_attempts=2, prompts=None, tracer=None, tracing=None):
     clock = FakeClock()
-    a = ScriptedProvider("groq", "model-a", primary or [ok("Attention weighs the tokens [S1].")])
-    b = ScriptedProvider("gemini", "model-b", secondary or [ok("Fallback answer [S1].")])
+    a = ScriptedProvider("groq", "model-a", primary or [ok(answer_json(("Attention weighs the tokens.", ["S1"])))])
+    b = ScriptedProvider("gemini", "model-b", secondary or [ok(answer_json(("Fallback answer.", ["S1"])))])
     gw = LLMGateway([a, b], sleep=clock.sleep, clock=clock, rng=lambda: 1.0, max_attempts=max_attempts, breaker_threshold=breaker_threshold)
     retriever = retriever or FakeRetriever(hits)
     cache_obj = InMemoryTTLCache(clock=clock) if cache is True else cache
@@ -51,16 +52,31 @@ def text_of(evs) -> str:
     return "".join(e["text"] for e in evs if e["type"] == "token")
 
 
+def short_events(svc, q=Q):
+    """The SHORT (plain-text) pipeline's events: the abstention sentinel hold-back applies only there."""
+    return list(svc._run(svc.validate_question(q), None, False, "short", None, traced=False))
+
+
+def chunks(text: str, size: int = 9) -> list[str]:
+    return [text[i:i + size] for i in range(0, len(text), size)]
+
+
 # ---- happy path ---------------------------------------------------------------------------------------------------------
 
 def test_event_order_sources_then_tokens_then_done_with_a_typed_result():
-    svc, retriever, a, _, _, _ = make([ok("Attention weighs ", "the tokens [S1]", " and [S2].")])
+    reply = answer_json(("Attention weighs the tokens.", ["S1"]), ("It scales.", ["S2"]))
+    svc, retriever, a, _, _, _ = make([ok(*chunks(reply))])
     evs = events(svc)
     assert [e["type"] for e in evs][0] == "sources" and evs[-1]["type"] == "done" and all(e["type"] == "token" for e in evs[1:-1])
     assert [s.label for s in evs[0]["sources"]] == ["S1", "S2", "S3", "S4", "S5"]
     r = done_of(evs)
-    assert isinstance(r, AnswerResult) and text_of(evs) == r.answer == "Attention weighs the tokens [S1] and [S2]."
+    assert isinstance(r, AnswerResult) and text_of(evs) == r.answer == "Attention weighs the tokens. [S1] It scales. [S2]"
+    assert sum(e["type"] == "token" for e in evs) > 2  # it really streamed, claim text first, markers once a claim is closed
+    assert "{" not in text_of(evs) and '"status"' not in text_of(evs)  # the JSON itself is never shown
     assert r.citations == ["S1", "S2"] and r.invalid_citations == [] and not r.abstained and not r.degraded and not r.partial and not r.cached
+    assert [c.text for c in r.claims] == ["Attention weighs the tokens.", "It scales."] and all(x.verified for c in r.claims for x in c.citations)
+    assert a.calls[0]["response_schema"]["properties"]["claims"]["items"]["properties"]["citations"]["items"]["properties"]["source"]["enum"] == \
+        ["S1", "S2", "S3", "S4", "S5"]  # the schema allows exactly the labels that were sent
     assert (r.provider, r.model, r.finish_reason, r.mode, r.prompt_version) == ("groq", "model-a", "stop", "long", PROMPT_VERSION)
     assert (r.usage.prompt_tokens, r.usage.completion_tokens) == (11, 7) and r.errors == []
     assert len(r.attempts) == 1 and r.attempts[0].outcome == "ok"
@@ -112,45 +128,106 @@ def test_used_sources_are_the_prompt_sources_even_when_the_chunk_text_contains_m
 
 # ---- citations ---------------------------------------------------------------------------------------------------------
 
-def test_citations_are_validated_against_the_sources_that_were_sent():
-    svc, *_ = make([ok("A [S1]. B [S7]. C [S2][S9].")])
+def test_citations_are_validated_against_the_sources_that_were_sent_even_if_the_provider_ignored_the_schema():
+    svc, *_ = make([ok(answer_json(("A.", ["S1"]), ("B.", ["S7"]), ("C.", ["S2", "S9"])))])
     r = done_of(events(svc))
     assert r.citations == ["S1", "S2"] and r.invalid_citations == ["S7", "S9"]
 
 
-def test_a_marker_for_a_source_that_was_retrieved_but_cut_by_the_budget_is_invalid():
+def test_a_label_for_a_source_that_was_retrieved_but_cut_by_the_budget_is_invalid_and_not_in_the_schema():
     hits = [make_hit(i, text="long passage text " * 40) for i in range(1, 6)]
-    svc, *_ = make([ok("Claim [S5].")], hits=hits, cfg=RagConfig(max_context_tokens=700))
+    svc, _, a, *_ = make([ok(answer_json(("Claim.", [("S5", "long passage text long")])))], hits=hits, cfg=RagConfig(max_context_tokens=700))
     r = done_of(events(svc))
     assert len(r.used_sources) < 5 and r.invalid_citations == ["S5"] and r.citations == []
+    assert "S5" not in a.calls[0]["response_schema"]["properties"]["claims"]["items"]["properties"]["citations"]["items"]["properties"]["source"]["enum"]
+
+
+def test_each_quote_is_verified_against_the_text_of_the_source_it_cites():
+    reply = answer_json(("Real.", [("S1", default_quote("S1"))]), ("Paraphrased.", [("S2", "passage two talks about attention")]),
+                        ("Wrong source.", [("S3", default_quote("S1"))]))
+    svc, *_ = make([ok(reply)])
+    r = done_of(events(svc))
+    (real,), (para,), (wrong,) = [c.citations for c in r.claims]
+    assert real.verified and r.used_sources[0].text[real.start:real.end] == default_quote("S1")
+    assert not para.verified and para.start is None and not wrong.verified  # a quote must be in THE cited source, word for word
+    assert r.citations == ["S1", "S2", "S3"]  # the labels are valid; whether the quote was found is reported per citation
+
+
+def test_a_reply_that_is_not_a_structured_answer_is_degraded_not_shown():
+    from rag_core.service import INVALID_OUTPUT_MESSAGE
+
+    svc, _, _, _, cache, _ = make([ok("Attention weighs the tokens [S1].")])
+    evs = events(svc)
+    r = done_of(evs)
+    assert [e["error"].code for e in evs if e["type"] == "error"] == ["invalid_output"] and r.degraded and r.answer == INVALID_OUTPUT_MESSAGE
+    assert text_of(evs) == "" and r.claims == [] and r.retrieved_sources and len(cache) == 0
+
+
+def test_json_cut_off_by_the_output_limit_keeps_the_claims_that_arrived_and_is_marked_incomplete():
+    reply = answer_json(("First claim.", ["S1"]), ("Second claim that never", ["S2"]))
+    svc, _, _, _, cache, _ = make([ok(reply[: reply.index("never") + 5], finish="length")])
+    evs = events(svc)
+    r = done_of(evs)
+    assert r.partial and [e["error"].code for e in evs if e["type"] == "error"] == ["truncated"] and len(cache) == 0
+    assert [c.text for c in r.claims] == ["First claim.", "Second claim that never"] and r.answer.startswith("First claim. [S1]")
+
+
+def test_a_claim_without_text_or_a_citation_without_a_source_is_skipped_not_guessed():
+    import json as _json
+
+    reply = _json.dumps({"status": "answered", "claims": [{"text": "", "citations": []}, {"text": "Kept.", "citations": [{"quote": "no source"},
+                                                                                                                       {"source": "S1", "quote": default_quote("S1")}]}]})
+    svc, *_ = make([ok(reply)])
+    r = done_of(events(svc))
+    assert [c.text for c in r.claims] == ["Kept."] and [x.source for x in r.claims[0].citations] == ["S1"] and r.answer == "Kept. [S1]"
 
 
 # ---- abstention ---------------------------------------------------------------------------------------------------------
 
-def test_the_sentinel_means_abstained_the_sentinel_is_never_streamed_and_nothing_is_cached():
-    svc, _, _, _, cache, _ = make([ok(INSUFFICIENT_CONTEXT)])
+def test_status_insufficient_context_means_abstained_nothing_is_streamed_and_nothing_is_cached():
+    svc, _, _, _, cache, _ = make([ok(*chunks(ABSTAIN_JSON, 5))])
     evs = events(svc)
     r = done_of(evs)
-    assert r.abstained and text_of(evs) == "" and r.answer == ABSTAIN_MESSAGE and r.citations == [] and len(cache) == 0
+    assert r.abstained and text_of(evs) == "" and r.answer == ABSTAIN_MESSAGE and r.citations == [] and r.claims == [] and len(cache) == 0
     assert [s.label for s in r.used_sources][:1] == ["S1"]  # it did see the sources
 
 
-def test_a_sentinel_split_across_deltas_is_held_back_and_never_leaks():
-    svc, *_ = make([ok("INSUFF", "ICIENT_", "CONTEXT")])
+def test_an_answered_status_without_any_claim_is_an_abstention():
+    svc, *_ = make([ok('{"status": "answered", "claims": []}')])
+    r = done_of(events(svc))
+    assert r.abstained and r.answer == ABSTAIN_MESSAGE
+
+
+def test_claims_written_alongside_an_insufficient_context_status_are_dropped():
+    reply = answer_json(("Speculation.", ["S1"]), status="insufficient_context")
+    svc, *_ = make([ok(reply)])
     evs = events(svc)
+    r = done_of(evs)
+    assert r.abstained and r.claims == [] and r.citations == [] and text_of(evs) == ""
+
+
+def test_short_mode_a_sentinel_split_across_deltas_is_held_back_and_never_leaks():
+    svc, *_ = make([ok("INSUFF", "ICIENT_", "CONTEXT")])
+    evs = short_events(svc)
     assert text_of(evs) == "" and done_of(evs).abstained
 
 
-def test_a_normal_answer_that_starts_like_the_sentinel_is_released_once_it_diverges():
-    svc, *_ = make([ok("IN", "SIDE the model [S1]", " works.")])
-    evs = events(svc)
-    assert text_of(evs) == "INSIDE the model [S1] works." and not done_of(evs).abstained and evs[1]["text"] == "INSIDE the model [S1]"
+def test_short_mode_an_answer_that_starts_like_the_sentinel_is_released_once_it_diverges():
+    svc, *_ = make([ok("IN", "SIDE the model", " works.")])
+    evs = short_events(svc)
+    assert text_of(evs) == "INSIDE the model works." and not done_of(evs).abstained and evs[1]["text"] == "INSIDE the model"
 
 
-def test_a_very_short_answer_held_back_to_the_end_is_still_delivered():
+def test_short_mode_a_very_short_answer_held_back_to_the_end_is_still_delivered():
     svc, *_ = make([ok("I")])
-    evs = events(svc)
+    evs = short_events(svc)
     assert text_of(evs) == "I" and done_of(evs).answer == "I"
+
+
+def test_short_mode_sends_no_response_schema():
+    svc, _, a, *_ = make([ok("yes")])
+    svc.answer_short("Do they use attention?")
+    assert a.calls[0]["response_schema"] is None
 
 
 def test_no_retrieved_passages_means_abstain_without_calling_the_model():
@@ -248,22 +325,25 @@ def test_a_reply_that_spent_its_whole_budget_before_any_text_is_answer_too_long_
 
 
 def test_MIDSTREAM_failure_yields_an_error_event_a_partial_result_no_failover_and_no_caching():
-    svc, retriever, a, b, cache, _ = make([["Attention weighs ", "the tok", fail("connection")]], [ok("SPLICED [S1]")])
+    reply = answer_json(("Attention weighs the tokens.", ["S1"]), ("It scales well", ["S2"]))
+    cut = reply[: reply.index("scales") + 6]
+    svc, retriever, a, b, cache, _ = make([[*chunks(cut), fail("connection")]], [ok(answer_json(("SPLICED.", ["S1"])))])
     evs = events(svc)
     r = done_of(evs)
     err = [e for e in evs if e["type"] == "error"]
     assert len(err) == 1 and err[0]["error"].code == "mid_stream" and err[0]["error"].recoverable is False
-    assert r.partial and r.answer == "Attention weighs the tok" and r.finish_reason == "error" and r.provider == "groq"
-    assert text_of(evs) == "Attention weighs the tok"  # the user saw exactly what was written, nothing spliced
+    assert r.partial and r.answer == "Attention weighs the tokens. [S1] It scales" and r.finish_reason == "error" and r.provider == "groq"
+    assert [c.text for c in r.claims] == ["Attention weighs the tokens.", "It scales"] and r.citations == ["S1"]
+    assert text_of(evs) == r.answer and "SPLICED" not in text_of(evs)  # the user saw exactly what was written, nothing spliced
     assert b.calls == [] and len(a.calls) == 1  # no failover, no retry
     assert len(cache) == 0 and not r.degraded and r.used_sources  # the sources were sent, so they are recorded
 
 
 def test_failover_before_the_first_token_answers_from_the_second_provider_and_is_not_cached():
-    svc, retriever, a, b, cache, _ = make([[fail("auth", 401)]], [ok("Gemini answer [S1].")])
+    svc, retriever, a, b, cache, _ = make([[fail("auth", 401)]], [ok(answer_json(("Gemini answer.", ["S1"])))])
     evs = events(svc)
     r = done_of(evs)
-    assert r.provider == "gemini" and r.model == "model-b" and r.answer == "Gemini answer [S1]." and not r.degraded and r.errors == []
+    assert r.provider == "gemini" and r.model == "model-b" and r.answer == "Gemini answer. [S1]" and not r.degraded and r.errors == []
     assert [(x.provider, x.outcome) for x in r.attempts] == [("groq", "error"), ("gemini", "ok")]
     assert len(cache) == 0  # produced by the fallback model, not the one named in the key
     done_of(events(svc))
@@ -328,11 +408,13 @@ def test_a_changed_cache_key_ingredient_misses(change):
 
 @pytest.mark.parametrize("name,primary,secondary", [
     ("degraded", [[fail("server", 500)]], [[fail("server", 500)]]),
-    ("abstention", [ok(INSUFFICIENT_CONTEXT)], None),
-    ("invalid citation", [ok("Claim [S9].")], None),
-    ("no citation", [ok("An uncited answer.")], None),
-    ("truncated", [ok("Cut off [S1]", finish="length")], None),
-    ("mid-stream", [["partial", fail("server", 503)]], None),
+    ("abstention", [ok(ABSTAIN_JSON)], None),
+    ("invalid citation", [ok(answer_json(("Claim.", ["S9"])))], None),
+    ("no citation", [ok(answer_json(("An uncited answer.", [])))], None),
+    ("not structured", [ok("Free text [S1].")], None),
+    ("truncated", [ok(answer_json(("Cut off.", ["S1"]))[:-3], finish="length")], None),
+    ("length finish", [ok(answer_json(("Complete JSON.", ["S1"])), finish="length")], None),
+    ("mid-stream", [['{"status": "answered", "claims": [{"text": "partial', fail("server", 503)]], None),
 ])
 def test_unsuccessful_or_unvalidated_answers_are_never_cached(name, primary, secondary):
     svc, _, a, _, cache, _ = make(primary, secondary)
@@ -449,7 +531,7 @@ def test_answer_short_abstains_with_none_and_never_raises_on_provider_failure():
 
 def test_short_and_long_answers_do_not_share_cache_entries():
     cache = InMemoryTTLCache(clock=FakeClock())
-    svc, retriever, a, *_ = make([ok("Attention weighs tokens [S1]."), ok("yes")], cache=cache)
+    svc, retriever, a, *_ = make([ok(answer_json(("Attention weighs tokens.", ["S1"]))), ok("yes")], cache=cache)
     done_of(events(svc, "Do they use attention?"))
     r = svc.answer_short("Do they use attention?")
     assert not r.cached and r.short_answer == "yes" and len(cache) == 2
@@ -462,7 +544,7 @@ def test_clean_short_answer():
 # ---- latency ----------------------------------------------------------------------------------------------------------
 
 def test_latency_fields_are_measured_with_perf_counter_and_ordered():
-    svc, *_ = make([ok("a ", "b [S1]")], perf=TickingPerf())
+    svc, *_ = make([ok(*chunks(answer_json(("a b.", ["S1"]))))], perf=TickingPerf())
     r = done_of(events(svc))
     lat = r.latency_ms
     assert lat.retrieve > 0 and lat.first_token is not None and lat.first_token >= lat.retrieve and lat.total >= lat.first_token
@@ -487,7 +569,7 @@ def test_the_result_round_trips_through_json_and_contains_no_api_key(monkeypatch
     secret = "gsk-THIS-MUST-NEVER-APPEAR-IN-A-RESULT"
     monkeypatch.setenv("GROQ_API_KEY", secret)
     monkeypatch.setenv("GEMINI_API_KEY", secret + "-g")
-    svc, *_ = make([[fail("server", 500)]], [ok("Answer [S1].")])
+    svc, *_ = make([[fail("server", 500)]], [ok(answer_json(("Answer.", ["S1"])))])
     r = done_of(events(svc))
     dumped = r.model_dump_json()
     assert secret not in dumped and AnswerResult.model_validate_json(dumped) == r

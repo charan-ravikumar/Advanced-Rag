@@ -16,7 +16,7 @@ from rag_core.config import RagConfig
 from rag_core.gateway import Delta, Final, LLMGateway
 from rag_core.prompts import SYSTEM_SHORT
 from rag_core.service import RagService
-from tests.unit.rag_core_fakes import FakeClock, FakeRetriever, fail, make_hit
+from tests.unit.rag_core_fakes import answer_json, fail, FakeClock, FakeRetriever, make_hit
 
 START = datetime(2026, 11, 22, 12, 0, tzinfo=timezone.utc)
 
@@ -47,20 +47,20 @@ def make_data(tmp_path: Path, papers=4, per=3):
 
 
 class ModeProvider:
-    """Answers 'red green' in short mode and 'Because [S1].' in long mode; fails on chosen call numbers; records every call."""
+    """Answers 'red green' in short mode and a one-claim structured answer citing S1 in long mode; fails on chosen call numbers; records every call."""
 
     name, model = "gemini", "gemini-3.5-flash-lite"
 
     def __init__(self, effort="low", fail_calls=(), fail_kind="rate_limit", status=429, tokens=(1000, 100, 30)):
         self.reasoning_effort, self.fail_calls, self.fail_kind, self.status, self.tokens, self.calls = effort, set(fail_calls), fail_kind, status, tokens, []
 
-    def stream(self, messages, *, timeout_s, max_output_tokens, temperature):
+    def stream(self, messages, *, timeout_s, max_output_tokens, temperature, response_schema=None):
         self.calls.append({"messages": messages, "max_output_tokens": max_output_tokens})
         if len(self.calls) in self.fail_calls:
             raise fail(self.fail_kind, self.status)
         short = messages[0]["content"] == SYSTEM_SHORT
         question = messages[1]["content"].split("<question>\n")[1].split("\n")[0]  # long answers differ per question, so the judge prompts differ too
-        yield Delta("red green" if short else f"Because [S1]. About: {question}")
+        yield Delta("red green" if short else answer_json((f"Because of it. About: {question}", ["S1"])))
         yield Final("stop", self.tokens[0], self.tokens[1], self.tokens[2])
 
     def keys(self):

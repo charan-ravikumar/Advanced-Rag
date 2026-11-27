@@ -14,7 +14,7 @@ from rag_core.cache import InMemoryTTLCache
 from rag_core.config import RagConfig
 from rag_core.gateway import LLMGateway
 from rag_core.service import RagService, index_version_for
-from tests.unit.rag_core_fakes import FakeClock, ScriptedProvider, ok
+from tests.unit.rag_core_fakes import answer_json, FakeClock, ok, ScriptedProvider
 
 TOPICS = ["alpha model training dataset", "network latency server cache", "protein cell enzyme sequence", "river delta soil water", "market price trade supply"]
 EMB = HashEmbedder()
@@ -51,7 +51,7 @@ def service(stack, script, **kw):
 
 
 def test_end_to_end_with_the_real_retriever_the_context_comes_from_the_matching_paper(stack):
-    svc, provider = service(stack, [ok("The enzyme work is described [S1].")])
+    svc, provider = service(stack, [ok(answer_json(("The enzyme work is described.", [("S1", "unverifiable quote here")])))])
     evs = list(svc.answer_stream("protein cell enzyme sequence"))
     r = evs[-1]["result"]
     assert len(r.used_sources) == 5 and r.used_sources[0].doc_id == "1234.00002" and r.citations == ["S1"] and not r.degraded
@@ -61,13 +61,13 @@ def test_end_to_end_with_the_real_retriever_the_context_comes_from_the_matching_
 
 
 def test_the_document_filter_restricts_the_context_to_that_paper(stack):
-    svc, provider = service(stack, [ok("Answer [S1].")])
+    svc, provider = service(stack, [ok(answer_json(("Answer.", ["S1"])))])
     r = list(svc.answer_stream("protein cell enzyme sequence", doc_ids=["1234.00001"]))[-1]["result"]
     assert r.used_sources and {s.doc_id for s in r.used_sources} == {"1234.00001"} and {s.doc_id for s in r.retrieved_sources} == {"1234.00001"}
 
 
 def test_an_empty_document_filter_retrieves_nothing_and_abstains_without_calling_the_model(stack):
-    svc, provider = service(stack, [ok("never used [S1]")])
+    svc, provider = service(stack, [ok(answer_json(("never used", ["S1"])))])
     r = list(svc.answer_stream("protein cell enzyme sequence", doc_ids=[]))[-1]["result"]
     assert r.abstained and r.used_sources == [] and provider.calls == []
 
@@ -79,7 +79,7 @@ def test_the_index_version_starts_with_the_chunk_count_of_the_store(stack):
 
 
 def test_a_second_identical_question_is_a_cache_hit_with_the_real_retriever(stack):
-    svc, provider = service(stack, [ok("Cached answer [S1].")])
+    svc, provider = service(stack, [ok(answer_json(("Cached answer.", ["S1"])))])
     first = list(svc.answer_stream("network latency server cache"))[-1]["result"]
     second = list(svc.answer_stream("network latency server cache"))[-1]["result"]
     assert not first.cached and second.cached and len(provider.calls) == 1 and second.answer == first.answer

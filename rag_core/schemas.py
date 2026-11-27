@@ -68,11 +68,30 @@ class PromptInfo(BaseModel):
     fallback_reason: str | None = None
 
 
+class SpanCitation(BaseModel):
+    """One citation of a claim: the source label, the words the model copied from it, and where they are in ``Source.text``.
+    ``verified`` means the quote was found word for word in that source (``rag_core.claims.locate_quote``); it does NOT mean the source supports the claim."""
+
+    source: str
+    quote: str
+    start: int | None = None  # character offsets into the cited Source.text (None when not verified)
+    end: int | None = None
+    verified: bool = False
+
+
+class Claim(BaseModel):
+    """One statement of a long answer and its citations (structured output: the model fills a JSON schema, nothing is parsed out of prose)."""
+
+    text: str
+    citations: list[SpanCitation] = Field(default_factory=list)
+
+
 class AnswerResult(BaseModel):
-    answer: str = ""
+    answer: str = ""  # long mode: rendered by the code from ``claims`` ("claim [S1] claim [S2][S3]"); short mode: the model's text
     short_answer: str | None = None  # only for answer_short(); None when the model abstained
-    citations: list[str] = Field(default_factory=list)  # labels ("S1") that the answer cites AND that were provided
-    invalid_citations: list[str] = Field(default_factory=list)  # markers that name a source that was never provided
+    claims: list[Claim] = Field(default_factory=list)  # long mode: the structured answer (empty for short mode, abstentions and failures)
+    citations: list[str] = Field(default_factory=list)  # labels ("S1") that the claims cite AND that were provided
+    invalid_citations: list[str] = Field(default_factory=list)  # labels that name a source that was never provided (the schema forbids them; still checked)
     abstained: bool = False  # the model replied INSUFFICIENT_CONTEXT, or nothing relevant was retrieved
     used_sources: list[Source] = Field(default_factory=list)  # EXACTLY the passages sent to the LLM (label, id, text)
     retrieved_sources: list[Source] = Field(default_factory=list)  # everything retrieved; shown when degraded

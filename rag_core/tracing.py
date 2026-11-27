@@ -7,12 +7,12 @@ Pieces
   and the compiled prompt (key-like strings are STILL redacted). ``"none"``: no question or answer text at all.
 * ``Tracer`` / ``RequestTrace``: ``tracer.start_request(...)`` returns one per-request trace with ``span``, ``generation`` (context managers),
   ``event``, ``set_error``, ``trace_id``, ``end``; ``tracer.flush()``.
-* ``NoopTracer`` (default), ``LangfuseTracer`` (SDK imported lazily; explicit parent/child observations, no ambient OpenTelemetry context, so it is
-  safe inside a generator that yields), ``FakeTracer`` (tests, UI development), ``SafeTracer`` (the fail-open wrapper the service always uses).
-* ``build_tracer``: a LangfuseTracer only if both keys are present AND ``tracing.enabled``; ``sample_rate`` and an in-memory daily request cap.
-  Beyond the cap (or when sampled out) a request is simply not traced.
+* ``NoopTracer`` (default), ``OtelTracer`` (``rag_core.otel_tracing``: OpenTelemetry spans with explicit parent contexts, exported over OTLP to
+  Langfuse and/or any OTLP backend), ``FakeTracer`` (tests, UI development), ``SafeTracer`` (the fail-open wrapper the service always uses).
+* ``build_tracer``: an OtelTracer only if ``tracing.enabled`` AND at least one configured exporter can be built (``langfuse`` needs both keys);
+  ``sample_rate`` and an in-memory daily request cap. Beyond the cap (or when sampled out) a request is simply not traced.
 
-Import-safe: the Langfuse SDK is imported inside ``LangfuseTracer`` methods only.
+Import-safe: the OpenTelemetry SDK is imported only when a tracer with an exporter is built.
 """
 
 from __future__ import annotations
@@ -400,7 +400,7 @@ class FakeTracer:
         self.flushes += 1
 
 
-# ---- Langfuse ---------------------------------------------------------------------------------------------------------------------
+# ---- the daily cap and the factory ---------------------------------------------------------------------------------------------------------------------
 class DailyCap:
     """At most ``limit`` requests per UTC day, counted in memory (a restart resets it; it is a cost guard, not an accounting system)."""
 
@@ -418,136 +418,37 @@ class DailyCap:
             return True
 
 
-class _LangfuseHandle:
-    def __init__(self, obs: Any, as_generation: bool, stats: TraceStats):
-        self._obs, self._gen = obs, as_generation
-
-    def update(self, **attrs: Any) -> None:
-        kw: dict[str, Any] = {}
-        usage = attrs.pop("usage", None)
-        if usage is not None and self._gen:
-            parts = {"input": usage.get("prompt_tokens"), "output": usage.get("completion_tokens")}
-            kw["usage_details"] = {k: int(v) for k, v in parts.items() if v is not None}
-        for key in ("output", "input", "level", "status_message", "completion_start_time", "cost_details", "model_parameters", "model"):
-            if key in attrs:
-                kw[key] = attrs.pop(key)
-        if attrs:
-            kw["metadata"] = attrs
-        if kw:
-            self._obs.update(**kw)
+EXPORTER_NAMES = ("langfuse", "otlp")
 
 
-class LangfuseTrace:
-    def __init__(self, root: Any, stats: TraceStats):
-        self._root, self._stats = root, stats
-        self.trace_id = getattr(root, "trace_id", None)
+def configured_exporters(cfg: TracingConfig, env: dict | None = None) -> list:
+    """The span exporters named in ``tracing.exporters`` that can be built now: ``langfuse`` only with both keys; ``otlp`` always (the OpenTelemetry SDK
+    reads its endpoint from the standard OTEL_EXPORTER_OTLP_* variables). An unknown name is a configuration error."""
+    unknown = [name for name in cfg.exporters if name not in EXPORTER_NAMES]
+    if unknown:
+        raise ValueError(f"tracing.exporters: unknown exporter(s) {unknown}; choose from {list(EXPORTER_NAMES)}")
+    out = []
+    if "langfuse" in cfg.exporters:
+        from rag_core.langfuse_client import keys_present, langfuse_span_exporter
 
-    @contextmanager
-    def span(self, name: str, **attrs: Any) -> Iterator[SpanHandle]:
-        as_type = attrs.pop("as_type", "span")
-        obs = self._root.start_observation(name=name, as_type=as_type, input=attrs.pop("input", None), metadata=attrs or None)
-        try:
-            yield _LangfuseHandle(obs, False, self._stats)
-        finally:
-            obs.end()
+        if keys_present(env):
+            out.append(langfuse_span_exporter(env))
+    if "otlp" in cfg.exporters:
+        from rag_core.otel_tracing import otlp_exporter
 
-    @contextmanager
-    def generation(self, name: str, **attrs: Any) -> Iterator[SpanHandle]:
-        prompt = attrs.pop("prompt", None)
-        kw = {k: attrs.pop(k) for k in ("model", "model_parameters", "input") if k in attrs}
-        obs = self._root.start_observation(name=name, as_type="generation", metadata=attrs or None, **({"prompt": prompt} if prompt is not None else {}), **kw)
-        try:
-            yield _LangfuseHandle(obs, True, self._stats)
-        finally:
-            obs.end()
-
-    def event(self, name: str, *, level: str = "DEFAULT", status_message: str | None = None, metadata: dict | None = None) -> None:
-        obs = self._root.start_observation(name=name, as_type="event", level=level, status_message=status_message, metadata=metadata)
-        if hasattr(obs, "end"):
-            obs.end()
-
-    def set_error(self, code: str, message: str, level: str = "ERROR") -> None:
-        self._root.update(level=level, status_message=f"{code}: {message}"[:500], metadata={"error_code": code})
-
-    def end(self, *, output: Any = None, metadata: dict | None = None) -> None:
-        kw: dict[str, Any] = {}
-        if output is not None:
-            kw["output"] = output
-        if metadata:
-            kw["metadata"] = metadata
-        if kw:
-            self._root.update(**kw)
-        self._root.end()
+        out.append(otlp_exporter())
+    return out
 
 
-class LangfuseTracer:
-    """Sends traces to Langfuse through explicit parent/child observations. Subject to ``sample_rate`` and the daily cap."""
-
-    enabled = True
-
-    def __init__(self, cfg: TracingConfig | None = None, *, client_factory: Callable[[], Any] | None = None,
-                 propagate_factory: Callable[..., Any] | None = None, rng: Callable[[], float] = random.random,
-                 clock: Callable[[], float] = time.time):
-        self.cfg = cfg or TracingConfig(enabled=True)
-        self._factory, self._propagate, self._rng = client_factory, propagate_factory, rng
-        self.stats, self._cap = TraceStats(), DailyCap(self.cfg.daily_request_cap, clock)
-
-    def _client(self) -> Any:
-        if self._factory is not None:
-            return self._factory()
-        from rag_core.langfuse_client import get_langfuse_client
-
-        return get_langfuse_client()
-
-    def _propagate_cm(self, **kw: Any):
-        if self._propagate is not None:
-            return self._propagate(**kw)
-        from langfuse import propagate_attributes
-
-        return propagate_attributes(**kw)
-
-    def start_request(self, name: str, *, session_id: str | None = None, input: Any = None, metadata: dict | None = None):
-        if self._rng() >= self.cfg.sample_rate:
-            self.stats.bump("sampled_out")
-            return NoopTrace()
-        if not self._cap.allow():
-            self.stats.bump("capped")
-            return NoopTrace()
-        client = self._client()
-        if client is None:
-            return NoopTrace()
-        kw = {"trace_name": name, **({"session_id": session_id} if session_id else {})}
-        with self._propagate_cm(**kw):
-            root = client.start_observation(name=name, as_type="span", input=input, metadata=metadata)
-        self.stats.bump("traced")
-        return LangfuseTrace(root, self.stats)
-
-    def flush(self, timeout_s: float | None = None) -> None:
-        """Flush in a helper thread and give up after ``timeout_s`` (default ``tracing.flush_timeout_seconds``): a slow Langfuse must not stall."""
-        client = self._client()
-        if client is None:
-            return
-        done = threading.Event()
-
-        def run() -> None:
-            try:
-                client.flush()
-            except Exception:  # noqa: BLE001
-                self.stats.bump("errors")
-            finally:
-                done.set()
-
-        threading.Thread(target=run, daemon=True, name="langfuse-flush").start()
-        if not done.wait(self.cfg.flush_timeout_seconds if timeout_s is None else timeout_s):
-            self.stats.bump("flush_timeouts")
-
-
-def build_tracer(cfg: TracingConfig, *, env: dict | None = None, client_factory: Callable[[], Any] | None = None,
-                 propagate_factory: Callable[..., Any] | None = None, rng: Callable[[], float] = random.random,
-                 clock: Callable[[], float] = time.time) -> Tracer:
-    """``LangfuseTracer`` only if ``cfg.enabled`` AND both Langfuse keys are present; otherwise ``NoopTracer`` (and the SDK is never imported)."""
-    from rag_core.langfuse_client import keys_present
-
-    if not cfg.enabled or not (keys_present(env) if client_factory is None else True):
+def build_tracer(cfg: TracingConfig, *, env: dict | None = None, exporters: Sequence | None = None, simple: bool = False,
+                 rng: Callable[[], float] = random.random, clock: Callable[[], float] = time.time) -> Tracer:
+    """``OtelTracer`` if ``cfg.enabled`` and there is at least one exporter (``exporters`` replaces the configured ones: tests pass an in-memory
+    exporter, with ``simple=True`` for synchronous export); otherwise ``NoopTracer`` (and the OpenTelemetry SDK is never imported)."""
+    if not cfg.enabled:
         return NoopTracer()
-    return LangfuseTracer(cfg, client_factory=client_factory, propagate_factory=propagate_factory, rng=rng, clock=clock)
+    exporters = configured_exporters(cfg, env) if exporters is None else list(exporters)
+    if not exporters:
+        return NoopTracer()
+    from rag_core.otel_tracing import OtelTracer, build_provider
+
+    return OtelTracer(cfg, provider=build_provider(exporters, simple=simple), rng=rng, clock=clock)

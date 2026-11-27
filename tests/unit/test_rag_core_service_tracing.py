@@ -11,7 +11,7 @@ from rag_core.errors import InvalidQuestion
 from rag_core.prompt_store import LangfusePromptStore, LocalPromptStore
 from rag_core.prompts import PROMPT_NAMES, PROMPT_VERSION
 from rag_core.tracing import FakeTracer
-from tests.unit.rag_core_fakes import FakePrompt, FakePromptClient, FakeRetriever, chat_messages, fail, make_hit, ok
+from tests.unit.rag_core_fakes import ABSTAIN_JSON, FakePrompt, FakePromptClient, FakeRetriever, answer_json, chat_messages, fail, make_hit, ok
 from tests.unit.test_rag_core_service import Q, done_of, events, make
 
 KEY = "gsk_abcdefghijklmnop1234567890"
@@ -58,7 +58,8 @@ def test_the_generation_carries_model_provider_usage_first_token_time_the_prompt
     assert gen["type"] == "generation" and gen["attrs"]["model"] == "model-a"
     attrs = gen["attrs"]
     assert attrs["provider"] == "groq" and attrs["prompt_name"] == PROMPT_NAMES["long"] and attrs["prompt_version"] == PROMPT_VERSION and attrs["prompt_source"] == "local"
-    assert len(attrs["prompt_sha256"]) == 64 and attrs["model_parameters"] == {"temperature": RagConfig().temperature, "max_tokens": RagConfig().max_output_tokens, "reasoning_effort": None}  # the fake gateway has no effort
+    assert len(attrs["prompt_sha256"]) == 64 and attrs["model_parameters"] == {"temperature": RagConfig().temperature, "max_tokens": RagConfig().max_output_tokens, "reasoning_effort": None,
+                                                                     "response_format": "claims-1"}  # the fake gateway has no effort
     assert attrs["usage"] == {"prompt_tokens": 11, "completion_tokens": 7} and attrs["finish_reason"] == "stop" and isinstance(attrs["completion_start_time"], datetime)
     assert attrs["attempts"] == [{"provider": "groq", "attempt": 1, "outcome": "ok", "error_kind": None, "latency_ms": attrs["attempts"][0]["latency_ms"]}]
     assert attrs["prompt"] is None  # a local prompt has no Langfuse object to link
@@ -109,7 +110,8 @@ def test_capture_none_records_no_question_or_answer_text():
 def test_no_key_like_string_reaches_the_tracer_in_any_mode_even_from_a_provider_answer():
     for mode in ("masked", "full", "none"):
         tracer = FakeTracer()
-        svc, *_ = make([[f"The key is {KEY} [S1]", *ok()[-1:]]], tracer=tracer, tracing=tracing(capture=mode), hits=[make_hit(1, text=KEY)])
+        svc, *_ = make([[answer_json((f"The key is {KEY}.", [("S1", KEY)])), *ok()[-1:]]], tracer=tracer, tracing=tracing(capture=mode),
+                       hits=[make_hit(1, text=KEY)])
         _, trace, _ = run(svc, tracer, q=f"my key is {KEY}")
         assert KEY not in json.dumps(trace.observations, default=str), mode
 
@@ -140,7 +142,7 @@ def test_every_provider_failing_is_a_degraded_trace_with_an_error_generation_and
 
 def test_a_mid_stream_failure_marks_the_generation_and_root_as_errors_and_records_the_partial_text():
     tracer = FakeTracer()
-    svc, *_ = make([["Attention weighs ", "the tok", fail("connection")]], tracer=tracer, tracing=tracing())
+    svc, *_ = make([['{"status": "answered", "claims": [{"text": "Attention weighs ', 'the tok', fail("connection")]], tracer=tracer, tracing=tracing())
     result, trace, _ = run(svc, tracer)
     gen = trace.get("generation")
     assert result.partial and gen["level"] == "ERROR" and gen["status_message"] == "mid_stream" and gen["attrs"]["output"] == "Attention weighs the tok"
@@ -194,7 +196,7 @@ def test_small_talk_is_traced_as_a_route_only_trace():
 
 def test_an_abstention_and_a_no_results_answer_are_traced_and_not_errors():
     tracer = FakeTracer()
-    svc, *_ = make([[*["INSUFFICIENT_CONTEXT"], *ok()[-1:]]], tracer=tracer, tracing=tracing())
+    svc, *_ = make([[ABSTAIN_JSON, *ok()[-1:]]], tracer=tracer, tracing=tracing())
     result, trace, _ = run(svc, tracer)
     assert result.abstained and trace.observations[0]["attrs"]["abstained"] is True and trace.observations[0]["level"] == "DEFAULT"
     assert trace.get("generation")["attrs"]["abstained"] is True
@@ -230,9 +232,9 @@ def test_an_invalid_langfuse_prompt_is_an_error_level_event():
 
 def test_a_good_langfuse_prompt_links_the_generation_to_the_prompt_object_and_adds_no_fallback_event():
     from rag_core.config import PromptsConfig
-    from rag_core.prompts import CITATION_INSTRUCTION, INSUFFICIENT_CONTEXT
+    from rag_core.prompts import QUOTE_INSTRUCTION, STATUS_INSUFFICIENT
 
-    prompt = FakePrompt(chat_messages(f"Answer only from sources. Cite {CITATION_INSTRUCTION}. Else {INSUFFICIENT_CONTEXT}."), version=4)
+    prompt = FakePrompt(chat_messages(f"Answer only from sources. Quote each source in {QUOTE_INSTRUCTION}. Else {STATUS_INSUFFICIENT}."), version=4)
     tracer = FakeTracer()
     svc, _, a, *_ = make(tracer=tracer, tracing=tracing(), prompts=LangfusePromptStore(PromptsConfig(mode="langfuse"), client_factory=lambda: FakePromptClient(prompt)))
     result, trace, _ = run(svc, tracer)
@@ -302,7 +304,8 @@ def test_flush_traces_calls_the_tracer_and_never_raises():
 
 def test_an_aborted_consumer_still_ends_the_root_and_marks_it_aborted():
     tracer = FakeTracer()
-    svc, *_ = make([["First part. ", "Second part [S1]."]], tracer=tracer, tracing=tracing())
+    reply = answer_json(("First part.", ["S1"]), ("Second part.", ["S1"]))
+    svc, *_ = make([[reply[:40], reply[40:]]], tracer=tracer, tracing=tracing())
     stream = svc.answer_stream(Q)
     for ev in stream:
         if ev["type"] == "token":

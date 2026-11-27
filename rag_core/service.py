@@ -34,7 +34,8 @@ from typing import Callable, Iterator, Sequence
 
 from rag.router import route_query
 from rag_core.cache import CacheBackend, config_hash, is_cacheable, make_cache_key
-from rag_core.citations import could_become_abstention, is_abstention, parse_citations
+from rag_core.citations import could_become_abstention, is_abstention
+from rag_core.claims import SCHEMA_VERSION, ParsedAnswer, StreamRenderer, answer_schema, parse_answer, render_answer
 from rag_core.config import RagConfig, TracingConfig
 from rag_core.context import build_context
 from rag_core.errors import AllProvidersFailed, AnswerTooLong, InvalidQuestion, MidStreamError
@@ -50,6 +51,8 @@ ABSTAIN_MESSAGE = "The retrieved passages do not contain enough information to a
 NO_RESULTS_MESSAGE = "No relevant passages were found in the indexed papers for this question."
 DEGRADED_MESSAGE = ("The answer service is unavailable right now, so no answer could be generated. "
                     "These are the most relevant passages that were found; you can read them directly.")
+INVALID_OUTPUT_MESSAGE = ("The model's reply did not follow the required answer format, so no answer is shown. "
+                          "These are the most relevant passages that were found; you can read them directly.")
 TOO_LONG_MESSAGE = ("The model used its whole output budget before it wrote an answer, so no answer was generated. "
                     "Try a more specific question. These are the most relevant passages that were found; you can read them directly.")
 RETRIEVAL_FAILED_MESSAGE = "Search is unavailable right now, so no passages could be retrieved. Please try again later."
@@ -219,8 +222,9 @@ class RagService:
             return fallback
 
     def _cache_key(self, question: str, doc_ids, rerank: bool, mode: str, resolved: ResolvedPrompt) -> str:
+        prompt_id = f"{resolved.cache_id}|{SCHEMA_VERSION}" if mode == "long" else resolved.cache_id  # a schema change must not serve old answers
         return make_cache_key(question=question, doc_ids=doc_ids, retrieval_config_hash=config_hash(self.cfg.retrieval_settings(rerank)),
-                              index_version=self.index_version, embedder_revision=self.embedder_revision, prompt=resolved.cache_id,
+                              index_version=self.index_version, embedder_revision=self.embedder_revision, prompt=prompt_id,
                               model_id=self.gateway.primary_model, top_k=self.cfg.top_k, mode=mode,
                               reasoning_effort=self.gateway.primary_reasoning_effort)
 
@@ -249,9 +253,19 @@ class RagService:
         trace.end(output=self.capture.answer(result.answer), metadata=self.capture.meta({
             "cache_hit": result.cached, "mode": result.mode, "provider": result.provider, "model": result.model, "finish_reason": result.finish_reason,
             "reasoning_effort": result.reasoning_effort,
-            "degraded": result.degraded, "abstained": result.abstained, "partial": result.partial, "citations": len(result.citations),
+            "degraded": result.degraded, "abstained": result.abstained, "partial": result.partial, "citations": len(result.citations), "claims": len(result.claims),
             "invalid_citations": len(result.invalid_citations), "error_codes": [e.code for e in result.errors],
             "prompt": None if result.prompt is None else result.prompt.model_dump()}))
+
+    @staticmethod
+    def _apply_claims(result: AnswerResult, parsed: ParsedAnswer) -> bool:
+        """Fill the long-answer fields of ``result`` from a parsed structured answer; True if the model abstained."""
+        abstained = parsed.abstained
+        result.abstained = abstained
+        result.claims = [] if abstained else parsed.claims
+        result.answer = ABSTAIN_MESSAGE if abstained else render_answer(parsed.claims)
+        result.citations, result.invalid_citations = ([], []) if abstained else (parsed.cited, parsed.invalid)
+        return abstained
 
     # ---- the pipeline -------------------------------------------------------------------------------------------
     def _run(self, question: str, doc_ids, rerank: bool, mode: str, session_id, traced: bool) -> Iterator[dict]:
@@ -348,12 +362,16 @@ class RagService:
         # 6. generate (streaming), inside ONE generation observation
         messages = compile_messages(resolved.messages, ctx.sources, question)
         max_out = self.cfg.short_max_output_tokens if mode == "short" else self.cfg.max_output_tokens
+        structured = mode == "long"  # the long answer is structured output (claims with quotes); the short answer is plain text
+        schema = answer_schema([s.label for s in ctx.sources]) if structured else None
+        renderer = StreamRenderer() if structured else None
         parts: list[str] = []
         released, suppressed, first_token_ms, first_token_wall, done = False, False, None, None, None
         generation = trace.generation(
             "generation", model=self.gateway.primary_model, provider=self.gateway.primary_name,
             input=self.capture.generation_input(messages, question, ctx.sources), prompt=resolved.client if resolved.source == "langfuse" else None,
-            model_parameters={"temperature": self.cfg.temperature, "max_tokens": max_out, "reasoning_effort": self.gateway.primary_reasoning_effort},
+            model_parameters={"temperature": self.cfg.temperature, "max_tokens": max_out, "reasoning_effort": self.gateway.primary_reasoning_effort,
+                              "response_format": SCHEMA_VERSION if structured else "text"},
             prompt_name=resolved.name, prompt_version=str(resolved.version), prompt_source=resolved.source, prompt_sha256=resolved.sha256)
         gen = generation.__enter__()
 
@@ -362,11 +380,18 @@ class RagService:
 
         try:
             try:
-                for event in self.gateway.stream(messages, max_output_tokens=max_out, temperature=self.cfg.temperature):
+                for event in self.gateway.stream(messages, max_output_tokens=max_out, temperature=self.cfg.temperature,
+                                                 **({"response_schema": schema} if structured else {})):
                     if isinstance(event, Delta):
                         if first_token_ms is None:
                             first_token_ms, first_token_wall = elapsed(), datetime.now(timezone.utc)
                         parts.append(event.text)
+                        if renderer is not None:  # structured: show the claims' text as it arrives (never the JSON, never an abstention)
+                            shown = renderer.feed(event.text)
+                            if shown:
+                                released = True
+                                yield {"type": "token", "text": shown}
+                            continue
                         if suppressed:
                             continue
                         if not released:
@@ -384,14 +409,21 @@ class RagService:
                         done = event
             except MidStreamError as exc:
                 text = "".join(parts)
-                result.answer, result.partial, result.finish_reason = text, True, "error"
+                result.partial, result.finish_reason = True, "error"
                 result.provider, result.model, result.attempts = exc.provider, exc.model, exc.attempts
                 result.used_sources = list(ctx.sources)
-                result.citations = parse_citations(text, [s.label for s in ctx.sources]).cited
+                if structured:  # keep the claims that arrived (the JSON is parsed as far as it goes)
+                    self._apply_claims(result, parse_answer(text, ctx.sources))
+                    tail = renderer.finish(result.answer)
+                    if tail:
+                        yield {"type": "token", "text": tail}
+                    released = True
+                else:
+                    result.answer = text
                 result.errors.append(ErrorInfo(code="mid_stream", provider=exc.provider, recoverable=False,
                                                message=f"{exc.provider} stopped after {len(text)} characters ({exc.cause.kind}); the answer is incomplete."))
                 result.latency_ms = Latency(retrieve=retrieve_ms, first_token=first_token_ms, total=elapsed())
-                gen.update(level="ERROR", status_message="mid_stream", output=self.capture.answer(text), completion_start_time=first_token_wall,
+                gen.update(level="ERROR", status_message="mid_stream", output=self.capture.answer(result.answer), completion_start_time=first_token_wall,
                            provider=exc.provider, model=exc.model, finish_reason="error", attempts=attempts_meta(exc.attempts))
                 if not released and text and not suppressed:
                     yield {"type": "token", "text": text}
@@ -425,24 +457,45 @@ class RagService:
 
             # 7. validate and assemble
             text = "".join(parts)
-            if not released and not suppressed and text:
-                yield {"type": "token", "text": text}  # a short answer that stayed held back until the stream ended
-            labels = [s.label for s in ctx.sources]
-            abstained = is_abstention(text)
-            parse = parse_citations("" if abstained else text, labels)
-            result.abstained = abstained
-            result.answer = ABSTAIN_MESSAGE if abstained else text.strip()
-            result.short_answer = None if (abstained or mode != "short") else clean_short_answer(text)
-            result.citations, result.invalid_citations = parse.cited, parse.invalid
             result.used_sources = list(ctx.sources)  # exactly what the model saw
             result.provider, result.model, result.finish_reason = done.provider, done.model, done.finish_reason
+            parsed: ParsedAnswer | None = None
+            if structured:
+                parsed = parse_answer(text, ctx.sources)
+                abstained = self._apply_claims(result, parsed)
+                if not abstained:
+                    tail = renderer.finish(result.answer)
+                    if tail:
+                        yield {"type": "token", "text": tail}
+                if parsed.status is None and not parsed.claims:  # not the required format at all: no answer is shown, the passages are
+                    result.degraded, result.answer, result.claims = True, INVALID_OUTPUT_MESSAGE, []
+                    result.errors.append(ErrorInfo(code="invalid_output", message="The model's reply was not a structured answer."))
+                    yield {"type": "error", "error": result.errors[-1]}
+                elif not parsed.complete and not abstained:  # the JSON was cut off (output limit): the claims that arrived are kept and the answer is marked incomplete
+                    result.partial = True
+                    result.errors.append(ErrorInfo(code="truncated", recoverable=False,
+                                                   message="The model stopped before it finished the answer (output limit); the answer is incomplete."))
+                    yield {"type": "error", "error": result.errors[-1]}
+            else:
+                if not released and not suppressed and text:
+                    yield {"type": "token", "text": text}  # a short answer that stayed held back until the stream ended
+                abstained = is_abstention(text)
+                result.abstained = abstained
+                result.answer = ABSTAIN_MESSAGE if abstained else text.strip()
+                result.short_answer = None if abstained else clean_short_answer(text)
             result.usage = Usage(prompt_tokens=done.prompt_tokens, completion_tokens=done.completion_tokens, reasoning_tokens=done.reasoning_tokens)
             result.attempts = done.attempts
             result.latency_ms = Latency(retrieve=retrieve_ms, first_token=first_token_ms, total=elapsed())
             update = {"output": self.capture.answer(result.answer), "provider": done.provider, "model": done.model, "finish_reason": done.finish_reason,
                       "reasoning_tokens": done.reasoning_tokens,
-                      "completion_start_time": first_token_wall, "attempts": attempts_meta(done.attempts), "abstained": abstained,
-                      "citations": len(parse.cited), "invalid_citations": len(parse.invalid)}
+                      "completion_start_time": first_token_wall, "attempts": attempts_meta(done.attempts), "abstained": result.abstained,
+                      "citations": len(result.citations), "invalid_citations": len(result.invalid_citations)}
+            if parsed is not None:
+                verified, total = parsed.quotes
+                update.update(claims=len(parsed.claims), quotes_verified=verified, quotes=total, json_complete=parsed.complete,
+                              malformed_items=parsed.malformed_items)
+            if result.errors:
+                update.update(level="WARNING" if result.partial else "ERROR", status_message=result.errors[-1].code)
             if done.prompt_tokens is not None or done.completion_tokens is not None:
                 update["usage"] = {"prompt_tokens": done.prompt_tokens, "completion_tokens": done.completion_tokens}
             cost = cost_details(self.cfg.prices, done.model, done.prompt_tokens, done.completion_tokens)

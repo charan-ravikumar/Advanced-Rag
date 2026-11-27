@@ -1,0 +1,24 @@
+{
+  "archive": {
+    "bytes": 3865061,
+    "sha256": "72a52a41193e2838b8074f80ac074b94f956b84886c36a61c58a7df4171bdd72"
+  },
+  "dataset": "qasper-test-v0.3",
+  "downloaded_utc": "2026-11-27T17:28:20.741119+00:00",
+  "files": {
+    "README-test.md": {
+      "bytes": 916,
+      "sha256": "64616ee7ee72494afe5cd8296ab8d1f30b134c8a3aafa556d035ec7c9b97414c"
+    },
+    "qasper-test-v0.3.json": {
+      "bytes": 18078957,
+      "sha256": "6e29ad410e6e39aa1936017fb965b30a20eb2e7751997f55b97c9d281aa884e5"
+    },
+    "qasper_evaluator.py": {
+      "bytes": 6345,
+      "sha256": "781aba7cd8e524bef4f0a1b4bf3504e5b02cb1d8d5bf32a8f0a89dfa83e86bfe"
+    }
+  },
+  "license": "CC BY 4.0 (Dasigi et al., 2021)",
+  "url": "https://qasper-dataset.s3.us-west-2.amazonaws.com/qasper-test-and-evaluator-v0.3.tgz"
+}

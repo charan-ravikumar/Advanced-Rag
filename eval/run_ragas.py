@@ -3,7 +3,7 @@
     # in the EVALUATION venv (ragas lives only there):
     & "$env:LOCALAPPDATA\\advrag\\venv_eval\\Scripts\\python.exe" eval/run_ragas.py --run runs/gen/<generation run folder>
 
-Scores faithfulness and answer relevancy (ragas 0.4.4 collections API) of every NON-ABSTAINED long-mode answer of the generation run. Judge: Gemini ``gemini-3.5-flash-lite`` at temperature 0 with
+Scores faithfulness and answer relevancy (ragas 0.4.4 collections API) of every NON-ABSTAINED long-mode answer of the generation run. Judge: Gemini ``gemini-3.8-flash`` (``generation.judge.model``; a different model from the generator, the same family) at temperature 0 with
 the thinking budget and output limit from ``config.yaml`` (``generation.judge``), through ``eval/ragas_adapter.py``; answer relevancy uses the local pinned MiniLM embeddings. The answers are scored
 with their ``[S#]`` citation markers removed; the contexts are exactly the passages that were sent to the generator (``used_sources``). Only public Qasper text goes to Gemini.
 
@@ -94,6 +94,19 @@ def score_rows(rows: Sequence[dict], scorer, *, log: Callable[[str], None] = pri
     return {"rows": out, "errors": errors, "stopped_reason": stopped}
 
 
+def family_note(judge_model: str, generator_model: str | None) -> str:
+    """How the judge relates to the generator that wrote the answers it scores (recorded in config.json)."""
+    calibration = "; NOT calibrated against human labels"
+    if generator_model is None:
+        return "the generator's model is not recorded in the generation run, so the judge's relation to it is unknown" + calibration
+    if judge_model == generator_model:
+        return f"the judge is the SAME model as the generator ({judge_model}): self-preference bias is possible" + calibration
+    if judge_model.split("-")[0] == generator_model.split("-")[0]:
+        return (f"the judge ({judge_model}) is a different model of the SAME family as the generator ({generator_model}): "
+                "family-level self-preference bias is still possible" + calibration)
+    return f"the judge ({judge_model}) and the generator ({generator_model}) are from different model families" + calibration
+
+
 def summarize(rows: Sequence[dict], selection: dict, result: dict, stats: JudgeStats) -> dict:
     return {"label": LABEL, "n_scored_rows": len(rows), "selection": selection,
             "metrics": {m: summarize_metric(rows, m) for m in METRICS},
@@ -165,7 +178,7 @@ def main(argv=None, *, scorer_factory=None, judge: dict | None = None, log: Call
         "generation_run": {"path": str(args.run), "per_question_sha256": hashlib.sha256(gen_rows_path.read_bytes()).hexdigest(), "label": gen_config.get("label"),
                            "sample": {k: gen_config.get("sample", {}).get(k) for k in ("seed", "n_drawn", "question_ids")},
                            "generator": gen_config.get("generator"), "code_fingerprint": gen_config.get("code_fingerprint")},
-        "judge": {**settings.as_dict(), "provider": "gemini", "family_note": "the judge may be the SAME model as the generator (both gemini-3.5-flash-lite): self-preference bias is possible; NOT calibrated against human labels",
+        "judge": {**settings.as_dict(), "provider": "gemini", "family_note": family_note(settings.model, (gen_config.get("generator") or {}).get("model")),
                   "strictness": 1, "strictness_note": "answer relevancy asks for one generated question (at temperature 0 more would be near-identical)"},
         "ragas_version": ragas_version, "libraries": versions,
         "embeddings": "local sentence-transformers/all-MiniLM-L6-v2 at its pinned revision (local cache only), used by answer relevancy",

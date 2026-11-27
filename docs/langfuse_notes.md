@@ -24,6 +24,23 @@ and the INSTALLED SDK (signatures and source inspected locally). Where the two c
 variables (so tests can inject a fake and so "keys present" is decided by our code). `rag_core/env.py::load_env()` loads an ALLOWLIST of names from `.env`
 (only entry-point scripts call it).
 
+## Since 2026-11-27: traces are OpenTelemetry spans, not SDK observations
+
+The sections below describe the SDK's own tracing API, which `rag_core` used until 2026-11-27. Traces now come from `rag_core/otel_tracing.py::OtelTracer`:
+plain OpenTelemetry spans from a PRIVATE `TracerProvider`, exported with `OTLPSpanExporter` to `<base url>/api/public/otel/v1/traces`. The exporter sends
+Basic auth with the key pair and `x-langfuse-ingestion-version: 4`, as the v5 SDK's exporter does; it is built in `rag_core/langfuse_client.py::langfuse_span_exporter`.
+Each span carries the attributes the SDK would write (`langfuse.observation.type|input|output|level|status_message|metadata.<key>|model.name|model.parameters|
+usage_details|cost_details|completion_start_time|prompt.name|prompt.version`, `langfuse.trace.name`, `session.id`), with the SDK's JSON encoding. The generation span
+also carries the OpenTelemetry GenAI conventions (`gen_ai.*`). `tests/unit/test_rag_core_tracing.py::test_the_attributes_match_what_the_installed_langfuse_sdk_would_send`
+compares the names and the encoding with the installed SDK (5.2.0). The trace id is the OTel trace id (32 hex characters), which is also the id that feedback scores use.
+The SDK client is still used for prompts, scores and the Metrics API.
+
+NOT verified live (the offline tests cannot show these; `scripts/smoke_trace.py` can, and it is run only when the owner asks):
+- that Langfuse renders these spans exactly as it rendered the SDK's (observation types, prompt links, usage, sessions);
+- that Langfuse does not count usage twice when both `langfuse.observation.usage_details` and `gen_ai.usage.*` are present (the docs say the `langfuse.*` attributes take precedence);
+- the Metrics API delay: the "Data delay" note below says data from plain OTel exporters "can lag by up to 15 minutes". Whether the SDK-like headers avoid that is unknown, and the
+  Observability tab may show new requests later than before.
+
 ## Creating traces and observations (Python v5)
 
 - Client: `from langfuse import Langfuse, get_client, propagate_attributes`. `Langfuse(public_key=, secret_key=, base_url=, timeout=, sample_rate=, mask=, should_export_span=, flush_at=, flush_interval=, environment=, tracing_enabled=, debug=)`.

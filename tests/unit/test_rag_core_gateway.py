@@ -299,7 +299,7 @@ class SlowDrip:
         self.name, self.model, self.clock, self.texts, self.step_s = name, model, clock, list(texts), step_s
         self.calls, self.closed = 0, False
 
-    def stream(self, messages, *, timeout_s, max_output_tokens, temperature):
+    def stream(self, messages, *, timeout_s, max_output_tokens, temperature, response_schema=None):
         self.calls += 1
         try:
             for text in self.texts:

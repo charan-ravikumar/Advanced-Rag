@@ -15,7 +15,7 @@ from rag_core.config import RagConfig, TracingConfig
 from rag_core.observability_reader import Panel
 from rag_core.scores import record_feedback
 from rag_core.tracing import FakeTracer
-from tests.unit.rag_core_fakes import FakeLangfuse, make_hit, ok
+from tests.unit.rag_core_fakes import answer_json, FakeLangfuse, make_hit, ok
 from tests.unit.test_rag_core_service import make
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -63,7 +63,7 @@ class FakeReader:
 def make_resources(*, primary=None, secondary=None, hits=None, artifacts=None, retriever=None, keys=True, daily_cap=80, session_cap=20, rate=100, reader=None, feedback=None,
                    rerank_available=True, selfcheck=None, tracing=True, prices=False, index_version="idx-test") -> Resources:
     tracer = FakeTracer() if tracing else None
-    svc, retr, a, b, cache, gw = make(primary or [ok("Attention weighs the tokens\u3010S1\u3011.")], secondary, hits=hits, retriever=retriever, tracer=tracer,
+    svc, retr, a, b, cache, gw = make(primary or [ok(answer_json(("Attention weighs the tokens.", ["S1"])))], secondary, hits=hits, retriever=retriever, tracer=tracer,
                                       tracing=TracingConfig(enabled=tracing), index_version=index_version, cfg=RagConfig(prices={"model-a": {"input": 1.0, "output": 1.0}} if prices else {}))
     check = selfcheck or SelfCheck([Check("Index directory", True, "set and found"), Check("Gemini API key present", keys, "present" if keys else "missing", fatal=False)])
     res = Resources(settings=AppConfig(daily_request_cap=daily_cap, session_request_cap=session_cap, rate_limit_requests=rate, metrics_ttl_seconds=3600), selfcheck=check,

@@ -66,8 +66,10 @@ class Provider(Protocol):
     name: str
     model: str
 
-    def stream(self, messages: list[dict], *, timeout_s: float, max_output_tokens: int, temperature: float) -> Iterator[Delta | Final]:
-        """Yield ``Delta`` text pieces, then one ``Final``. Raise ``ProviderError`` (typed) on any failure."""
+    def stream(self, messages: list[dict], *, timeout_s: float, max_output_tokens: int, temperature: float,
+               response_schema: dict | None = None) -> Iterator[Delta | Final]:
+        """Yield ``Delta`` text pieces, then one ``Final``. Raise ``ProviderError`` (typed) on any failure. With ``response_schema`` (a JSON
+        schema) the provider must constrain its reply to it (structured output); the deltas are then pieces of the JSON text."""
 
 
 class CircuitBreaker:
@@ -162,7 +164,8 @@ class LLMGateway:
             delay = max(delay, retry_after_s)
         return min(delay, self.max_delay_s)
 
-    def stream(self, messages: list[dict], *, max_output_tokens: int = 700, temperature: float = 0.0) -> Iterator[Delta | StreamDone]:
+    def stream(self, messages: list[dict], *, max_output_tokens: int = 700, temperature: float = 0.0,
+               response_schema: dict | None = None) -> Iterator[Delta | StreamDone]:
         attempts: list[AttemptRecord] = []
         started = self._clock()
         length_seen = other_failure = False
@@ -184,7 +187,8 @@ class LLMGateway:
                 t0 = self._clock()
                 stream = None
                 try:
-                    stream = provider.stream(messages, timeout_s=self.timeout_s, max_output_tokens=cap, temperature=temperature)
+                    stream = provider.stream(messages, timeout_s=self.timeout_s, max_output_tokens=cap, temperature=temperature,
+                                             **({"response_schema": response_schema} if response_schema is not None else {}))
                     for item in stream:
                         if isinstance(item, Delta):
                             if self._clock() - started >= self.deadline_s:  # a slow drip must not hold this thread past the total deadline
@@ -304,15 +308,17 @@ class GeminiProvider:
                 self._client = genai.Client(api_key=key)
         return self._client
 
-    def build_config(self, system: str | None, timeout_s: float, max_output_tokens: int, temperature: float):
+    def build_config(self, system: str | None, timeout_s: float, max_output_tokens: int, temperature: float, response_schema: dict | None = None):
         from google.genai import types
 
         extra = {"thinking_config": types.ThinkingConfig(thinking_budget=self.thinking_budget)} if self.thinking_budget is not None else {}
+        if response_schema is not None:  # structured output: the reply is JSON constrained by the schema (constrained decoding on Gemini's side)
+            extra.update(response_mime_type="application/json", response_json_schema=response_schema)
         return types.GenerateContentConfig(
             system_instruction=system, temperature=temperature, max_output_tokens=max_output_tokens,
             http_options=types.HttpOptions(timeout=int(timeout_s * 1000), retry_options=types.HttpRetryOptions(attempts=1)), **extra)
 
-    def stream(self, messages, *, timeout_s, max_output_tokens, temperature):
+    def stream(self, messages, *, timeout_s, max_output_tokens, temperature, response_schema=None):
         key = os.environ.get(self.api_key_env)
         try:
             from google.genai import types
@@ -321,7 +327,7 @@ class GeminiProvider:
             contents = [types.Content(role="model" if m["role"] == "assistant" else "user", parts=[types.Part(text=m["content"])])
                         for m in messages if m["role"] != "system"]
             client = self._get_client()
-            config = self.build_config(system, timeout_s, max_output_tokens, temperature)
+            config = self.build_config(system, timeout_s, max_output_tokens, temperature, response_schema)
             finish, usage = None, None
             for chunk in client.models.generate_content_stream(model=self.model, contents=contents, config=config):
                 if getattr(chunk, "usage_metadata", None) is not None:

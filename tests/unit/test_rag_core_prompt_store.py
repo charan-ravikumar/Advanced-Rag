@@ -11,7 +11,7 @@ import pytest
 
 from rag_core.config import PromptsConfig
 from rag_core.prompt_store import LangfusePromptStore, LocalPromptStore, ResolvedPrompt, build_prompt_store, describe_prompts
-from rag_core.prompts import (CITATION_INSTRUCTION, INSUFFICIENT_CONTEXT, PROMPT_NAMES, PROMPT_VERSION, REQUIRED_SYSTEM_SUBSTRINGS, SYSTEM_LONG, SYSTEM_SHORT,
+from rag_core.prompts import (INSUFFICIENT_CONTEXT, PROMPT_NAMES, QUOTE_INSTRUCTION, STATUS_INSUFFICIENT, PROMPT_VERSION, REQUIRED_SYSTEM_SUBSTRINGS, SYSTEM_LONG, SYSTEM_SHORT,
                               USER_TEMPLATE, build_messages, compile_messages, find_variables, local_template, render_template, template_sha256,
                               validate_template)
 from rag_core.schemas import Source
@@ -19,7 +19,7 @@ from tests.unit.rag_core_fakes import FakePrompt, FakePromptClient, chat_message
 
 ROOT = Path(__file__).resolve().parents[2]
 LONG, SHORT = PROMPT_NAMES["long"], PROMPT_NAMES["short"]
-GOOD_LONG = f"Answer from the sources only. Cite like {CITATION_INSTRUCTION}. If unsure reply exactly {INSUFFICIENT_CONTEXT}."
+GOOD_LONG = f"Answer from the sources only. Give each claim a {QUOTE_INSTRUCTION}. If unsure set status to {STATUS_INSUFFICIENT}."
 GOOD_SHORT = f"Answer briefly. If the sources do not say, reply exactly {INSUFFICIENT_CONTEXT}."
 
 
@@ -162,8 +162,9 @@ INVALID = {
     "missing variable {{sources}}": (chat_messages(GOOD_LONG, "<question>{{question}}</question>"), "variables must be exactly"),
     "an extra variable": (chat_messages(GOOD_LONG, USER_TEMPLATE + " {{extra}}"), "variables must be exactly"),
     "no variables at all": (chat_messages(GOOD_LONG, "static text"), "variables must be exactly"),
-    "missing the INSUFFICIENT_CONTEXT instruction": (chat_messages(f"Cite like {CITATION_INSTRUCTION}."), INSUFFICIENT_CONTEXT),
-    "missing the [S#] citation instruction": (chat_messages(f"Reply exactly {INSUFFICIENT_CONTEXT} when unsure."), CITATION_INSTRUCTION),
+    "missing the insufficient_context instruction": (chat_messages(f"Give each claim a {QUOTE_INSTRUCTION}."), STATUS_INSUFFICIENT),
+    "missing the quote instruction": (chat_messages(f"Set status to {STATUS_INSUFFICIENT} when unsure."), QUOTE_INSTRUCTION),
+    "the OLD free-text long prompt ([S1] markers, INSUFFICIENT_CONTEXT)": (chat_messages(f"Cite like [S1]. If unsure reply exactly {INSUFFICIENT_CONTEXT}."), STATUS_INSUFFICIENT),
     "an invalid role": ([{"type": "message", "role": "tool", "content": GOOD_LONG}, {"type": "message", "role": "user", "content": USER_TEMPLATE}], "invalid role"),
     "no system message": ([{"type": "message", "role": "user", "content": GOOD_LONG + USER_TEMPLATE}], "exactly one system message"),
     "two system messages": ([{"type": "message", "role": "system", "content": GOOD_LONG}, {"type": "message", "role": "system", "content": GOOD_LONG},
@@ -186,10 +187,10 @@ def test_an_invalid_fetched_prompt_is_rejected_and_the_local_template_is_used(la
     assert r.client is None  # an invalid prompt is never linked to a generation
 
 
-def test_the_short_prompt_is_not_required_to_have_the_citation_instruction_but_the_long_one_is():
+def test_the_short_prompt_is_not_required_to_have_the_quote_instruction_but_the_long_one_is():
     assert validate_template(SHORT, chat_messages(GOOD_SHORT)) == []
-    assert any(CITATION_INSTRUCTION in p for p in validate_template(LONG, chat_messages(GOOD_SHORT)))
-    assert REQUIRED_SYSTEM_SUBSTRINGS[SHORT] == (INSUFFICIENT_CONTEXT,) and REQUIRED_SYSTEM_SUBSTRINGS[LONG] == (INSUFFICIENT_CONTEXT, CITATION_INSTRUCTION)
+    assert any(QUOTE_INSTRUCTION in p for p in validate_template(LONG, chat_messages(GOOD_SHORT)))
+    assert REQUIRED_SYSTEM_SUBSTRINGS[SHORT] == (INSUFFICIENT_CONTEXT,) and REQUIRED_SYSTEM_SUBSTRINGS[LONG] == (STATUS_INSUFFICIENT, QUOTE_INSTRUCTION)
 
 
 def test_an_edited_but_still_valid_prompt_is_accepted_and_reported_as_a_different_hash():
