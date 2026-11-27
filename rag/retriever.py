@@ -17,8 +17,8 @@ Behaviour guaranteed by tests/unit/test_retriever.py
 from __future__ import annotations
 
 import time
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
-from typing import Callable, Sequence
 
 from rag.embedders import embed_query
 from rag.fusion import fuse_rrf, naive_interleave

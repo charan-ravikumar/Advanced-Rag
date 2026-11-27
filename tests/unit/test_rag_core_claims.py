@@ -7,8 +7,17 @@ import pytest
 from hypothesis import given
 from hypothesis import strategies as st
 
-from rag_core.claims import (MAX_CLAIMS, MIN_QUOTE_WORDS, STATUS_ANSWERED, STATUS_INSUFFICIENT, StreamRenderer, answer_schema, locate_quote, parse_answer,
-                             render_answer)
+from rag_core.claims import (
+    MAX_CLAIMS,
+    MIN_QUOTE_WORDS,
+    STATUS_ANSWERED,
+    STATUS_INSUFFICIENT,
+    StreamRenderer,
+    answer_schema,
+    locate_quote,
+    parse_answer,
+    render_answer,
+)
 from rag_core.prompts import escape_text
 from tests.unit.rag_core_fakes import answer_json
 

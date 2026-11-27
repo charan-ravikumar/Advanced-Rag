@@ -19,11 +19,12 @@ free text before they leave the process.
 from __future__ import annotations
 
 import sqlite3
+from collections.abc import Callable
 from contextlib import closing
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 from rag_core.tracing import mask_text
 
@@ -159,9 +160,9 @@ def record_feedback(store: FeedbackStore | None, request_id: str | None, trace_i
     except Exception:  # noqa: BLE001: a broken local store must not stop the forwarding
         saved = False
     forwarded = submit_feedback(trace_id, value, comment, client_factory=client_factory) if trace_id else False
-    if forwarded and saved:
+    if forwarded and saved and store is not None and request_id:  # saved implies both; stated for the type checker
         try:
-            store.mark_forwarded(request_id, USER_FEEDBACK)  # type: ignore[union-attr]
+            store.mark_forwarded(request_id, USER_FEEDBACK)
         except Exception:  # noqa: BLE001
             pass
     return FeedbackResult(saved, forwarded)

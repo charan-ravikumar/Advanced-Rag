@@ -16,7 +16,8 @@ response is still 200 and carries the retrieved passages and a ``daily_budget_re
 
 from __future__ import annotations
 
-from typing import Any, Iterator
+from collections.abc import Iterator
+from typing import Any
 
 import anyio
 from fastapi import APIRouter, Depends, Query, Request
@@ -25,8 +26,23 @@ from starlette.concurrency import iterate_in_threadpool, run_in_threadpool
 
 from api.deps import ApiException, ApiState, authenticate, ready_state
 from api.limits import FEEDBACK_LIMIT, limiter, query_limits
-from api.schemas import (AskRequest, Budget, CheckModel, ErrorEvent, ErrorResponse, FeedbackRequest, FeedbackResponse, Flags, HealthResponse, Limits, MetaResponse,
-                         ObservabilityResponse, ReadyResponse, RetrieveRequest, RetrieveResponse)
+from api.schemas import (
+    AskRequest,
+    Budget,
+    CheckModel,
+    ErrorEvent,
+    ErrorResponse,
+    FeedbackRequest,
+    FeedbackResponse,
+    Flags,
+    HealthResponse,
+    Limits,
+    MetaResponse,
+    ObservabilityResponse,
+    ReadyResponse,
+    RetrieveRequest,
+    RetrieveResponse,
+)
 from api.sse import OPEN_COMMENT, encode_event, encode_service_event
 from rag_core.errors import InvalidQuestion
 from rag_core.schemas import AnswerResult, ErrorInfo

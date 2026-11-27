@@ -2,8 +2,21 @@
 
 import pytest
 
-from eval.answer_metrics import (answer_f1, citation_counts, mean_with_interval, normalize_answer, score_long, score_short, strip_citation_markers,
-                                 summarize_long, summarize_metric, summarize_short, token_f1, yes_no_accuracy, yes_no_label)
+from eval.answer_metrics import (
+    answer_f1,
+    citation_counts,
+    mean_with_interval,
+    normalize_answer,
+    score_long,
+    score_short,
+    strip_citation_markers,
+    summarize_long,
+    summarize_metric,
+    summarize_short,
+    token_f1,
+    yes_no_accuracy,
+    yes_no_label,
+)
 
 
 def ref(answer, typ="extractive", evidence=("e",), lost=0):

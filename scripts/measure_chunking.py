@@ -130,7 +130,7 @@ def measure_coverage(corpus, ids, embedder):
 
 def measure_recursive_cap(corpus, ids, embedder):
     size, minc = cfg.chunking.recursive_chunk_size, cfg.chunking.min_chunk_chars
-    raw_lens, final_lens, merged_sections = [], [], 0
+    raw_lens, final_lens = [], []
     for pid in ids:
         doc = qasper_to_document(pid, corpus[pid])
         for sec in doc.sections:

@@ -14,7 +14,7 @@ from api.sse import decode_service_event, iter_sse
 from app.bootstrap import Check, Resources, SelfCheck
 from app.guards import AppConfig, DailyBudget
 from rag_core.scores import FeedbackResult
-from tests.unit.rag_core_fakes import answer_json, make_hit, ok
+from tests.unit.rag_core_fakes import answer_json, ok
 from tests.unit.test_rag_core_service import Q, make
 
 

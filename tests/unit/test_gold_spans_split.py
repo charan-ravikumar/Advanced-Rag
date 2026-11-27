@@ -6,7 +6,15 @@ from pathlib import Path
 
 import pytest
 
-from eval.gold_spans import ANSWERABLE, DROPPED, UNANSWERABLE, _builder, classify_question, gold_spans_for_question, locate_evidence
+from eval.gold_spans import (
+    ANSWERABLE,
+    DROPPED,
+    UNANSWERABLE,
+    _builder,
+    classify_question,
+    gold_spans_for_question,
+    locate_evidence,
+)
 from eval.split import DEV_PERCENT, split_of, split_questions
 from rag.chunk_adapter import qasper_to_document
 

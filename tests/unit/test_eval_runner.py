@@ -2,7 +2,6 @@
 tmp Chroma, tmp FTS). No network, no model."""
 
 import json
-import random
 from pathlib import Path
 
 import chromadb
@@ -18,7 +17,7 @@ from eval.gold_spans import gold_spans_for_question
 from rag.embedders import HashEmbedder
 from rag.ingestion import ingest_corpus
 from rag.lexical import SqliteFtsIndex
-from rag.retriever import Hit, LegHit, Retriever, RetrievalResult
+from rag.retriever import Hit, LegHit, RetrievalResult, Retriever
 from rag.schemas_ingest import Chunk
 
 EMB = HashEmbedder()
@@ -206,7 +205,7 @@ def test_end_to_end_all_fifteen_arms_with_a_fake_reranker_and_the_titled_mode(wo
     assert list(summary["arms"]) == rre.ARM_ALIASES["all"] and seen and max(seen) <= 20
     assert summary["arms"]["G"]["retrieval_latency_ms"]["rerank"]["p50"] > 0.0  # the reranker stage is timed separately
     assert summary["arms"]["D"]["retrieval_latency_ms"]["rerank"]["p50"] == 0.0
-    assert all(len(json.loads(l)["retrieved"]) <= 10 for l in (paper / "per_question.jsonl").read_text(encoding="utf-8").splitlines())
+    assert all(len(json.loads(line)["retrieved"]) <= 10 for line in (paper / "per_question.jsonl").read_text(encoding="utf-8").splitlines())
     cfg_ = json.loads((titled / "config.json").read_text(encoding="utf-8"))
     assert cfg_["setting"] == "EXTENSION: corpus-wide, title-qualified (user names the paper)" and "In the paper" in cfg_["query_template"]
     assert json.loads((titled / "summary.json").read_text(encoding="utf-8"))["primary_setting"] is False
@@ -254,7 +253,7 @@ def test_end_to_end_routed_arms_in_corpus_mode_restrict_stage_two_and_record_the
     monkeypatch.setattr(EMB, "encode", lambda texts, *a, **k: (seen.append(texts), orig(texts, *a, **k))[1])
     assert _cli(world, tmp_path / "runs", arm="D,RT1,RT3,RT5", mode="corpus") == 0
     (run,) = list((tmp_path / "runs").iterdir())
-    rows = [json.loads(l) for l in (run / "per_question.jsonl").read_text(encoding="utf-8").splitlines()]
+    rows = [json.loads(line) for line in (run / "per_question.jsonl").read_text(encoding="utf-8").splitlines()]
     for r in rows:
         if r["arm"].startswith("RT"):
             m = int(r["arm"][2:])
@@ -427,7 +426,7 @@ def test_run_writes_the_folder_with_all_files_and_checksums(world, tmp_path):
     assert config["hardware"]["cpu_count_logical"] and "numpy" in config["libraries"] and config["scored_questions"] == 6
     assert config["unanswerable_questions_not_scored"] == 3 and "NOT end-to-end" in config["latency_label"]
 
-    rows = [json.loads(l) for l in (run / "per_question.jsonl").read_text(encoding="utf-8").splitlines()]
+    rows = [json.loads(line) for line in (run / "per_question.jsonl").read_text(encoding="utf-8").splitlines()]
     assert len(rows) == 6 * 6  # 6 answerable dev questions x 6 arms; unanswerable are not scored
     assert not any(r["question_id"].endswith("unans") for r in rows)
     r0 = rows[0]
@@ -447,7 +446,7 @@ def test_run_writes_the_folder_with_all_files_and_checksums(world, tmp_path):
 def test_evidence_f1_is_computed_from_the_annotator_references_and_the_corpus(world, tmp_path):
     _cli(world, tmp_path / "runs", mode="paper")
     (run,) = list((tmp_path / "runs").iterdir())
-    rows = [json.loads(l) for l in (run / "per_question.jsonl").read_text(encoding="utf-8").splitlines()]
+    rows = [json.loads(line) for line in (run / "per_question.jsonl").read_text(encoding="utf-8").splitlines()]
     for r in rows:
         f1s = [r["metrics"][f"EvidenceF1@{k}"] for k in (1, 5, 10)]
         assert all(v is not None and 0.0 <= v <= 1.0 for v in f1s)
@@ -546,7 +545,7 @@ def test_a_changed_result_is_detected_by_the_determinism_check(world, tmp_path):
 def test_single_arm_selection(world, tmp_path):
     _cli(world, tmp_path / "runs", arm="D,E")
     (run,) = list((tmp_path / "runs").iterdir())
-    assert {json.loads(l)["arm"] for l in (run / "per_question.jsonl").read_text(encoding="utf-8").splitlines()} == {"D", "E"}
+    assert {json.loads(line)["arm"] for line in (run / "per_question.jsonl").read_text(encoding="utf-8").splitlines()} == {"D", "E"}
 
 
 def test_unknown_arm_is_refused(world, tmp_path):

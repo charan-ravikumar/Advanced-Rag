@@ -42,9 +42,16 @@ if str(ROOT) not in sys.path:
 os.environ.setdefault("HF_HUB_OFFLINE", "1")
 
 from eval.gold_spans import GoldSpan, paragraph_index  # noqa: E402
-from eval.metrics import is_relevant as old_is_relevant  # noqa: E402  (the OLD token-F1 >= 0.25 metric, kept as a secondary column)
 from eval.metrics import MATCH_THRESHOLD as OLD_THRESHOLD  # noqa: E402
-from rag.eval_metrics import DEEP_KS, KS, count_relevant_chunks, hit_rate_at_k, question_metrics, reciprocal_rank  # noqa: E402
+from eval.metrics import is_relevant as old_is_relevant  # noqa: E402  (the OLD token-F1 >= 0.25 metric, kept as a secondary column)
+from rag.eval_metrics import (  # noqa: E402
+    DEEP_KS,
+    KS,
+    count_relevant_chunks,
+    hit_rate_at_k,
+    question_metrics,
+    reciprocal_rank,
+)
 
 TOP_K = 10
 CANDIDATE_K = 20

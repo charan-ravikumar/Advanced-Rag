@@ -64,6 +64,12 @@ target-version = "py310"
 select = ["E", "F", "I", "UP"]
 ignore = ["E501"]
 
+[tool.mypy]
+# CI type-checks the core package only (the answer path).
+files = ["rag_core"]
+python_version = "3.13"
+ignore_missing_imports = true
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]

@@ -18,7 +18,12 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 os.environ["HF_HUB_OFFLINE"] = "1"
 
-from eval.gold_spans import ANSWERABLE, DROPPED, UNANSWERABLE, classify_question, gold_spans_for_question  # noqa: E402
+from eval.gold_spans import (  # noqa: E402
+    ANSWERABLE,
+    UNANSWERABLE,
+    classify_question,
+    gold_spans_for_question,
+)
 from rag.ingestion import file_sha256  # noqa: E402
 from utils.fingerprint import code_fingerprint  # noqa: E402
 

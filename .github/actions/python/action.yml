@@ -1,0 +1,20 @@
+name: Locked Python environment
+description: Python 3.13 with requirements.lock, CPU-only torch and the project installed. pip downloads are cached.
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@v7
+      with:
+        python-version: "3.13"
+        cache: pip
+        cache-dependency-path: |
+          requirements.lock
+          requirements-ci.txt
+    - shell: bash
+      run: |
+        # torch first, from the CPU wheel index (PyPI's Linux wheel is the CUDA build), exactly as the Dockerfile does
+        tr -d '\r' < requirements.lock > "$RUNNER_TEMP/requirements.lock"
+        pip install --no-deps --index-url https://download.pytorch.org/whl/cpu "$(grep -E '^torch==' "$RUNNER_TEMP/requirements.lock")"
+        pip install -r "$RUNNER_TEMP/requirements.lock"
+        pip install -e . --no-deps
+        pip check

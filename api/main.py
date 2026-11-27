@@ -14,8 +14,9 @@ Bind to 127.0.0.1 (the default of the command above) unless a token is set.
 from __future__ import annotations
 
 import os
+from collections.abc import Callable
 from contextlib import asynccontextmanager
-from typing import Any, Callable
+from typing import Any
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError

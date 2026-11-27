@@ -16,8 +16,9 @@ import hashlib
 import json
 import re
 import time
+from collections.abc import Awaitable, Callable
 from dataclasses import asdict, dataclass, field
-from typing import Any, Awaitable, Callable
+from typing import Any
 
 from eval.disk_cache import DiskCache
 
@@ -36,7 +37,7 @@ class JudgeSettings:
         return asdict(self)
 
     @classmethod
-    def from_config(cls, judge: dict) -> "JudgeSettings":
+    def from_config(cls, judge: dict) -> JudgeSettings:
         return cls(model=judge["model"], temperature=float(judge.get("temperature", 0.0)), thinking_budget=int(judge["thinking_budget"]),
                    max_output_tokens=int(judge["max_output_tokens"]))
 

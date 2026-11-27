@@ -4,7 +4,6 @@ import pytest
 
 from rag.router import classify_by_rules, route_query
 
-
 # ---------------------------------------------------------------------------
 # router (rules only, no LLM, no clients)
 # ---------------------------------------------------------------------------

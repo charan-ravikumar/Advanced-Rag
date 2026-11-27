@@ -24,9 +24,9 @@ import argparse  # noqa: E402
 import hashlib  # noqa: E402
 import json  # noqa: E402
 import sys  # noqa: E402
+from collections.abc import Callable, Sequence  # noqa: E402
 from datetime import datetime, timezone  # noqa: E402
 from pathlib import Path  # noqa: E402
-from typing import Callable, Sequence  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -126,7 +126,12 @@ def main(argv=None, *, scorer_factory=None, judge: dict | None = None, log: Call
     ap.add_argument("--prereg-hash-file", default=str(PREREG_HASH_FILE))
     args = ap.parse_args(argv)
 
-    from eval.run_retrieval_eval import hardware_info, preregistration_info, verify_checksums, write_run
+    from eval.run_retrieval_eval import (
+        hardware_info,
+        preregistration_info,
+        verify_checksums,
+        write_run,
+    )
 
     prereg = preregistration_info(Path(args.prereg), Path(args.prereg_hash_file))  # refuses if the pre-registered text changed
     gen_config, gen_rows = load_generation_run(Path(args.run))

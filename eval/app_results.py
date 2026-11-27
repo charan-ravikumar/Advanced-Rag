@@ -14,9 +14,10 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+from collections.abc import Iterable
 from datetime import datetime, timezone
 from pathlib import Path, PureWindowsPath
-from typing import Any, Iterable
+from typing import Any
 
 SCHEMA = 1
 SCOPE_LABELS = ("TEST", "DEV", "EXPLORATORY")
@@ -242,7 +243,7 @@ def parse_claims_log(text: str) -> list[dict]:
 
 
 def chunker_findings(rows: list[dict]) -> list[dict]:
-    return [r for r in rows if any(f.startswith(("runs/measurements/chunk")) for f in r["run_folders"])]
+    return [r for r in rows if any(f.startswith("runs/measurements/chunk") for f in r["run_folders"])]
 
 
 def crosscheck_claims(test: dict, rows: list[dict]) -> list[str]:

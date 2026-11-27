@@ -9,8 +9,8 @@ overhead for its <source ...> wrapper. Pass ``count_tokens`` to use a real token
 
 from __future__ import annotations
 
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
-from typing import Callable, Sequence
 
 from rag.tokens import estimate_token_count
 from rag_core.schemas import Source
@@ -61,7 +61,7 @@ def build_context(hits: Sequence, max_tokens: int = DEFAULT_MAX_TOKENS, *, max_c
     truncated rather than dropped, so a non-empty ``hits`` never yields an empty context."""
     out = ContextResult()
     seen: set[str] = set()
-    candidates = [h for h in hits if h.text and h.chunk_id not in seen and not seen.add(h.chunk_id)]
+    candidates = [h for h in hits if h.text and h.chunk_id not in seen and not seen.add(h.chunk_id)]  # type: ignore[func-returns-value]  # add() returns None: keeps first occurrences
     for position, hit in enumerate(candidates):
         if len(out.sources) >= max_chunks:
             out.dropped = len(candidates) - position

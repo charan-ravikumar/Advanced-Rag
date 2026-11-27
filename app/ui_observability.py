@@ -35,7 +35,7 @@ def _snapshot(_reader, days: int | None) -> dict[str, dict]:
     return {name: panel.as_dict() for name, panel in _reader.snapshot(days).items()}
 
 
-@functools.lru_cache(maxsize=None)
+@functools.cache
 def _cached(ttl_seconds: int):
     return st.cache_data(ttl=ttl_seconds, show_spinner="Reading the Langfuse metrics…")(_snapshot)
 

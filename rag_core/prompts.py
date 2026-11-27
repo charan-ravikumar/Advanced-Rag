@@ -23,7 +23,7 @@ from __future__ import annotations
 import hashlib
 import html
 import json
-from typing import Sequence
+from collections.abc import Sequence
 
 PROMPT_VERSION = "2026-11-27.1"  # 2026-11-27.1: the long prompt asks for structured claims with quotes (rag_core/claims.py)
 INSUFFICIENT_CONTEXT = "INSUFFICIENT_CONTEXT"  # the SHORT answer's abstention sentinel (the long answer abstains through its "status" field)

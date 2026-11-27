@@ -8,8 +8,8 @@ Pure: no streamlit, no environment, no HTTP library (the HTTP is in ``api.client
 from __future__ import annotations
 
 import time
+from collections.abc import Callable, Iterator, Sequence
 from types import SimpleNamespace
-from typing import Callable, Iterator, Sequence
 
 from api.client import ApiClient, ApiError, ApiUnavailable
 from api.schemas import AskRequest, FeedbackRequest, Limits

@@ -5,8 +5,19 @@ import re
 
 import pytest
 
-from rag_core.prompts import (INSUFFICIENT_CONTEXT, PROMPT_VERSION, QUOTE_INSTRUCTION, STATUS_ANSWERED, STATUS_INSUFFICIENT, SYSTEM_LONG, SYSTEM_SHORT, build_messages, escape_attr, escape_text,
-                              render_sources)
+from rag_core.prompts import (
+    INSUFFICIENT_CONTEXT,
+    PROMPT_VERSION,
+    QUOTE_INSTRUCTION,
+    STATUS_ANSWERED,
+    STATUS_INSUFFICIENT,
+    SYSTEM_LONG,
+    SYSTEM_SHORT,
+    build_messages,
+    escape_attr,
+    escape_text,
+    render_sources,
+)
 from rag_core.schemas import Source
 
 

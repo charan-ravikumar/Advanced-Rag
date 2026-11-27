@@ -18,7 +18,8 @@ import threading
 import time
 import unicodedata
 from collections import OrderedDict
-from typing import Callable, Protocol, Sequence
+from collections.abc import Callable, Sequence
+from typing import Protocol
 
 from rag_core.schemas import AnswerResult
 

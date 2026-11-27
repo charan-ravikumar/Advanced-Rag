@@ -22,10 +22,17 @@ import os
 import random
 import threading
 import time
+from collections.abc import Callable, Iterator, Sequence
 from dataclasses import dataclass, field
-from typing import Callable, Iterator, Protocol, Sequence
+from typing import Any, Protocol
 
-from rag_core.errors import BREAKER_KINDS, AllProvidersFailed, AnswerTooLong, MidStreamError, ProviderError
+from rag_core.errors import (
+    BREAKER_KINDS,
+    AllProvidersFailed,
+    AnswerTooLong,
+    MidStreamError,
+    ProviderError,
+)
 from rag_core.schemas import AttemptRecord
 
 # A reply that stops with finish_reason "length" and no visible text spent its whole output budget on reasoning. It is retried ONCE on the same
@@ -80,7 +87,8 @@ class CircuitBreaker:
             raise ValueError("threshold must be >= 1")
         self.threshold, self.cooldown_s, self._clock = threshold, cooldown_s, clock
         self._lock = threading.Lock()
-        self._failures, self._opened_at, self._trial = 0, None, False
+        self._failures, self._trial = 0, False
+        self._opened_at: float | None = None
 
     @property
     def state(self) -> str:
@@ -256,7 +264,7 @@ def _read_key(env_name: str) -> str:
     return key
 
 
-def _scrub(text: str, key: str | None) -> str:
+def _scrub(text: object, key: str | None) -> str:
     text = str(text)[:300]
     return text.replace(key, "[redacted]") if key else text
 
@@ -311,7 +319,7 @@ class GeminiProvider:
     def build_config(self, system: str | None, timeout_s: float, max_output_tokens: int, temperature: float, response_schema: dict | None = None):
         from google.genai import types
 
-        extra = {"thinking_config": types.ThinkingConfig(thinking_budget=self.thinking_budget)} if self.thinking_budget is not None else {}
+        extra: dict[str, Any] = {} if self.thinking_budget is None else {"thinking_config": types.ThinkingConfig(thinking_budget=self.thinking_budget)}
         if response_schema is not None:  # structured output: the reply is JSON constrained by the schema (constrained decoding on Gemini's side)
             extra.update(response_mime_type="application/json", response_json_schema=response_schema)
         return types.GenerateContentConfig(

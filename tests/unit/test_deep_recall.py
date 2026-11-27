@@ -4,7 +4,7 @@ import pytest
 
 from eval import run_retrieval_eval as rre
 from rag.eval_metrics import DEEP_KS, question_metrics, recall_at_k
-from tests.unit.test_eval_runner import ARM, INDEX, QUESTIONS, FakeRetriever, GOLD_CHUNK
+from tests.unit.test_eval_runner import ARM, GOLD_CHUNK, INDEX, QUESTIONS, FakeRetriever
 from tests.unit.test_relevance import chunk, span
 
 

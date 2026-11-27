@@ -17,11 +17,18 @@ from __future__ import annotations
 import math
 import threading
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Any, Callable, Protocol
+from typing import Any, Protocol
 
 from rag_core.config import PromptsConfig
-from rag_core.prompts import PROMPT_NAMES, PROMPT_VERSION, local_template, template_sha256, validate_template
+from rag_core.prompts import (
+    PROMPT_NAMES,
+    PROMPT_VERSION,
+    local_template,
+    template_sha256,
+    validate_template,
+)
 from rag_core.schemas import PromptInfo
 
 NAME_TO_MODE = {name: mode for mode, name in PROMPT_NAMES.items()}

@@ -331,3 +331,9 @@
     NEVER run `docker compose config` without `--quiet` (it prints the values from `.env`); use
     `--env-file /dev/null` for tests that must not contact Gemini or Langfuse. Do not remove the
     `advrag_data` volume (`down -v`) without asking. `tests/unit/test_docker_files.py` pins these rules.
+30. **CI (`.github/workflows/ci.yml`).** Jobs: `ruff check .`, `mypy` (rag_core, `[tool.mypy]`), `pytest --fast`,
+    Docker build plus `scripts/ci_smoke.sh` (`/v1/ready`), `pip-audit` on `requirements.lock`. Keep all green; tool
+    pins are in `requirements-ci.txt`. Never silence a failure with a blanket ignore. A new `--ignore-vuln` id goes
+    in `.github/pip-audit-ignore.txt` with its reason and needs the owner's approval. The chromadb ids there hold
+    only while no Chroma server or HttpClient is used. `scripts/ci_fetch_model.py` downloads a model and runs ONLY in
+    CI. `scripts/ci_smoke.sh` uses its own compose project and removes only that project's volume.

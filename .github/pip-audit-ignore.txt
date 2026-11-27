@@ -1,0 +1,9 @@
+# Advisories pip-audit is told to ignore, one id per line, each with the reason. Review when chromadb publishes a new release.
+#
+# chromadb 1.5.9 (the newest release on 2026-11-28; no fixed version is published). All four are in the Chroma HTTP SERVER
+# (its collection endpoints and its RBAC provider). This project runs no Chroma server: db/store.py opens only an
+# in-process chromadb.PersistentClient on a local directory. If a server or HttpClient is ever added, remove these lines.
+PYSEC-2026-311     # CVE-2026-45829 pre-auth code injection through the server's create-collection endpoint
+PYSEC-2026-3813    # CVE-2026-45830 missing authorisation across tenants (server)
+PYSEC-2026-3814    # CVE-2026-45833 authenticated code injection through the server's update-collection endpoint
+PYSEC-2026-3815    # CVE-2026-45831 RBAC provider ignores tenant scope (server)

@@ -1,5 +1,7 @@
 # Advanced RAG: hybrid retrieval, a resilient LLM gateway, and a pre-registered evaluation
 
+[![CI](https://github.com/charan-ravikumar/Advanced-Rag/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/charan-ravikumar/Advanced-Rag/actions/workflows/ci.yml)
+
 Question answering over scientific papers ([Qasper](https://allenai.org/data/qasper)), served as a FastAPI service with streamed, cited answers and a Streamlit client.
 
 - **Retrieval**: vector search (Chroma) plus SQLite FTS5 keyword search, weighted RRF fusion, optional cross-encoder rerank. It is evaluated with a protocol written **before** the test run.
@@ -158,6 +160,10 @@ pytest -p no:cacheprovider -q -rs          # full run, more Hypothesis examples
 
 The suite is hermetic: it blocks non-loopback network access and `chromadb.CloudClient`, and uses fake providers instead of real keys.
 
+## Continuous integration
+
+Every push and pull request runs [ci.yml](.github/workflows/ci.yml): ruff, mypy on `rag_core`, the fast test subset (slow and model tests are skipped), a Docker build with a smoke test that indexes five papers and requires `GET /v1/ready` to report ready, and `pip-audit` on the runtime lock. Advisories that are ignored are listed with their reasons in [pip-audit-ignore.txt](.github/pip-audit-ignore.txt). The badge does not cover answer quality: no model is called.
+
 ## Docker
 
 `compose.yaml` runs the API and the UI from one image. The build uses public PyPI at the locked versions plus PyTorch's public CPU wheel index; it needs no credentials. The image holds code and packages only: models, the index and API keys are supplied at run time.
@@ -200,4 +206,4 @@ docker compose down        # stop (the index stays in the volume)
 - **Corpus scale.** The corpus is small (200 papers). Behaviour at a larger scale has no saved measurement.
 - **Semantic chunking** did not beat recursive chunking on the test split. The served index uses recursive chunks.
 - **Reranker** is off by default because of its latency on CPU.
-- **Docker** was built and run on Apple Silicon (linux/arm64) without API keys; a live answer and the reranker were not exercised in a container. There is no CI workflow yet.
+- **Docker** was run without API keys; a live answer and the reranker were not exercised in a container.

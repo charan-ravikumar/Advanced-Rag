@@ -11,8 +11,9 @@ There is deliberately no "clear collection" method: the only deletion is
 from __future__ import annotations
 
 import os
+from collections.abc import Iterator, Sequence
 from pathlib import Path
-from typing import Any, Iterator, Protocol, Sequence
+from typing import Any, Protocol
 
 from rag.schemas_ingest import Chunk
 

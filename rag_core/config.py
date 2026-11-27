@@ -61,7 +61,7 @@ class RagConfig:
         return asdict(self)
 
     @classmethod
-    def from_config(cls, cfg) -> "RagConfig":
+    def from_config(cls, cfg) -> RagConfig:
         """Overlay ``cfg.generation`` (a SimpleNamespace from config.py) on the defaults, then read the retrieval knobs from ``cfg.pipeline``
         (their ONE home: a retrieval knob under ``generation`` is an error). Unknown keys are an error."""
         generation = getattr(cfg, "generation", None)
@@ -121,7 +121,7 @@ class PromptsConfig:
     max_chars: int = 20000
 
     @classmethod
-    def from_config(cls, cfg) -> "PromptsConfig":
+    def from_config(cls, cfg) -> PromptsConfig:
         return _overlay(cls(), getattr(cfg, "prompts", None), "prompts")
 
 
@@ -140,5 +140,5 @@ class TracingConfig:
     exporters: list = field(default_factory=lambda: ["langfuse"])
 
     @classmethod
-    def from_config(cls, cfg) -> "TracingConfig":
+    def from_config(cls, cfg) -> TracingConfig:
         return _overlay(cls(), getattr(cfg, "tracing", None), "tracing")

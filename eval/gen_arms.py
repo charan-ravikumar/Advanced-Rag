@@ -13,9 +13,9 @@ supposed to know only the gold paragraphs (or only the abstract) cannot reach th
 from __future__ import annotations
 
 import hashlib
+from collections.abc import Sequence
 from dataclasses import dataclass, field
 from types import SimpleNamespace
-from typing import Sequence
 
 ARMS = ("R", "O", "T", "F")
 MAX_ORACLE_CHUNKS = 5

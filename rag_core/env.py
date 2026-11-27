@@ -13,8 +13,8 @@ Secrets rule: nobody opens, prints or echoes ``.env``. To check that a key is av
 from __future__ import annotations
 
 import os
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable
 
 ROOT = Path(__file__).resolve().parents[1]
 

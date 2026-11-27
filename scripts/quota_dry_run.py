@@ -54,9 +54,9 @@ def gemini_rpm_probe(max_calls: int = 16) -> dict:
     from google import genai
     from google.genai import types
 
+    from config import cfg
     from rag_core.config import RagConfig
     from rag_core.tracing import mask_text
-    from config import cfg
 
     judge = RagConfig.from_config(cfg).judge
     client = genai.Client(api_key=os.environ["GEMINI_API_KEY"], http_options=types.HttpOptions(
@@ -100,7 +100,12 @@ def main(argv=None) -> int:
         return 2
 
     from config import cfg
-    from eval.gen_arms import FixedContextRetriever, oracle_context, title_abstract_context, usable_references
+    from eval.gen_arms import (
+        FixedContextRetriever,
+        oracle_context,
+        title_abstract_context,
+        usable_references,
+    )
     from eval.gold_spans import paragraph_index
     from eval.quota_plan import Limits, Pacer, plan_wall_time, scale_to_budget
     from eval.run_retrieval_eval import build_real_components, preregistration_info

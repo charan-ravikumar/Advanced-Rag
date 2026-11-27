@@ -2,10 +2,9 @@
 # IMPORTS
 # ============================================
 
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
-
 
 # ============================================
 # INGESTION MODELS
@@ -17,7 +16,7 @@ class Section(BaseModel):
 
     section_title: str = ""
 
-    metadata: Dict[str, Any] = Field(
+    metadata: dict[str, Any] = Field(
         default_factory=dict
     )
 
@@ -26,11 +25,11 @@ class Document(BaseModel):
 
     content: str
 
-    metadata: Dict[str, Any] = Field(
+    metadata: dict[str, Any] = Field(
         default_factory=dict
     )
 
-    sections: List[Section] = Field(
+    sections: list[Section] = Field(
         default_factory=list
     )
 
@@ -39,7 +38,7 @@ class Chunk(BaseModel):
 
     content: str
 
-    metadata: Dict[str, Any] = Field(
+    metadata: dict[str, Any] = Field(
         default_factory=dict
     )
 
@@ -59,9 +58,9 @@ class QueryRequest(BaseModel):
 
 class SourceDocument(BaseModel):
 
-    source: Optional[str] = None
+    source: str | None = None
 
-    section_title: Optional[str] = None
+    section_title: str | None = None
 
     content: str
 
@@ -74,9 +73,9 @@ class SourceDocument(BaseModel):
 
 class RagasMetrics(BaseModel):
 
-    faithfulness: Optional[float] = None
+    faithfulness: float | None = None
 
-    answer_relevancy: Optional[float] = None
+    answer_relevancy: float | None = None
 
 
 # ============================================
@@ -89,6 +88,6 @@ class QueryResponse(BaseModel):
 
     answer: str
 
-    sources: List[SourceDocument]
+    sources: list[SourceDocument]
 
-    ragas: Optional[RagasMetrics] = None
+    ragas: RagasMetrics | None = None

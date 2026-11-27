@@ -26,7 +26,12 @@ sys.path.insert(0, str(ROOT))
 os.environ["HF_HUB_OFFLINE"] = "1"
 
 from eval.gold_spans import (  # noqa: E402
-    ANSWER_TYPES, ANSWERABLE, UNANSWERABLE, classify_question, gold_spans_for_question, reference_records,
+    ANSWER_TYPES,
+    ANSWERABLE,
+    UNANSWERABLE,
+    classify_question,
+    gold_spans_for_question,
+    reference_records,
 )
 from eval.split import DEV_PERCENT, split_of, split_questions  # noqa: E402
 from rag.ingestion import file_sha256  # noqa: E402

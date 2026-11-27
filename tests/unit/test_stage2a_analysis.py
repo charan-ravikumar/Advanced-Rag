@@ -1,18 +1,15 @@
 """Decision rule, error-analysis helpers and corpus diagnostics: hand-built cases, no model, no network."""
 
-import json
 import re
-from pathlib import Path
 
 import numpy as np
 
 from eval.run_retrieval_eval import ARM_ALIASES, ARMS, PREREG_FILE
-
-PREREG_2B = PREREG_FILE.with_name("PREREGISTRATION_2b.md")
 from scripts import corpus_diagnostics as cd
 from scripts import decision_rule as dr
 from scripts import error_analysis as ea
 
+PREREG_2B = PREREG_FILE.with_name("PREREGISTRATION_2b.md")
 
 # ---- decision rule -------------------------------------------------------------------------------------
 
@@ -49,7 +46,10 @@ def _rows(values: dict[str, list[float]], papers=None):
 def test_the_simplest_arm_statistically_tied_with_the_best_wins():
     rng = np.random.default_rng(1)
     base = 0.2 + 0.6 * rng.random(120)  # away from 0 and 1, so zero-mean noise is not distorted by clipping
-    noise = lambda s: list(base + rng.normal(0, s, 120))
+
+    def noise(s):
+        return list(base + rng.normal(0, s, 120))
+
     rows = _rows({"A": [0.2] * 120, "D": noise(0.1), "F": noise(0.1), "G": list(base)}, None)
     res = dr.apply_rule(rows, n_resamples=500)
     assert res["best"] in {"D", "F", "G"}

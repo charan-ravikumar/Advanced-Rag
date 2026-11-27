@@ -16,11 +16,14 @@ import hmac
 import threading
 import time
 from collections import deque
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Any, Callable
+from typing import Any
 
-from rag_core.config import _overlay  # the same overlay as RagConfig (an unknown key is an error, defaults kept for missing ones)
+from rag_core.config import (
+    _overlay,  # the same overlay as RagConfig (an unknown key is an error, defaults kept for missing ones)
+)
 
 
 @dataclass
@@ -43,7 +46,7 @@ class AppConfig:
     feedback_path: str = "%LOCALAPPDATA%/advrag/feedback.sqlite3"  # local SQLite file of the thumbs (kept outside OneDrive); created on the first vote
 
     @classmethod
-    def from_config(cls, cfg) -> "AppConfig":
+    def from_config(cls, cfg) -> AppConfig:
         return _overlay(cls(), getattr(cfg, "app", None), "app")
 
 

@@ -1,12 +1,18 @@
 """eval/gen_arms.py (arm contexts), eval/quota_plan.py (wall-time arithmetic and pacing) and RagService.answer_long. Hermetic: no network, no keys."""
 
-import math
-from types import SimpleNamespace
 
 import pytest
 
-from eval.gen_arms import (MAX_ORACLE_CHUNKS, ContextHit, FixedContextRetriever, context_hash, gold_paragraph_texts, oracle_context,
-                           title_abstract_context, usable_references)
+from eval.gen_arms import (
+    MAX_ORACLE_CHUNKS,
+    ContextHit,
+    FixedContextRetriever,
+    context_hash,
+    gold_paragraph_texts,
+    oracle_context,
+    title_abstract_context,
+    usable_references,
+)
 from eval.quota_plan import Limits, Pacer, plan_wall_time, scale_to_budget
 from rag.eval_metrics import Paragraph
 
@@ -125,10 +131,10 @@ def test_an_oracle_service_feeds_the_generator_only_the_gold_paragraphs():
 # ---- RagService.answer_long -------------------------------------------------------------------------------------------------------
 
 def test_answer_long_returns_the_final_result_untraced_by_default_and_never_raises_for_provider_failures():
-    from rag_core.config import RagConfig, TracingConfig
+    from rag_core.config import TracingConfig
     from rag_core.errors import InvalidQuestion
     from rag_core.tracing import FakeTracer
-    from tests.unit.rag_core_fakes import fail, ok
+    from tests.unit.rag_core_fakes import fail
     from tests.unit.test_rag_core_service import make
 
     tracer = FakeTracer()

@@ -81,7 +81,10 @@ def main(argv=None) -> int:
                "arms": results}
     (out / "results.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
     print(out / "results.json")
-    f = lambda v: "  n/a" if v is None else f"{v:5.3f}"
+
+    def f(v):
+        return "  n/a" if v is None else f"{v:5.3f}"
+
     print("arm  n   DocHit@1 @5 @10 @20 | HR@5 corpus(all) paper(all) | doc found@5: n  corpus  paper | doc NOT found@5: n  corpus  paper")
     for arm, r in results.items():
         d, y, z = r["DocHit"], r["doc_found_at_5"], r["doc_not_found_at_5"]

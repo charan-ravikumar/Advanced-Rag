@@ -5,10 +5,10 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from sklearn.metrics.pairwise import cosine_similarity
 
 from config import cfg
+from observability.logger_config import get_logger
 from rag.splitting import recursive_split_spans
 from rag.tokens import max_chars, max_tokens_for, split_to_fit_spans, token_counter_for
 from schemas import Chunk, Section
-from observability.logger_config import get_logger
 
 logger = get_logger(__name__)
 

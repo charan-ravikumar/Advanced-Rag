@@ -11,9 +11,25 @@ from types import SimpleNamespace
 import pytest
 
 import app.bootstrap as bs
-from app.artifacts import Artifacts, cross_paper_facts, fmt_ms, load_artifacts, rerank_facts, scope_caption, structure_problems
+from app.artifacts import (
+    cross_paper_facts,
+    fmt_ms,
+    load_artifacts,
+    rerank_facts,
+    scope_caption,
+    structure_problems,
+)
 from app.guards import AppConfig
-from app.ui_chat import (Capture, MarkerNormaliser, classify, escape_md, normalise_markers, answer_markdown, style_markers, token_stream)
+from app.ui_chat import (
+    Capture,
+    MarkerNormaliser,
+    answer_markdown,
+    classify,
+    escape_md,
+    normalise_markers,
+    style_markers,
+    token_stream,
+)
 from eval import app_results as ar
 from rag_core.schemas import AnswerResult, ErrorInfo
 from tests.unit.app_fakes import ROOT, real_artifacts
@@ -279,7 +295,7 @@ def test_the_served_index_version_follows_a_reingest_without_a_restart(index_roo
     ({}, {"open_store": lambda cfg, s, p: (_ for _ in ()).throw(RuntimeError("chroma exploded"))}, "Vector store and lexical index open"),
     ({}, {"open_lexical": lambda cfg, s, p: (_ for _ in ()).throw(RuntimeError("no fts"))}, "Vector store and lexical index open"),
     ({}, {"model_cached": lambda n, r: False}, "Embedding model in the local cache"),
-    ({}, {"make_retriever": lambda s, e, l, r, c: SimpleNamespace(retrieve=lambda *a, **k: (_ for _ in ()).throw(OSError("model files missing")), embedder=None)},
+    ({}, {"make_retriever": lambda s, e, lex, r, c: SimpleNamespace(retrieve=lambda *a, **k: (_ for _ in ()).throw(OSError("model files missing")), embedder=None)},
      "Embedder warm-up (one dummy query)"),
 ])
 def test_every_failed_fatal_check_is_reported_by_name_without_raising_and_without_a_service(index_root, env_over, fac_over, expect):

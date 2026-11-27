@@ -109,7 +109,7 @@ class SentenceTransformerEmbedder:
         self._model = None
 
     @classmethod
-    def from_config(cls, cfg, **kwargs) -> "SentenceTransformerEmbedder":
+    def from_config(cls, cfg, **kwargs) -> SentenceTransformerEmbedder:
         return cls(
             cfg.embedding.model,
             cfg.embedding.revision,

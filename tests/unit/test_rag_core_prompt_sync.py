@@ -1,6 +1,5 @@
 """rag_core.prompt_sync: compare and seed with a fake Langfuse client. Idempotent, never overwrites by default, dry run changes nothing."""
 
-import pytest
 
 from rag_core.prompt_sync import compare_all, compare_prompt, seed
 from rag_core.prompts import INSUFFICIENT_CONTEXT, PROMPT_NAMES, local_template, template_sha256

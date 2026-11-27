@@ -6,7 +6,7 @@ correct "no score fusion" baseline. ``fuse_rrf`` is the deterministic ranked for
 
 from __future__ import annotations
 
-from typing import Hashable, Sequence
+from collections.abc import Hashable, Sequence
 
 from config import cfg
 

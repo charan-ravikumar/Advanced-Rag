@@ -22,7 +22,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import math
 import os
 import sys
 import time
@@ -73,7 +72,13 @@ def main(argv=None) -> int:
 
     from config import cfg
     from db.store import build_store
-    from rag.gemini_embedder import GeminiEmbedder, GeminiError, KEY_ENV, QuotaExhausted, urllib_transport
+    from rag.gemini_embedder import (
+        KEY_ENV,
+        GeminiEmbedder,
+        GeminiError,
+        QuotaExhausted,
+        urllib_transport,
+    )
     from utils.fingerprint import code_fingerprint
 
     if not os.environ.get(KEY_ENV):
@@ -130,7 +135,7 @@ def main(argv=None) -> int:
         res["single_query_latency_ms"] = lat
         print(f"single query request latency ms: {lat}")
 
-        burst_calls, i = 0, 0
+        i = 0
         res["burst"] = {"batches_attempted": 0, "texts_per_batch": 100, "stopped_by": None}
         for b in range(3):
             part = others[i:i + 100]

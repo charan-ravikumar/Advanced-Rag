@@ -21,9 +21,10 @@ import json
 import os
 import threading
 import time
-from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
-from typing import Any, Callable, Mapping
+from collections.abc import Callable, Mapping
+from dataclasses import dataclass
+from datetime import date, datetime, timedelta, timezone
+from typing import Any
 
 HttpGet = Callable[[str, dict, tuple, float], tuple]  # (url, params, (user, password), timeout_s) -> (status_code, json_or_None)
 DEFAULT_BASE_URL = "https://cloud.langfuse.com"
@@ -63,7 +64,8 @@ class ObservabilityReader:
         self.ttl_s, self.window_days, self._clock, self.daily_budget, self.timeout_s = ttl_s, window_days, clock, daily_budget, timeout_s
         self._cache: dict[str, tuple[float, tuple]] = {}
         self._lock = threading.Lock()
-        self._day, self._used = None, 0
+        self._day: date | None = None
+        self._used = 0
         self.queries_sent = 0
 
     # ---- plumbing ------------------------------------------------------------------------------------------------------
@@ -101,6 +103,7 @@ class ObservabilityReader:
         if not self._budget_left():
             return "unavailable", None, "the local daily query budget for the Langfuse Metrics API is used up"
         base = (env.get("LANGFUSE_BASE_URL") or env.get("LANGFUSE_HOST") or DEFAULT_BASE_URL).rstrip("/")
+        result: tuple[str, list | None, str | None]
         try:
             with self._lock:
                 self._used += 1
