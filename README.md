@@ -160,27 +160,22 @@ The suite is hermetic: it blocks non-loopback network access and `chromadb.Cloud
 
 ## Docker
 
-The image holds code and pinned packages only. Models, the index and API keys are supplied at run time.
+`compose.yaml` runs the API and the UI from one image. The build uses public PyPI at the locked versions plus PyTorch's public CPU wheel index; it needs no credentials. The image holds code and packages only: models, the index and API keys are supplied at run time.
 
 ```bash
-# build: your pip configuration (index URL and credentials) is passed as a BuildKit secret, never stored in a layer
-docker build --secret id=pipconf,src=<path-to-your-pip.ini-or-pip.conf> -t advanced-rag .
+# once: build the index into the data volume (needs the pinned embedding model in your HuggingFace cache)
+docker compose run --rm --build ingest
 
-# 1) one-time: build the index inside the data volume (needs the HuggingFace cache with the pinned models)
-docker run --rm -v advrag-data:/data -v <host-huggingface-cache>:/models \
-  advanced-rag python scripts/ingest.py --strategy recursive
+# API on http://127.0.0.1:8000/docs, UI on http://127.0.0.1:8501
+docker compose up --build
 
-# 2) run the API (index, models and keys live here) and, in a second container, the UI (it needs none of them)
-docker network create advrag-net
-docker run --rm --name api --network advrag-net --no-healthcheck -v advrag-data:/data -v <host-huggingface-cache>:/models \
-  --env-file .env advanced-rag python -m uvicorn api.main:app --host 0.0.0.0 --port 8000
-docker run --rm --network advrag-net -p 8501:8501 -e ADVRAG_API_URL=http://api:8000 advanced-rag
+docker compose down        # stop (the index stays in the volume)
 ```
 
-- The existing Windows index cannot be reused in the container: ingest manifests record the store location, and the API checks it. Build the index in the container volume as shown.
-- `<host-huggingface-cache>` is the folder that contains `hub/` (on Windows usually `%USERPROFILE%\.cache\huggingface`). The container runs with `HF_HUB_OFFLINE=1`.
-- On Linux the default `torch` wheel is the CUDA build. If you have an approved index with CPU wheels, add `--build-arg TORCH_INDEX_URL=<that index>`.
-- The Dockerfile has not been built or run (Docker is not installed in the development environment).
+- **Models:** the host's HuggingFace cache is mounted read-only. The default is `~/.cache/huggingface`; set `HF_CACHE_DIR` to the folder that holds `hub/` if yours is elsewhere (on Windows usually `%USERPROFILE%\.cache\huggingface`). The containers run offline and never download. Without the pinned reranker the app still runs, with reranking unavailable.
+- **Keys:** put `GEMINI_API_KEY` (and optionally the Langfuse names, `ADVRAG_API_TOKEN`, `APP_ACCESS_CODE`) in your shell or a `.env` file; only the names listed in `compose.yaml` reach a container. Without a Gemini key retrieval works and no answer is generated. `docker compose config` prints the values, so check the file with `docker compose config --quiet`.
+- Ports are published on `127.0.0.1` only (`API_PORT`, `UI_PORT` change them).
+- An index built on the host cannot be reused: ingest manifests record the store location, and the API checks it.
 
 ## Repository map
 
@@ -206,5 +201,5 @@ docker run --rm --network advrag-net -p 8501:8501 -e ADVRAG_API_URL=http://api:8
 - **Corpus scale.** The audit measured the keyword leg growing roughly linearly with corpus size; the corpus here is small (200 papers).
 - **Semantic chunking** did not beat recursive chunking on the test split, and the audit found many of its windows exceeding the embedder's input limit. The served index uses recursive chunks.
 - **Reranker** is off by default because of its latency on CPU.
-- **Docker** is untested, and there is no CI workflow yet.
+- **Docker** was built and run on Apple Silicon (linux/arm64) without API keys; a live answer and the reranker were not exercised in a container. There is no CI workflow yet.
 - Findings and planned fixes are in [technical_audit/](technical_audit).

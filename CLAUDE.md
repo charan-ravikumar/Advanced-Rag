@@ -324,3 +324,10 @@
     question set and index is part of the final evaluation and needs its own
     pre-registration. It is NOT the "test" split of `split.json` (rule 16), which is
     a slice of the official DEV papers and has already been run once.
+29. **Docker (`Dockerfile`, `compose.yaml`).** `docker compose run --rm --build ingest` once, then
+    `docker compose up --build` (API 127.0.0.1:8000, UI 127.0.0.1:8501). Packages: public PyPI at the
+    locked versions, torch from PyTorch's public CPU wheel index; no secrets in the build. The image
+    holds no keys, models or index; only the variable NAMES listed in `compose.yaml` reach a container.
+    NEVER run `docker compose config` without `--quiet` (it prints the values from `.env`); use
+    `--env-file /dev/null` for tests that must not contact Gemini or Langfuse. Do not remove the
+    `advrag_data` volume (`down -v`) without asking. `tests/unit/test_docker_files.py` pins these rules.
