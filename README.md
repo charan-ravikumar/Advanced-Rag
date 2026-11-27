@@ -190,7 +190,6 @@ docker compose down        # stop (the index stays in the volume)
 | [scripts/](scripts) | ingestion, lexical index build, artifact builder, diagnostics |
 | [tests/](tests) | unit and property tests |
 | [docs/](docs) | the claims log and working notes |
-| [technical_audit/](technical_audit) | independent audit of the code, with a roadmap |
 | [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md) | decision log: why each choice was made and what it costs |
 
 ## Limitations
@@ -198,8 +197,7 @@ docker compose down        # stop (the index stays in the volume)
 - **Generation is not validated.** The only answer-quality run is exploratory (40 dev questions, no baseline, an uncalibrated judge) and used an earlier generator. Behaviour on unanswerable questions has not been measured, so the hallucination rate is unknown. The offline judge (`gemini-3.8-flash`) is a different model from the generator but the same family (Gemini), so self-preference is still possible.
 - **One process, one retrieval lock.** The retriever (SQLite, the embedder) is serialised by one lock, so concurrent questions queue at retrieval. Rate limits and the daily budget are in memory and per process. There is a single optional shared token and no accounts. No concurrency or load test exists.
 - **Prompt injection** is handled by escaping and delimiting untrusted text and by validating what comes back (the structured answer, its citations and quotes, abstention). That is tested with scripted providers; it has not been measured against a real model.
-- **Corpus scale.** The audit measured the keyword leg growing roughly linearly with corpus size; the corpus here is small (200 papers).
-- **Semantic chunking** did not beat recursive chunking on the test split, and the audit found many of its windows exceeding the embedder's input limit. The served index uses recursive chunks.
+- **Corpus scale.** The corpus is small (200 papers). Behaviour at a larger scale has no saved measurement.
+- **Semantic chunking** did not beat recursive chunking on the test split. The served index uses recursive chunks.
 - **Reranker** is off by default because of its latency on CPU.
 - **Docker** was built and run on Apple Silicon (linux/arm64) without API keys; a live answer and the reranker were not exercised in a container. There is no CI workflow yet.
-- Findings and planned fixes are in [technical_audit/](technical_audit).

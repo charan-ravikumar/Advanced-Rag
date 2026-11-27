@@ -1332,3 +1332,12 @@ after each task, using the template below. (The older free-form diary lives in
 - **Evidence it works (test or measurement, with file path):** `tests/unit/test_docker_files.py` (static). By hand on 2026-11-27, linux/arm64 (printed output, no saved run): image built; torch `2.15.0+cpu`, no NVIDIA package; ingest verified 7255 chunks with store/lexical parity; `compose up --wait` made both services healthy; `/v1/ready` true; `/v1/retrieve` returned 5 passages; `/v1/answer` without a key degraded to passages; the UI script ran in the container with no exception (Streamlit AppTest, not a browser).
 - **Likely interview questions and strong answers:** *"Why isn't the model in the image?"* — "Images should carry code and pinned packages. Models are large, pinned by revision and mounted read-only, so the container can't download or change them."
 - **Honest limitations:** No live Gemini or Langfuse call and no reranking in a container. UI not looked at in a real browser. No CI build.
+
+### Deferred: baseline generation evaluation (B0, B1, B4) until paid model quota
+- **What we did:** Nothing was run. The task, the owner's decisions (judge `gemini-3.8-flash`; all 48 unanswerable questions for this evaluation only; no free-tier run) and the missing pieces are in `docs/TODO.md`. Return point: commit `cbf0897`.
+- **Why (the problem it solves):** A full run with a repeat is a few thousand model calls; free-tier quota would stretch it over days.
+- **Alternatives considered and why rejected:** A pilot or a seeded sample on free-tier quota: the owner chose to wait.
+- **Trade-offs / what it costs:** Generation quality of the current model stays unmeasured.
+- **Evidence it works (test or measurement, with file path):** None: no run.
+- **Likely interview questions and strong answers:** *"What is your hallucination rate?"* — "Not measured yet for the current model. The plan and its baselines are written down; I don't quote a number without a run."
+- **Honest limitations:** The 48-question plan reuses 29 unanswerable questions of an already-opened test split, and the judge shares the generator's model family.
