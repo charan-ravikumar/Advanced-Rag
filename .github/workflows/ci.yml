@@ -25,6 +25,8 @@ jobs:
           cache-dependency-path: requirements-ci.txt
       - run: pip install "$(grep -E '^ruff==' requirements-ci.txt)"
       - run: ruff check .
+      - name: The run index is up to date
+        run: python scripts/runs_index.py --check
 
   types:
     name: mypy (rag_core)

@@ -341,3 +341,9 @@
     admins included, and force pushes and deletion are off. A direct push to `main` is rejected: push a branch,
     open a pull request, wait for the checks, then merge it. Renaming a job means updating the required checks.
     Never relax or remove the protection without asking.
+31. **Run registry (`runs/index.jsonl`).** One row per run folder, built by `scripts/runs_index.py` from the files in
+    the folders (id, path, timestamp, code fingerprint, config hash, split, metrics, files, content hash). Never edit it
+    by hand: after adding or changing a run folder, run `python scripts/runs_index.py` and commit the index with the run.
+    CI (a step of the `ruff` job) runs `--check`, which also fails if README.md or `docs/CLAIMS_LOG.md` name a run
+    folder that does not exist. Being in the index does not make a number publishable: rules 5, 16 and 26 still apply
+    (it holds dev and EXPLORATORY numbers).

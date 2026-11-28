@@ -1359,3 +1359,12 @@ after each task, using the template below. (The older free-form diary lives in
 - **Evidence it works (test or measurement, with file path):** The GitHub branch protection settings, and the pull request that added this entry (blocked until its checks passed).
 - **Likely interview questions and strong answers:** *"Can broken code reach main?"* — "Not without passing the five checks. An admin could still switch the protection off, and the checks only cover what they cover."
 - **Honest limitations:** The setting lives in GitHub, not in the repository, so no test watches it.
+
+### Run registry: one index over all run folders
+- **What we did:** Added `scripts/runs_index.py`, which writes `runs/index.jsonl` (one row per folder under `runs/<kind>/`; the two generation caches are not runs). A CI step rebuilds it and fails if the committed file differs, or if the README or the claims log name a run folder that does not exist.
+- **Why (the problem it solves):** Finding where a number came from meant opening run folders one by one.
+- **Alternatives considered and why rejected:** MLflow or W&B (a new dependency, possibly an external service). Taking the commit from git history (changes with history rewrites and shallow clones; the runs record a code fingerprint instead). A generation timestamp in the file (a rerun would change it). A separate CI job (it would need the branch protection settings changed).
+- **Trade-offs / what it costs:** Adding a run now needs the index regenerated. The index repeats numbers that are in the run folders, including dev and exploratory ones.
+- **Evidence it works (test or measurement, with file path):** `tests/unit/test_runs_index.py`; `runs/index.jsonl`.
+- **Likely interview questions and strong answers:** *"Where does this number come from?"* — "Search the run index: it gives the run folder, the code fingerprint and the config hash. CI fails if the index and the folders disagree."
+- **Honest limitations:** Values a run did not record are null (two text-only comparison folders have no fingerprint; only folders with a config.json or an ingest signature have a config hash). No run records a git commit. Metrics are the summary numbers, not per-question results. The check does not verify that a claimed value matches the run.
