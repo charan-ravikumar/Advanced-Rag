@@ -107,6 +107,11 @@ def _numbers(value, prefix: str = "") -> dict:
 
 def key_metrics(folder: Path) -> dict:
     summary, manifest = _load(folder / "summary.json"), _load(folder / "manifest.json")
+    if "sustained_qps" in summary:  # load test
+        out = {k: summary[k] for k in ("slo_ms", "max_failed_fraction", "sustained_qps")}
+        for step in summary.get("steps", []):
+            out.update({f"{step['offered_qps']:g}qps.{k}": step[k] for k in ("p50_ms", "p95_ms", "failed_fraction", "ok_qps") if step.get(k) is not None})
+        return out
     if "arms" in summary:  # retrieval evaluation
         out = {}
         for arm, data in summary["arms"].items():

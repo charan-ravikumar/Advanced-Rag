@@ -24,6 +24,7 @@ A cache hit has no retrieve / context / generation. What may leave the process i
 
 from __future__ import annotations
 
+import asyncio
 import hashlib
 import threading
 import time
@@ -204,12 +205,14 @@ class RagService:
         result.latency_ms = Latency(retrieve=elapsed, total=elapsed)
         return result
 
-    def retrieve_sources(self, question: str, doc_ids: Sequence[str] | None = None, rerank: bool = False) -> tuple[list[Source], float]:
+    async def aretrieve_sources(self, question: str, doc_ids: Sequence[str] | None = None, rerank: bool = False) -> tuple[list[Source], float]:
         """Retrieval only (no LLM, no cache, no tracing): ``(passages labelled S1.., milliseconds)``. Raises ``InvalidQuestion`` for a bad question and lets a retrieval
-        failure propagate (the caller decides how to report it)."""
+        failure propagate (the caller decides how to report it). Through the retriever's ``aretrieve`` when it has one, else in a thread."""
         cleaned = self.validate_question(question)
         t0 = self._perf()
-        retrieved = self.retriever.retrieve(cleaned, **self._retrieval_kwargs(doc_ids, rerank))
+        kwargs = self._retrieval_kwargs(doc_ids, rerank)
+        aretrieve = getattr(self.retriever, "aretrieve", None)
+        retrieved = await (aretrieve(cleaned, **kwargs) if aretrieve is not None else asyncio.to_thread(self.retriever.retrieve, cleaned, **kwargs))
         return to_sources(retrieved.hits), (self._perf() - t0) * 1000.0
 
     def flush_traces(self, timeout_s: float | None = None) -> None:

@@ -1,0 +1,164 @@
+{
+  "slo_ms": 300.0,
+  "max_failed_fraction": 0.01,
+  "sustained_qps": 35.0,
+  "steps": [
+    {
+      "offered_qps": 10.0,
+      "duration_s": 30.0,
+      "sent": 300,
+      "ok": 300,
+      "failed_fraction": 0.0,
+      "status": {
+        "200": 300
+      },
+      "ok_qps": 10.0,
+      "p50_ms": 36.95766720920801,
+      "p95_ms": 40.919000050053,
+      "p99_ms": 45.3687091358006,
+      "rejected_p95_ms": null,
+      "generator_lag_p95_ms": 2.3667090572416782,
+      "passed": true
+    },
+    {
+      "offered_qps": 20.0,
+      "duration_s": 30.0,
+      "sent": 600,
+      "ok": 600,
+      "failed_fraction": 0.0,
+      "status": {
+        "200": 600
+      },
+      "ok_qps": 20.0,
+      "p50_ms": 27.743292041122913,
+      "p95_ms": 32.03154215589166,
+      "p99_ms": 68.76295898109674,
+      "rejected_p95_ms": null,
+      "generator_lag_p95_ms": 2.314584096893668,
+      "passed": true
+    },
+    {
+      "offered_qps": 25.0,
+      "duration_s": 30.0,
+      "sent": 750,
+      "ok": 750,
+      "failed_fraction": 0.0,
+      "status": {
+        "200": 750
+      },
+      "ok_qps": 25.0,
+      "p50_ms": 27.252166997641325,
+      "p95_ms": 31.479791970923543,
+      "p99_ms": 39.30770792067051,
+      "rejected_p95_ms": null,
+      "generator_lag_p95_ms": 2.254833234474063,
+      "passed": true
+    },
+    {
+      "offered_qps": 30.0,
+      "duration_s": 30.0,
+      "sent": 900,
+      "ok": 900,
+      "failed_fraction": 0.0,
+      "status": {
+        "200": 900
+      },
+      "ok_qps": 30.0,
+      "p50_ms": 26.440041605383158,
+      "p95_ms": 33.21529156528413,
+      "p99_ms": 227.66070812940598,
+      "rejected_p95_ms": null,
+      "generator_lag_p95_ms": 1.284916652366519,
+      "passed": true
+    },
+    {
+      "offered_qps": 35.0,
+      "duration_s": 30.0,
+      "sent": 1050,
+      "ok": 1050,
+      "failed_fraction": 0.0,
+      "status": {
+        "200": 1050
+      },
+      "ok_qps": 35.0,
+      "p50_ms": 25.121594546362758,
+      "p95_ms": 93.71821954846382,
+      "p99_ms": 232.30849369429052,
+      "rejected_p95_ms": null,
+      "generator_lag_p95_ms": 1.2465533800423145,
+      "passed": true
+    },
+    {
+      "offered_qps": 40.0,
+      "duration_s": 30.0,
+      "sent": 1200,
+      "ok": 1153,
+      "failed_fraction": 0.03916666666666667,
+      "status": {
+        "200": 1153,
+        "503": 47
+      },
+      "ok_qps": 38.43333333333333,
+      "p50_ms": 23.948458023369312,
+      "p95_ms": 41.75137495622039,
+      "p99_ms": 1425.161625025794,
+      "rejected_p95_ms": 562.3589579481632,
+      "generator_lag_p95_ms": 2.455832902342081,
+      "passed": false
+    },
+    {
+      "offered_qps": 50.0,
+      "duration_s": 30.0,
+      "sent": 1500,
+      "ok": 1338,
+      "failed_fraction": 0.108,
+      "status": {
+        "200": 1338,
+        "503": 162
+      },
+      "ok_qps": 44.6,
+      "p50_ms": 58.5742499679327,
+      "p95_ms": 646.8716668896377,
+      "p99_ms": 980.8740420266986,
+      "rejected_p95_ms": 142.65208295546472,
+      "generator_lag_p95_ms": 1.786916982382536,
+      "passed": false
+    },
+    {
+      "offered_qps": 60.0,
+      "duration_s": 30.0,
+      "sent": 1800,
+      "ok": 1581,
+      "failed_fraction": 0.12166666666666667,
+      "status": {
+        "200": 1581,
+        "503": 219
+      },
+      "ok_qps": 52.7,
+      "p50_ms": 299.4077911134809,
+      "p95_ms": 361.1122078727931,
+      "p99_ms": 408.0429158639163,
+      "rejected_p95_ms": 16.55716635286808,
+      "generator_lag_p95_ms": 1.2269581202417612,
+      "passed": false
+    },
+    {
+      "offered_qps": 80.0,
+      "duration_s": 30.0,
+      "sent": 2400,
+      "ok": 1274,
+      "failed_fraction": 0.4691666666666667,
+      "status": {
+        "200": 1274,
+        "503": 1126
+      },
+      "ok_qps": 42.46666666666667,
+      "p50_ms": 366.45579198375344,
+      "p95_ms": 549.2762080393732,
+      "p99_ms": 1232.5977499131113,
+      "rejected_p95_ms": 279.46616685949266,
+      "generator_lag_p95_ms": 2.637541852891445,
+      "passed": false
+    }
+  ]
+}

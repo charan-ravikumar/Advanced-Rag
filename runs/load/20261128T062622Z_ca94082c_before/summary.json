@@ -1,0 +1,163 @@
+{
+  "slo_ms": 300.0,
+  "max_failed_fraction": 0.01,
+  "sustained_qps": 20.0,
+  "steps": [
+    {
+      "offered_qps": 10.0,
+      "duration_s": 30.0,
+      "sent": 300,
+      "ok": 300,
+      "failed_fraction": 0.0,
+      "status": {
+        "200": 300
+      },
+      "ok_qps": 10.0,
+      "p50_ms": 40.747457882389426,
+      "p95_ms": 66.23599980957806,
+      "p99_ms": 85.6504999101162,
+      "rejected_p95_ms": null,
+      "generator_lag_p95_ms": 1.4045827556401491,
+      "passed": true
+    },
+    {
+      "offered_qps": 20.0,
+      "duration_s": 30.0,
+      "sent": 600,
+      "ok": 600,
+      "failed_fraction": 0.0,
+      "status": {
+        "200": 600
+      },
+      "ok_qps": 20.0,
+      "p50_ms": 40.30274995602667,
+      "p95_ms": 164.2681669909507,
+      "p99_ms": 222.79020794667304,
+      "rejected_p95_ms": null,
+      "generator_lag_p95_ms": 1.568333012983203,
+      "passed": true
+    },
+    {
+      "offered_qps": 25.0,
+      "duration_s": 30.0,
+      "sent": 750,
+      "ok": 750,
+      "failed_fraction": 0.0,
+      "status": {
+        "200": 750
+      },
+      "ok_qps": 25.0,
+      "p50_ms": 5461.560249794275,
+      "p95_ms": 5955.450000008568,
+      "p99_ms": 6020.211124792695,
+      "rejected_p95_ms": null,
+      "generator_lag_p95_ms": 3.557290881872177,
+      "passed": false
+    },
+    {
+      "offered_qps": 30.0,
+      "duration_s": 30.0,
+      "sent": 900,
+      "ok": 900,
+      "failed_fraction": 0.0,
+      "status": {
+        "200": 900
+      },
+      "ok_qps": 30.0,
+      "p50_ms": 144.90133384242654,
+      "p95_ms": 339.10404169000685,
+      "p99_ms": 349.4221668224782,
+      "rejected_p95_ms": null,
+      "generator_lag_p95_ms": 1.6764174215495586,
+      "passed": false
+    },
+    {
+      "offered_qps": 35.0,
+      "duration_s": 30.0,
+      "sent": 1050,
+      "ok": 1050,
+      "failed_fraction": 0.0,
+      "status": {
+        "200": 1050
+      },
+      "ok_qps": 35.0,
+      "p50_ms": 3416.5133035276085,
+      "p95_ms": 5710.608089342713,
+      "p99_ms": 5881.8666723091155,
+      "rejected_p95_ms": null,
+      "generator_lag_p95_ms": 1.4249938540160656,
+      "passed": false
+    },
+    {
+      "offered_qps": 40.0,
+      "duration_s": 30.0,
+      "sent": 1200,
+      "ok": 1200,
+      "failed_fraction": 0.0,
+      "status": {
+        "200": 1200
+      },
+      "ok_qps": 40.0,
+      "p50_ms": 5578.873625025153,
+      "p95_ms": 10645.993458107114,
+      "p99_ms": 11080.288583179936,
+      "rejected_p95_ms": null,
+      "generator_lag_p95_ms": 1.2991251423954964,
+      "passed": false
+    },
+    {
+      "offered_qps": 50.0,
+      "duration_s": 30.0,
+      "sent": 1500,
+      "ok": 1493,
+      "failed_fraction": 0.004666666666666667,
+      "status": {
+        "200": 1493,
+        "RemoteProtocolError": 7
+      },
+      "ok_qps": 49.766666666666666,
+      "p50_ms": 10161.610583076254,
+      "p95_ms": 22733.534415951,
+      "p99_ms": 23699.697041185573,
+      "rejected_p95_ms": null,
+      "generator_lag_p95_ms": 1.4004579279571772,
+      "passed": false
+    },
+    {
+      "offered_qps": 60.0,
+      "duration_s": 30.0,
+      "sent": 1800,
+      "ok": 1116,
+      "failed_fraction": 0.38,
+      "status": {
+        "200": 1116,
+        "ReadTimeout": 684
+      },
+      "ok_qps": 37.2,
+      "p50_ms": 10772.760125575587,
+      "p95_ms": 28066.671792184934,
+      "p99_ms": 29602.58720908314,
+      "rejected_p95_ms": null,
+      "generator_lag_p95_ms": 1.3254170771688223,
+      "passed": false
+    },
+    {
+      "offered_qps": 80.0,
+      "duration_s": 30.0,
+      "sent": 2400,
+      "ok": 883,
+      "failed_fraction": 0.6320833333333333,
+      "status": {
+        "200": 883,
+        "ReadTimeout": 1517
+      },
+      "ok_qps": 29.433333333333334,
+      "p50_ms": 11829.695833846927,
+      "p95_ms": 27925.601874710992,
+      "p99_ms": 29544.788291910663,
+      "rejected_p95_ms": null,
+      "generator_lag_p95_ms": 1.364458817988634,
+      "passed": false
+    }
+  ]
+}

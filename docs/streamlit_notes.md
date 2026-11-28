@@ -16,7 +16,7 @@ Everything here was checked against the installed package (`inspect` on signatur
 |---|---|
 | `st.write_stream(stream, *, cursor=None)` | Takes a generator or any iterable of strings; returns the full text (a string) when the stream ends. Renders in the current container, so the app streams into an `st.empty()` placeholder inside the assistant message and replaces it with the final render. |
 | `st.status(label, *, expanded=False, state="running")` | A container with `.update(label=, state=, expanded=)`; used as the "thinking" indicator until the first token. |
-| `st.cache_resource(ttl=, max_entries=, show_spinner=, validate=, on_release=, scope="global", ...)` | One object shared by ALL sessions and reruns of the process, NOT copied: mutations hit the cache. Used once for the bootstrap (store, FTS, embedder, retriever, service, guards). Because every session thread shares it, the retriever is wrapped in a lock and the FTS connection is created with `check_same_thread=False` (SQLite objects are otherwise bound to the creating thread). |
+| `st.cache_resource(ttl=, max_entries=, show_spinner=, validate=, on_release=, scope="global", ...)` | One object shared by ALL sessions and reruns of the process, NOT copied: mutations hit the cache. Used once for the bootstrap (store, FTS, embedder, retriever, service, guards). Every session thread shares it, so anything in it must be thread safe (SQLite objects are bound to the creating thread unless opened with `check_same_thread=False`). The retriever now lives in the API server, which uses worker pools and a SQLite connection pool, not a lock. |
 | `st.cache_data(ttl=, max_entries=, show_spinner=, persist=, scope="global", ...)` | Returns a COPY of a serialisable value per call; arguments are hashed, an argument whose name starts with an underscore is NOT hashed (used for the reader object). The Observability snapshot is cached here with `ttl` from `config.yaml`. |
 | `st.secrets` | Reads `.streamlit/secrets.toml`. **If no secrets file exists, ANY access raises** (`StreamlitSecretNotFoundError`, a `FileNotFoundError`), also `.get()`: every read is wrapped. Root-level secrets are also exported as environment variables by Streamlit itself; the app additionally copies an explicit allowlist (never overriding a variable that is already set). |
 | `st.feedback("thumbs", key=, on_change=, args=, disabled=)` | Returns `None` (nothing selected), `0` (thumbs down) or `1` (thumbs up). `on_change` is a callback run before the rerun; the app sends the score from the callback. |
@@ -35,7 +35,7 @@ Everything here was checked against the installed package (`inspect` on signatur
 
 ## Things that bit others (kept here)
 
-- A cached resource created in one session's thread and used from another raises for SQLite and similar thread-bound objects: lock and `check_same_thread=False`.
+- A cached resource created in one session's thread and used from another raises for SQLite and similar thread-bound objects: give each thread its own connection (a pool) or serialise the calls, with `check_same_thread=False`.
 - `st.secrets` raises when no secrets file exists; guard it.
 - A script rerun happens on every widget interaction, so anything with a cost (a model call) must be triggered by the submission only, and results kept in `session_state`.
 - Importing `streamlit_app.py` (the legacy root file) pulls in the deprecated `rag.retrieval`; the new entry point is `app/streamlit_app.py` and imports nothing legacy.

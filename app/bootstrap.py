@@ -13,7 +13,8 @@ show an error screen with the failed checks, never a stack trace. Missing Gemini
 and the Observability tab has a ``no_keys`` state. Keys are only ever reported as booleans.
 
 Index directory (server): ``ADVRAG_INDEX_DIR``, else ``CHROMA_LOCAL_PATH``, else a failed check (there is NO default: nothing opens a store you did not name).
-The retriever is shared by all requests; SQLite and the embedder are not safe for concurrent use, so every call goes through one lock.
+The retriever is shared by all requests and there is NO global lock: the lexical leg uses a pool of SQLite connections, embedding and
+reranking run in bounded worker pools (``rag.concurrency``; sizes in ``config.yaml`` ``app.*``), and the API refuses work beyond its queue limit.
 """
 
 from __future__ import annotations
@@ -22,7 +23,6 @@ import hashlib
 import json
 import os
 import sqlite3
-import threading
 import time
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
@@ -159,31 +159,18 @@ class Factories:
     open_lexical: Callable[[Any, str, str], Any] = lambda cfg, strategy, path: _open_lexical(cfg, strategy, path)
     make_embedder: Callable[[Any], Any] = lambda cfg: __import__("rag.embedders", fromlist=["SentenceTransformerEmbedder"]).SentenceTransformerEmbedder.from_config(cfg)
     make_reranker: Callable[[Any], Any] = lambda cfg: __import__("rag.rerankers", fromlist=["CrossEncoderReranker"]).CrossEncoderReranker.from_config(cfg)
-    make_retriever: Callable[..., Any] = lambda store, embedder, lexical, reranker, cfg: __import__("rag.retriever", fromlist=["Retriever"]).Retriever(
-        store, embedder, lexical, reranker=reranker, cfg=cfg)
+    make_retriever: Callable[..., Any] = lambda store, embedder, lexical, reranker, cfg, executors: __import__("rag.retriever", fromlist=["Retriever"]).Retriever(
+        store, embedder, lexical, reranker=reranker, cfg=cfg, executors=executors)
     make_gateway: Callable[[Any], Any] = lambda rag_cfg: __import__("rag_core.gateway", fromlist=["build_gateway"]).build_gateway(rag_cfg)
+    set_torch_threads: Callable[[int], None] = lambda threads: __import__("rag.concurrency", fromlist=["set_torch_threads"]).set_torch_threads(threads)
     fts5_available: Callable[[], bool] = fts5_available
     model_cached: Callable[[str, str], bool] = model_cached
 
 
 def _open_lexical(cfg, strategy: str, index_dir: str):
-    from rag.lexical import SqliteFtsIndex, lexical_index_path
+    from rag.lexical import PooledFtsIndex, lexical_index_path
 
-    return SqliteFtsIndex(lexical_index_path(cfg, strategy, chroma_path=index_dir), check_same_thread=False)
-
-
-class LockedRetriever:
-    """One retriever for all sessions: calls are serialised (SQLite, the embedder and Chroma are not meant to be hit concurrently from several threads)."""
-
-    def __init__(self, inner):
-        self._inner, self._lock = inner, threading.Lock()
-
-    def retrieve(self, *args, **kwargs):
-        with self._lock:
-            return self._inner.retrieve(*args, **kwargs)
-
-    def __getattr__(self, name: str):  # embedder, store, lexical ... of the inner retriever
-        return getattr(self._inner, name)
+    return PooledFtsIndex(lexical_index_path(cfg, strategy, chroma_path=index_dir), size=AppConfig.from_config(cfg).db_workers)
 
 
 @dataclass
@@ -203,6 +190,7 @@ class Resources:
     reranker_available: bool = False
     index_dir: str | None = None
     warmup_ms: float | None = None
+    executors: Any = None  # rag.concurrency.RetrievalExecutors; the API shuts them down when it stops
 
     @property
     def ready(self) -> bool:
@@ -267,7 +255,11 @@ def build_resources(cfg, env: Mapping | None = None, *, factories: Factories | N
     res.reranker_available = f.model_cached(cfg.pipeline.reranker_model, cfg.pipeline.reranker_revision)
     if res.reranker_available:
         reranker = f.make_reranker(cfg)  # loaded lazily, at the first use
-    retriever = LockedRetriever(f.make_retriever(store, embedder, lexical, reranker, cfg))
+    from rag.concurrency import RetrievalExecutors
+
+    f.set_torch_threads(settings.torch_threads)
+    res.executors = RetrievalExecutors(embed_workers=settings.embed_workers, db_workers=settings.db_workers, rerank_workers=settings.rerank_workers)
+    retriever = f.make_retriever(store, embedder, lexical, reranker, cfg, res.executors)
     t0 = time.perf_counter()
     try:  # warm the embedder with one dummy query: the first real question must not pay the model load
         retriever.retrieve(settings.warmup_query, mode=rag_cfg.retrieval_mode, fusion=rag_cfg.fusion, top_k=1, candidate_k=rag_cfg.candidate_k, rrf_k=rag_cfg.rrf_k,

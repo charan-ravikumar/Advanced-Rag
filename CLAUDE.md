@@ -270,6 +270,10 @@
       is set, every endpoint except `/v1/health` needs `Authorization: Bearer <token>`. Bind to
       127.0.0.1 unless a token is set. Endpoints: `/v1/health`, `/v1/ready`, `/v1/meta`,
       `/v1/ask` (SSE), `/v1/answer`, `/v1/retrieve`, `/v1/feedback`, `/v1/observability`.
+      There is NO lock around retrieval: legs run in parallel in the bounded pools of `rag/concurrency.py`, the lexical index is
+      `PooledFtsIndex`, and the API refuses work with `503 overloaded` beyond `app.retrieval_max_in_flight`. Anything added to the
+      retrieval path must be safe to call from several threads. `Retriever` without `executors` (evaluation) stays sequential.
+      Load tests: `scripts/load_test.py` (runs under `runs/load/`); `torch_threads` is process-wide and affects the reranker too.
       The server enforces the limits in `config.yaml` under `app.*`. The per-key rate limit
       and the session cap use `slowapi` (`api/limits.py`; the key is `X-Session-Id`, in
       memory, so a restart resets it). The daily cap is a request count shared by all

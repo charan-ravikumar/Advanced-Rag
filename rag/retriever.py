@@ -12,14 +12,20 @@ Behaviour guaranteed by tests/unit/test_retriever.py
   * the fused list is cut to ``rerank_k`` (rerank on) or ``top_k`` (rerank off); it is never unbounded.
   * a chunk found by both legs appears once, with both ranks recorded.
   * ties are broken by chunk_id, so the order is deterministic.
+  * with ``executors`` (``rag.concurrency``) the two legs run at the same time, embedding and reranking in their own bounded pools and the
+    database reads in another; without them everything runs in the caller's thread, one step after the other. The result is the same.
 """
 
 from __future__ import annotations
 
+import asyncio
 import time
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Generator, Sequence
+from concurrent.futures import wait
 from dataclasses import dataclass, field
+from typing import Any
 
+from rag.concurrency import RetrievalExecutors, Stage, run_chain
 from rag.embedders import embed_query
 from rag.fusion import fuse_rrf, naive_interleave
 
@@ -63,7 +69,11 @@ class RetrievalResult:
 
 
 class Retriever:
-    def __init__(self, store, embedder, lexical, reranker: Callable[[str, list[str]], Sequence[float]] | None = None, cfg=None):
+    def __init__(self, store, embedder, lexical, reranker: Callable[[str, list[str]], Sequence[float]] | None = None, cfg=None,
+                 executors: RetrievalExecutors | None = None):
+        """``executors``: run the legs concurrently. ``lexical`` and ``store`` must then be safe to call from several threads
+        (``rag.lexical.PooledFtsIndex``); a plain ``SqliteFtsIndex`` is one connection and is not."""
+        self.executors = executors
         self.store = store
         self.embedder = embedder
         self.lexical = lexical
@@ -79,7 +89,49 @@ class Retriever:
             "lexical_weight": getattr(p, "bm25_weight", 0.7),
         }
 
-    def retrieve(
+    def retrieve(self, query: str, **options: Any) -> RetrievalResult:
+        """Blocking retrieval. The options are those of ``_plan``."""
+        plan = self._plan(query, **options)
+        try:
+            legs = next(plan)
+            while True:
+                legs = plan.send(self._run(legs))
+        except StopIteration as stop:
+            return stop.value
+
+    async def aretrieve(self, query: str, **options: Any) -> RetrievalResult:
+        """``retrieve`` for an event loop: no thread waits while the pools work. Without executors it runs ``retrieve`` in a thread
+        (``store`` and ``lexical`` must then be usable from that thread)."""
+        if self.executors is None:
+            return await asyncio.to_thread(self.retrieve, query, **options)  # to_thread keeps the context
+        plan = self._plan(query, **options)
+        try:
+            legs = next(plan)
+            while True:
+                futures = [asyncio.wrap_future(run_chain(self.executors, leg)) for leg in legs]
+                results = await asyncio.gather(*futures, return_exceptions=True)  # wait for EVERY leg, also when one failed
+                for result in results:
+                    if isinstance(result, BaseException):
+                        raise result
+                legs = plan.send(results)
+        except StopIteration as stop:
+            return stop.value
+
+    def _run(self, legs: list[list[Stage]]) -> list[Any]:
+        """The result of each leg (a list of stages run in order): concurrently in the pools, or here one after the other."""
+        if self.executors is None:
+            results = []
+            for leg in legs:
+                value = None
+                for _pool, stage in leg:
+                    value = stage(value)
+                results.append(value)
+            return results
+        futures = [run_chain(self.executors, leg) for leg in legs]
+        wait(futures)  # every leg finishes before the first failure is raised: no work outlives its request
+        return [f.result() for f in futures]
+
+    def _plan(
         self,
         query: str,
         *,
@@ -93,7 +145,9 @@ class Retriever:
         rrf_k: int | None = None,
         vector_weight: float | None = None,
         lexical_weight: float | None = None,
-    ) -> RetrievalResult:
+    ) -> Generator[list[list[Stage]], list[Any], RetrievalResult]:
+        """The pipeline as a generator, so that ``retrieve`` and ``aretrieve`` share it: it yields the legs to run, receives their
+        results and returns the ``RetrievalResult``. What runs in this generator itself (fusion, assembly) is cheap and never blocks."""
         if mode not in MODES:
             raise ValueError(f"mode must be one of {MODES}, got {mode!r}")
         if fusion not in FUSIONS:
@@ -124,34 +178,35 @@ class Retriever:
                 lat["total"] = (time.perf_counter() - t_total) * 1000
                 return RetrievalResult(query, mode, fusion if mode == "hybrid" else None, [], lat, 0, False, params)
 
-        # TODO(parallel legs): the two legs run one after the other on purpose. The old pipeline used a
-        # ThreadPoolExecutor, which (a) does not propagate contextvars, so OpenTelemetry spans started in the
-        # worker threads lost their parent, and (b) sqlite3 connections are bound to their creating thread
-        # (SqliteFtsIndex uses one connection). Parallelise later with contextvars.copy_context().run and a
-        # connection per thread, and measure first. Do NOT add threads before then.
+        def timed(stage: str, fn: Callable[[Any], Any]) -> Callable[[Any], Any]:
+            def run(value: Any) -> Any:  # measured inside the task: the waiting time for a worker is only in "total"
+                t = time.perf_counter()
+                out = fn(value)
+                lat[stage] = (time.perf_counter() - t) * 1000
+                return out
 
-        vec_hits: list[tuple] = []  # (chunk_id, similarity, text, doc_id, section, char_start, char_end)
-        if mode in ("hybrid", "vector"):
-            t = time.perf_counter()
-            query_vec = embed_query(self.embedder, query)
-            lat["embed"] = (time.perf_counter() - t) * 1000
-            t = time.perf_counter()
+            return run
+
+        def vector_search(query_vec: Any) -> list[tuple]:
             where = None if doc_ids is None else {"doc_id": {"$in": doc_ids}}
             raw = self.store.query(query_vec, k=candidate_k, where=where)
-            lat["vector"] = (time.perf_counter() - t) * 1000
             raw.sort(key=lambda r: (r["distance"], r["chunk_id"]))  # deterministic on equal distance
-            vec_hits = [
+            return [
                 (r["chunk_id"], 1.0 - r["distance"], r["text"], r["metadata"]["doc_id"],
                  r["metadata"].get("section", ""), int(r["metadata"].get("char_start", -1)),
                  int(r["metadata"].get("char_end", -1)))
                 for r in raw
             ]
 
-        lex_hits: list[tuple[str, float]] = []
+        search_legs: dict[str, list[Stage]] = {}
+        if mode in ("hybrid", "vector"):
+            search_legs["vector"] = [("embed", timed("embed", lambda _: embed_query(self.embedder, query))),
+                                     ("db", timed("vector", vector_search))]
         if mode in ("hybrid", "lexical"):
-            t = time.perf_counter()
-            lex_hits = self.lexical.search(query, candidate_k, doc_ids=doc_ids)
-            lat["lexical"] = (time.perf_counter() - t) * 1000
+            search_legs["lexical"] = [("db", timed("lexical", lambda _: self.lexical.search(query, candidate_k, doc_ids=doc_ids)))]
+        found = dict(zip(search_legs, (yield list(search_legs.values()))))
+        vec_hits: list[tuple] = found.get("vector", [])  # (chunk_id, similarity, text, doc_id, section, char_start, char_end)
+        lex_hits: list[tuple[str, float]] = found.get("lexical", [])
 
         # ---- fuse ------------------------------------------------------------------------
         t = time.perf_counter()
@@ -178,25 +233,25 @@ class Retriever:
         lat["fuse"] = (time.perf_counter() - t) * 1000
 
         # ---- hydrate text / doc_id for the survivors (lexical-only hits have neither yet) ------------
-        t = time.perf_counter()
         known = {cid: (text, doc, sec, cs, ce) for cid, _s, text, doc, sec, cs, ce in vec_hits}
         need = [cid for cid, _ in fused if cid not in known]
         if need:
-            for c in self.store.get_chunks(need):
+            (chunks,) = yield [[("db", timed("hydrate", lambda _: self.store.get_chunks(need)))]]
+            for c in chunks:
                 known[c.chunk_id] = (c.text, c.doc_id, c.section, c.char_start, c.char_end)
-        lat["hydrate"] = (time.perf_counter() - t) * 1000
 
         # ---- optional rerank ----------------------------------------------------------------
         rerank_scores: dict[str, float] = {}
         if rerank and fused:
-            t = time.perf_counter()
             texts = [known[cid][0] for cid, _ in fused]
-            scores = list(self.reranker(query, texts))
+            reranker = self.reranker
+            assert reranker is not None  # checked above
+            (raw_scores,) = yield [[("rerank", timed("rerank", lambda _: reranker(query, texts)))]]
+            scores = list(raw_scores)
             if len(scores) != len(texts):
                 raise ValueError(f"reranker returned {len(scores)} scores for {len(texts)} texts")
             rerank_scores = {cid: float(s) for (cid, _), s in zip(fused, scores)}
             fused = sorted(fused, key=lambda kv: (-rerank_scores[kv[0]], kv[0]))
-            lat["rerank"] = (time.perf_counter() - t) * 1000
         final = fused[:top_k]
 
         hits = [

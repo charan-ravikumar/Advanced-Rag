@@ -4,7 +4,6 @@ import json
 import os
 import shutil
 import threading
-import time
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -236,9 +235,9 @@ def factories(store_n=8, lex_n=8, **over):
     from rag_core.gateway import LLMGateway
     from tests.unit.rag_core_fakes import ScriptedProvider, ok
 
-    base = dict(open_store=lambda cfg, strategy, path: FakeStore(store_n), open_lexical=lambda cfg, strategy, path: FakeLexical(lex_n),
+    base = dict(set_torch_threads=lambda threads: None, open_store=lambda cfg, strategy, path: FakeStore(store_n), open_lexical=lambda cfg, strategy, path: FakeLexical(lex_n),
                 make_embedder=lambda cfg: SimpleNamespace(name="fake", revision="r"), make_reranker=lambda cfg: (lambda q, t: [0.0] * len(t)),
-                make_retriever=lambda store, embedder, lexical, reranker, cfg: FakeRetriever(), make_gateway=lambda rag_cfg: LLMGateway([ScriptedProvider("groq", "m", [ok("hi")])]),
+                make_retriever=lambda store, embedder, lexical, reranker, cfg, executors: FakeRetriever(), make_gateway=lambda rag_cfg: LLMGateway([ScriptedProvider("groq", "m", [ok("hi")])]),
                 fts5_available=lambda: True, model_cached=lambda name, revision: True)
     base.update(over)
     return bs.Factories(**base)
@@ -295,7 +294,7 @@ def test_the_served_index_version_follows_a_reingest_without_a_restart(index_roo
     ({}, {"open_store": lambda cfg, s, p: (_ for _ in ()).throw(RuntimeError("chroma exploded"))}, "Vector store and lexical index open"),
     ({}, {"open_lexical": lambda cfg, s, p: (_ for _ in ()).throw(RuntimeError("no fts"))}, "Vector store and lexical index open"),
     ({}, {"model_cached": lambda n, r: False}, "Embedding model in the local cache"),
-    ({}, {"make_retriever": lambda s, e, lex, r, c: SimpleNamespace(retrieve=lambda *a, **k: (_ for _ in ()).throw(OSError("model files missing")), embedder=None)},
+    ({}, {"make_retriever": lambda s, e, lex, r, c, x: SimpleNamespace(retrieve=lambda *a, **k: (_ for _ in ()).throw(OSError("model files missing")), embedder=None)},
      "Embedder warm-up (one dummy query)"),
 ])
 def test_every_failed_fatal_check_is_reported_by_name_without_raising_and_without_a_service(index_root, env_over, fac_over, expect):
@@ -351,26 +350,19 @@ def test_build_resources_never_raises_even_if_the_artifacts_cannot_be_loaded(ind
 
 # ---- threads --------------------------------------------------------------------------------------------------------------------------
 
-def test_the_locked_retriever_serialises_calls_from_several_threads_and_passes_attributes_through():
-    active, peak, lock = [0], [0], threading.Lock()
+def test_the_server_builds_the_retrieval_pools_from_the_config_and_no_lock(index_root):
+    seen = {}
 
-    class Slow:
-        embedder = "the-embedder"
+    def make_retriever(store, embedder, lexical, reranker, cfg, executors):
+        seen["executors"] = executors
+        return FakeRetriever()
 
-        def retrieve(self, *a, **k):
-            with lock:
-                active[0] += 1
-                peak[0] = max(peak[0], active[0])
-            time.sleep(0.02)
-            with lock:
-                active[0] -= 1
-            return "hits"
-
-    locked = bs.LockedRetriever(Slow())
-    threads = [threading.Thread(target=locked.retrieve, args=("q",)) for _ in range(8)]
-    [t.start() for t in threads]
-    [t.join() for t in threads]
-    assert peak[0] == 1 and locked.embedder == "the-embedder" and locked.retrieve("q") == "hits"
+    res = build(index_root, fac=factories(make_retriever=make_retriever, set_torch_threads=lambda n: seen.update(torch_threads=n)))
+    assert res.ready and res.executors is seen["executors"] and type(res.service.retriever) is FakeRetriever  # nothing wraps it
+    s = res.settings
+    assert seen["torch_threads"] == s.torch_threads
+    assert res.executors.workers == {"embed": s.embed_workers, "db": s.db_workers, "rerank": s.rerank_workers}
+    res.executors.shutdown()
 
 
 def test_an_fts_index_can_be_used_from_another_thread_only_when_asked_to(tmp_path):

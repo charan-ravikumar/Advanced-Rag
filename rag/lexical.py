@@ -15,9 +15,11 @@ so it is negated. Ties are broken by chunk_id so the order is deterministic.
 from __future__ import annotations
 
 import os
+import queue
 import re
 import sqlite3
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable, Iterator, Sequence
+from contextlib import contextmanager
 from pathlib import Path
 from typing import Protocol
 
@@ -77,11 +79,11 @@ def lexical_index_path(cfg, strategy: str, chroma_path: str | Path | None = None
 
 
 class SqliteFtsIndex:
-    """LexicalIndex over one SQLite file. Single-connection, not thread-safe (see Retriever TODO)."""
+    """LexicalIndex over one SQLite file. Single-connection, not thread-safe: for concurrent readers use ``PooledFtsIndex``."""
 
     def __init__(self, path: str | Path, *, check_same_thread: bool = True):
-        """``check_same_thread=False`` lets ONE index be used from several threads (the Streamlit app serves each session from its own thread); the caller must then
-        serialise the calls (the app wraps the retriever in a lock). The default keeps SQLite's own thread check."""
+        """``check_same_thread=False`` lets ONE index be used from several threads, one at a time (``PooledFtsIndex`` gives each caller
+        a connection of its own). The default keeps SQLite's own thread check."""
         path = Path(path)
         if any("onedrive" in part.lower() for part in path.resolve().parts):
             raise RuntimeError(f"lexical index path must be outside OneDrive: {path}")
@@ -166,3 +168,49 @@ class SqliteFtsIndex:
 
     def close(self) -> None:
         self._conn.close()
+
+
+class PooledFtsIndex:
+    """A fixed pool of read connections to one index: concurrent searches each use their own connection (the file is in WAL mode, so
+    readers do not block each other or a writer). A caller waits when every connection is busy. Read only: writes go through
+    ``SqliteFtsIndex``; a pooled connection refuses them."""
+
+    def __init__(self, path: str | Path, size: int = 4):
+        if size < 1:
+            raise ValueError("the pool needs at least one connection")
+        self.path, self.size = Path(path), size
+        self._all: list[SqliteFtsIndex] = []
+        self._free: queue.Queue[SqliteFtsIndex] = queue.Queue()
+        for _ in range(size):
+            index = SqliteFtsIndex(path, check_same_thread=False)
+            index._conn.execute("PRAGMA query_only=ON")
+            self._all.append(index)
+            self._free.put(index)
+
+    @contextmanager
+    def connection(self) -> Iterator[SqliteFtsIndex]:
+        index = self._free.get()
+        try:
+            yield index
+        finally:
+            self._free.put(index)
+
+    def search(self, query: str, k: int, doc_ids: Sequence[str] | None = None) -> list[tuple[str, float]]:
+        with self.connection() as index:
+            return index.search(query, k, doc_ids=doc_ids)
+
+    def count(self) -> int:
+        with self.connection() as index:
+            return index.count()
+
+    def chunk_ids(self) -> set[str]:
+        with self.connection() as index:
+            return index.chunk_ids()
+
+    def doc_chunk_ids(self, doc_id: str) -> set[str]:
+        with self.connection() as index:
+            return index.doc_chunk_ids(doc_id)
+
+    def close(self) -> None:
+        for index in self._all:
+            index.close()
