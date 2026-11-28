@@ -1,4 +1,4 @@
-"""The endpoints. Every handler is ``async``; the blocking work (retrieval, the model call, SQLite, Langfuse) runs in the thread pool, so the event loop is never blocked and
+"""The endpoints. Every handler is ``async``; the blocking work (retrieval, the model call, SQLite, Langfuse) runs in worker pools, so the event loop is never blocked and
 many streams can be open at once.
 
     GET  /v1/health         liveness (no auth)
@@ -10,8 +10,10 @@ many streams can be open at once.
     POST /v1/feedback       a thumb for an answer
     GET  /v1/observability  the shared Langfuse metrics snapshot
 
-Order of checks for a query: authentication -> readiness -> per-key rate limit (429; ``slowapi``, see ``api.limits``) -> question validation (422) -> daily budget (when it is used up the
-response is still 200 and carries the retrieved passages and a ``daily_budget_reached`` error, never an LLM call).
+Order of checks for a query: authentication -> readiness -> per-key rate limit (429; ``slowapi``, see ``api.limits``) -> question validation (422) -> queue limit (503
+``overloaded`` with ``Retry-After`` when ``app.retrieval_max_in_flight`` requests are already in retrieval) -> daily budget (when it is used up the response is still 200
+and carries the retrieved passages and a ``daily_budget_reached`` error, never an LLM call). A request holds its place in the queue until its passages are found, not
+while the model writes the answer.
 """
 
 from __future__ import annotations
@@ -44,6 +46,7 @@ from api.schemas import (
     RetrieveResponse,
 )
 from api.sse import OPEN_COMMENT, encode_event, encode_service_event
+from rag.concurrency import Ticket
 from rag_core.errors import InvalidQuestion
 from rag_core.schemas import AnswerResult, ErrorInfo
 
@@ -54,7 +57,8 @@ COMMON_ERRORS: dict[int | str, dict[str, Any]] = {
     401: {"model": ErrorResponse, "description": "Missing or wrong bearer token (only when the server has ADVRAG_API_TOKEN set)."},
     422: {"model": ErrorResponse, "description": "The request body is invalid, or the question was rejected (`code`: invalid_type, empty, too_long, invalid_request)."},
     429: {"model": ErrorResponse, "description": "Per-client rate limit or session cap (`code`: rate_limited, session_cap). `Retry-After` says when to retry."},
-    503: {"model": ErrorResponse, "description": "The service is not ready (failed self-check): see `GET /v1/ready`."},
+    503: {"model": ErrorResponse, "description": "The service is not ready (`code`: not_ready; see `GET /v1/ready`), or its retrieval queue is full (`code`: overloaded; "
+                                                 "retry after `Retry-After` seconds)."},
 }
 
 SSE_DESCRIPTION = """Streams the answer as [server-sent events](https://html.spec.whatwg.org/multipage/server-sent-events.html) (`text/event-stream`).
@@ -86,6 +90,31 @@ def _validated(state: ApiState, body) -> str:
         raise ApiException(422, exc.code, exc.message) from None
 
 
+RETRY_AFTER_S = 1
+RETRIEVAL_OVER = ("sources", "done")  # the first of these means retrieval is finished: the request leaves the queue
+
+
+def _admit(state: ApiState) -> Ticket:
+    ticket = state.gate.try_acquire()
+    if ticket is None:
+        raise ApiException(503, "overloaded", "The server is busy. Please try again in a moment.", {"Retry-After": str(RETRY_AFTER_S)})
+    return ticket
+
+
+class _AdmittedStream(StreamingResponse):
+    """Gives the place in the queue back when the response is over, also when the client left before the stream ever started."""
+
+    def __init__(self, ticket: Ticket, *args: Any, **kwargs: Any):
+        super().__init__(*args, **kwargs)
+        self._ticket = ticket
+
+    async def __call__(self, scope, receive, send) -> None:
+        try:
+            await super().__call__(scope, receive, send)
+        finally:
+            self._ticket.release()
+
+
 def _budget_events(service, question: str, doc_ids, rerank: bool) -> Iterator[dict]:
     """The daily budget is used up: the retrieved passages and the typed notice, in the same event shapes as a real answer."""
     result = service.passages_only(question, doc_ids, rerank)
@@ -107,10 +136,12 @@ def _finish_request(state: ApiState, events: Iterator[dict] | None, acquired: bo
         pass
 
 
-def _run_to_result(state: ApiState, events: Iterator[dict], acquired: bool) -> AnswerResult | None:
+def _run_to_result(state: ApiState, events: Iterator[dict], acquired: bool, ticket: Ticket) -> AnswerResult | None:
     result = None
     try:
         for event in events:
+            if event["type"] in RETRIEVAL_OVER:
+                ticket.release()
             if event["type"] == "done":
                 result = event["result"]
     finally:
@@ -130,11 +161,13 @@ def _open_events(state: ApiState, body, cleaned: str) -> tuple[Iterator[dict], b
         raise
 
 
-async def _sse(state: ApiState, events: Iterator[dict], acquired: bool):
+async def _sse(state: ApiState, events: Iterator[dict], acquired: bool, ticket: Ticket):
     result = None
     try:
         yield OPEN_COMMENT
         async for event in iterate_in_threadpool(events):
+            if event["type"] in RETRIEVAL_OVER:
+                ticket.release()
             if event["type"] == "done":
                 result = event["result"]
             yield encode_service_event(event)
@@ -152,8 +185,13 @@ async def _sse(state: ApiState, events: Iterator[dict], acquired: bool):
 @limiter.shared_limit(query_limits, scope="query")
 async def ask(body: AskRequest, request: Request, state: ApiState = Depends(ready_state)):
     cleaned = _validated(state, body)
-    events, acquired = _open_events(state, body, cleaned)
-    return StreamingResponse(_sse(state, events, acquired), media_type="text/event-stream", headers=STREAM_HEADERS)
+    ticket = _admit(state)
+    try:
+        events, acquired = _open_events(state, body, cleaned)
+    except BaseException:
+        ticket.release()
+        raise
+    return _AdmittedStream(ticket, _sse(state, events, acquired, ticket), media_type="text/event-stream", headers=STREAM_HEADERS)
 
 
 @router.post("/answer", tags=["query"], summary="Ask a question: the complete answer in one JSON body", response_model=AnswerResult, responses=COMMON_ERRORS,
@@ -161,23 +199,30 @@ async def ask(body: AskRequest, request: Request, state: ApiState = Depends(read
 @limiter.shared_limit(query_limits, scope="query")
 async def answer(body: AskRequest, request: Request, state: ApiState = Depends(ready_state)):
     cleaned = _validated(state, body)
-    events, acquired = _open_events(state, body, cleaned)
-    result = await run_in_threadpool(_run_to_result, state, events, acquired)
+    ticket = _admit(state)
+    try:
+        events, acquired = _open_events(state, body, cleaned)
+        result = await run_in_threadpool(_run_to_result, state, events, acquired, ticket)
+    finally:
+        ticket.release()
     if result is None:
         raise ApiException(500, "internal", "The answer ended without a result.")
     return result
 
 
 @router.post("/retrieve", tags=["query"], summary="Retrieval only: the best passages, no language model", response_model=RetrieveResponse,
-             responses={**COMMON_ERRORS, 503: {"model": ErrorResponse, "description": "Not ready, or retrieval failed (`code`: not_ready, retrieval_failed)."}})
+             responses={**COMMON_ERRORS, 503: {"model": ErrorResponse, "description": "Not ready, queue full, or retrieval failed (`code`: not_ready, overloaded, retrieval_failed)."}})
 @limiter.shared_limit(query_limits, scope="query")
 async def retrieve(body: RetrieveRequest, request: Request, state: ApiState = Depends(ready_state)):
     service = state.resources.service
     cleaned = _validated(state, body)
+    ticket = _admit(state)
     try:
-        sources, latency_ms = await run_in_threadpool(service.retrieve_sources, cleaned, body.doc_ids, body.rerank)
+        sources, latency_ms = await service.aretrieve_sources(cleaned, body.doc_ids, body.rerank)
     except Exception as exc:  # noqa: BLE001
         raise ApiException(503, "retrieval_failed", f"{type(exc).__name__} while retrieving passages") from None
+    finally:
+        ticket.release()
     return RetrieveResponse(sources=sources, latency_ms=latency_ms, index_version=service.index_version)
 
 

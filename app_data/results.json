@@ -1,9 +1,9 @@
 {
  "schema": 1,
- "built_utc": "2026-11-23T05:20:56+00:00",
+ "built_utc": "2026-11-28T07:49:15+00:00",
  "sources": {
-  "claims_log_sha256": "d362707be6d25117e2b3dddc113e6370da1dbd96041ded83b4dbac58781b55a1",
-  "claims_log_rows": 25
+  "claims_log_sha256": "8a0d7427528af7373a1e1b39c6be1cc4fa9e4a93b1d93fad29c07106c63430f6",
+  "claims_log_rows": 29
  },
  "retrieval_test": {
   "scope": {
@@ -1295,6 +1295,50 @@
    ],
    "code_fingerprint": "c5fac1051e3f0005bd8dd40408c48b66fbe85d8161a875ea4357d9e44cfc00c0",
    "scope_note": "Same scope. A valid marker only means the cited source was provided to the model, not that it supports the claim (faithfulness would test that; the RAGAS scoring is incomplete: 2 of 34 answers scored before the judge's daily quota ended, so no RAGAS number is logged). The parser accepts the lenticular brackets the model used."
+  },
+  {
+   "metric": "Load test BEFORE the concurrency change (global retrieval lock): sustained request rate",
+   "value": "20 requests/s in both repeats",
+   "run_folders": [
+    "runs/load/20261128T062622Z_ca94082c_before",
+    "runs/load/20261128T063418Z_ca94082c_before"
+   ],
+   "code_fingerprint": "ca94082ce3e7413e3ae538baf10543cc7f3ec0e77b3d603ce4985713ce5c6775",
+   "scope_note": "LOAD TEST of `POST /v1/retrieve` only (no model call, no reranker): open loop, 30 s per rate, ladder 10 to 80 requests/s, a rate passes with p95 <= 300 ms and <= 1% failed requests. API in Docker (linux/arm64, 8-CPU VM on an Apple M1), load generator on the same machine, 174 public dev questions. One machine, not a capacity promise. Server built from the previous code; the fingerprint is that code plus the load tool."
+  },
+  {
+   "metric": "Load test AFTER (parallel legs, worker pools, queue limit 16): sustained request rate",
+   "value": "50 requests/s in repeat 1, 35 requests/s in repeat 2",
+   "run_folders": [
+    "runs/load/20261128T072158Z_fa4c1730_after",
+    "runs/load/20261128T072702Z_fa4c1730_after"
+   ],
+   "code_fingerprint": "fa4c1730802d37c2d8f2d98f69bb7b7d8f501725b45212d210451ff6a42a17be",
+   "scope_note": "LOAD TEST of `POST /v1/retrieve` only (no model call, no reranker): open loop, 30 s per rate, ladder 10 to 80 requests/s, a rate passes with p95 <= 300 ms and <= 1% failed requests. API in Docker (linux/arm64, 8-CPU VM on an Apple M1), load generator on the same machine, 174 public dev questions. One machine, not a capacity promise. Worker counts were chosen with short probes of the same tool on the same machine. The repeats differ widely: quote the range."
+  },
+  {
+   "metric": "Load test: p95 latency at 20 requests/s",
+   "value": "before 164 ms and 92 ms; after 36 ms and 32 ms",
+   "run_folders": [
+    "runs/load/20261128T062622Z_ca94082c_before",
+    "runs/load/20261128T063418Z_ca94082c_before",
+    "runs/load/20261128T072158Z_fa4c1730_after",
+    "runs/load/20261128T072702Z_fa4c1730_after"
+   ],
+   "code_fingerprint": "ca94082ce3e7413e3ae538baf10543cc7f3ec0e77b3d603ce4985713ce5c6775",
+   "scope_note": "LOAD TEST of `POST /v1/retrieve` only (no model call, no reranker): open loop, 30 s per rate, ladder 10 to 80 requests/s, a rate passes with p95 <= 300 ms and <= 1% failed requests. API in Docker (linux/arm64, 8-CPU VM on an Apple M1), load generator on the same machine, 174 public dev questions. One machine, not a capacity promise."
+  },
+  {
+   "metric": "Load test: behaviour at 80 requests/s offered",
+   "value": "before: 63% and 68% of requests timed out or failed, p95 of the successful ones about 28 s; after: 28% and 47% refused with HTTP 503, p95 of the successful ones 326 ms and 549 ms",
+   "run_folders": [
+    "runs/load/20261128T062622Z_ca94082c_before",
+    "runs/load/20261128T063418Z_ca94082c_before",
+    "runs/load/20261128T072158Z_fa4c1730_after",
+    "runs/load/20261128T072702Z_fa4c1730_after"
+   ],
+   "code_fingerprint": "ca94082ce3e7413e3ae538baf10543cc7f3ec0e77b3d603ce4985713ce5c6775",
+   "scope_note": "LOAD TEST of `POST /v1/retrieve` only (no model call, no reranker): open loop, 30 s per rate, ladder 10 to 80 requests/s, a rate passes with p95 <= 300 ms and <= 1% failed requests. API in Docker (linux/arm64, 8-CPU VM on an Apple M1), load generator on the same machine, 174 public dev questions. One machine, not a capacity promise."
   }
  ]
 }

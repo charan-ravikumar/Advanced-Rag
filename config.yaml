@@ -98,3 +98,10 @@ app:                              # the Streamlit app (app/guards.py reads every
   warmup_query: "warm up"
   index_version_ttl_seconds: 30               # how often the index version in the cache keys is re-read (a re-ingest changes it)
   feedback_path: "%LOCALAPPDATA%/advrag/feedback.sqlite3"   # thumbs are saved here FIRST (comment masked), then sent to Langfuse when the answer has a trace id
+  retrieval_max_in_flight: 16   # backpressure: requests in retrieval at once (running or queued); beyond it the API answers 503 `overloaded` with Retry-After
+  embed_workers: 4              # worker threads for query embedding (CPU-bound); results do not depend on the count. The three settings below
+                                # were picked with short load-test probes on one 8-CPU Docker VM (scripts/load_test.py): re-check on other hardware
+  rerank_workers: 1             # worker threads for the cross-encoder (CPU-bound)
+  db_workers: 4                 # worker threads for SQLite and Chroma reads; also the size of the SQLite connection pool
+  torch_threads: 1              # threads inside ONE model call, process-wide; 0 = PyTorch's default. 1 gave the most throughput with 4 embed
+                                # workers, but it also applies to the reranker, whose latency at 1 thread has NOT been measured

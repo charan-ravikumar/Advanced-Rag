@@ -267,10 +267,10 @@ def test_a_broken_resources_factory_does_not_stop_the_server():
 def test_an_unexpected_server_error_leaks_nothing(api):
     svc = make()[0]
 
-    def explode(*args, **kwargs):
+    async def explode(*args, **kwargs):
         raise RuntimeError("secret: C:\\private\\key.txt")
 
-    svc.retrieve_sources = explode
+    svc.aretrieve_sources = explode
     response = api(svc).post("/v1/retrieve", json={"question": Q})
     assert response.status_code == 503 and code_of(response) == "retrieval_failed" and "private" not in response.text and "RuntimeError" in response.text
 

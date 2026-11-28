@@ -29,7 +29,7 @@ LIMITATIONS = (
     "English NLP papers from one dataset (Qasper). The system has not been tried on other domains or languages.",
     "Free-tier latency and limits: the language model is a free-tier API, so answers can be slow and a daily budget applies (see the sidebar).",
     "Searching all papers is much weaker than searching one paper (see the Evaluation tab).",
-    "A single-user demo: one process, one machine, in-memory answer cache and rate limits that reset on restart; it is not built for concurrent load.",
+    "A single-user demo: one process, one machine, in-memory answer cache and rate limits that reset on restart; it runs as one process and is not built for heavy load.",
     "The model can still be wrong or follow an instruction hidden in a passage; delimiters and a system rule reduce that risk, they do not remove it.",
 )
 

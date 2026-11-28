@@ -1,0 +1,164 @@
+{
+  "slo_ms": 300.0,
+  "max_failed_fraction": 0.01,
+  "sustained_qps": 20.0,
+  "steps": [
+    {
+      "offered_qps": 10.0,
+      "duration_s": 30.0,
+      "sent": 300,
+      "ok": 300,
+      "failed_fraction": 0.0,
+      "status": {
+        "200": 300
+      },
+      "ok_qps": 10.0,
+      "p50_ms": 44.6394591126591,
+      "p95_ms": 63.07566701434553,
+      "p99_ms": 103.92087511718273,
+      "rejected_p95_ms": null,
+      "generator_lag_p95_ms": 1.5538339503109455,
+      "passed": true
+    },
+    {
+      "offered_qps": 20.0,
+      "duration_s": 30.0,
+      "sent": 600,
+      "ok": 600,
+      "failed_fraction": 0.0,
+      "status": {
+        "200": 600
+      },
+      "ok_qps": 20.0,
+      "p50_ms": 38.90699986368418,
+      "p95_ms": 91.5677088778466,
+      "p99_ms": 152.94366679154336,
+      "rejected_p95_ms": null,
+      "generator_lag_p95_ms": 1.3134169857949018,
+      "passed": true
+    },
+    {
+      "offered_qps": 25.0,
+      "duration_s": 30.0,
+      "sent": 750,
+      "ok": 750,
+      "failed_fraction": 0.0,
+      "status": {
+        "200": 750
+      },
+      "ok_qps": 25.0,
+      "p50_ms": 636.2914999481291,
+      "p95_ms": 1790.0348340626806,
+      "p99_ms": 1818.5955840162933,
+      "rejected_p95_ms": null,
+      "generator_lag_p95_ms": 1.4485418796539307,
+      "passed": false
+    },
+    {
+      "offered_qps": 30.0,
+      "duration_s": 30.0,
+      "sent": 900,
+      "ok": 900,
+      "failed_fraction": 0.0,
+      "status": {
+        "200": 900
+      },
+      "ok_qps": 30.0,
+      "p50_ms": 2444.8949999641627,
+      "p95_ms": 7596.599000273272,
+      "p99_ms": 8365.843708161265,
+      "rejected_p95_ms": null,
+      "generator_lag_p95_ms": 1.3765415642410517,
+      "passed": false
+    },
+    {
+      "offered_qps": 35.0,
+      "duration_s": 30.0,
+      "sent": 1050,
+      "ok": 1050,
+      "failed_fraction": 0.0,
+      "status": {
+        "200": 1050
+      },
+      "ok_qps": 35.0,
+      "p50_ms": 17045.979970600456,
+      "p95_ms": 23207.52592338249,
+      "p99_ms": 24250.640131300315,
+      "rejected_p95_ms": null,
+      "generator_lag_p95_ms": 12.83638784661889,
+      "passed": false
+    },
+    {
+      "offered_qps": 40.0,
+      "duration_s": 30.0,
+      "sent": 1200,
+      "ok": 1199,
+      "failed_fraction": 0.0008333333333333334,
+      "status": {
+        "200": 1199,
+        "RemoteProtocolError": 1
+      },
+      "ok_qps": 39.96666666666667,
+      "p50_ms": 11938.194249989465,
+      "p95_ms": 21106.906875036657,
+      "p99_ms": 26831.78725023754,
+      "rejected_p95_ms": null,
+      "generator_lag_p95_ms": 1.3367501087486744,
+      "passed": false
+    },
+    {
+      "offered_qps": 50.0,
+      "duration_s": 30.0,
+      "sent": 1500,
+      "ok": 1019,
+      "failed_fraction": 0.32066666666666666,
+      "status": {
+        "200": 1019,
+        "ReadTimeout": 481
+      },
+      "ok_qps": 33.96666666666667,
+      "p50_ms": 15034.436375135556,
+      "p95_ms": 28046.24416702427,
+      "p99_ms": 29467.355750035495,
+      "rejected_p95_ms": null,
+      "generator_lag_p95_ms": 1.7914590425789356,
+      "passed": false
+    },
+    {
+      "offered_qps": 60.0,
+      "duration_s": 30.0,
+      "sent": 1800,
+      "ok": 1203,
+      "failed_fraction": 0.33166666666666667,
+      "status": {
+        "200": 1203,
+        "ReadTimeout": 597
+      },
+      "ok_qps": 40.1,
+      "p50_ms": 16742.939333198592,
+      "p95_ms": 28588.71474955231,
+      "p99_ms": 29677.338041597977,
+      "rejected_p95_ms": null,
+      "generator_lag_p95_ms": 1.641291892156005,
+      "passed": false
+    },
+    {
+      "offered_qps": 80.0,
+      "duration_s": 30.0,
+      "sent": 2400,
+      "ok": 778,
+      "failed_fraction": 0.6758333333333333,
+      "status": {
+        "200": 778,
+        "ReadTimeout": 1622
+      },
+      "ok_qps": 25.933333333333334,
+      "p50_ms": 12539.558332879096,
+      "p95_ms": 27853.9263329003,
+      "p99_ms": 29722.81220788136,
+      "rejected_p95_ms": null,
+      "generator_lag_p95_ms": 1.44595792517066,
+      "passed": false
+    }
+  ]
+}

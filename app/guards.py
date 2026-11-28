@@ -44,6 +44,11 @@ class AppConfig:
     warmup_query: str = "warm up"
     index_version_ttl_seconds: float = 30.0  # how often the served index version (part of every cache key) is re-read, so a re-ingest is seen without a restart
     feedback_path: str = "%LOCALAPPDATA%/advrag/feedback.sqlite3"  # local SQLite file of the thumbs (kept outside OneDrive); created on the first vote
+    retrieval_max_in_flight: int = 16  # API queue limit: requests in retrieval (running or waiting for a worker); the next one gets 503
+    embed_workers: int = 4
+    rerank_workers: int = 1
+    db_workers: int = 4  # also the number of pooled SQLite connections
+    torch_threads: int = 1  # threads inside one model call (process-wide, the reranker included); 0 = PyTorch's default
 
     @classmethod
     def from_config(cls, cfg) -> AppConfig:

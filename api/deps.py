@@ -3,11 +3,14 @@
 from __future__ import annotations
 
 import hmac
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 from fastapi import Depends, Request, Security
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+
+from app.guards import AppConfig
+from rag.concurrency import AdmissionGate
 
 bearer_scheme = HTTPBearer(auto_error=False, description="Optional shared token. The server requires it only when ADVRAG_API_TOKEN is set in its environment.")
 
@@ -24,6 +27,7 @@ class ApiException(Exception):
 class ApiState:
     resources: Any = None  # app.bootstrap.Resources (service, daily budget, reader, feedback recorder, self-check ...)
     token: str | None = None
+    gate: AdmissionGate = field(default_factory=lambda: AdmissionGate(AppConfig().retrieval_max_in_flight))  # the queue limit of retrieval
 
     @property
     def ready(self) -> bool:

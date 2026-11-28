@@ -55,6 +55,7 @@ SAFE_MODULES = [
     "rag.router",
     "rag.lexical",
     "rag.retriever",
+    "rag.concurrency",
     "rag.ingestion",
     "rag_core",
     "rag_core.schemas",

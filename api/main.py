@@ -30,6 +30,7 @@ from api.limits import configure as configure_limits
 from api.limits import limiter
 from api.routes import router
 from api.schemas import API_VERSION, MAX_BODY_BYTES, SSE_EVENT_MODELS, ErrorBody, ErrorResponse
+from rag.concurrency import AdmissionGate
 
 TITLE = "Advanced RAG API"
 DESCRIPTION = """Hybrid retrieval (vector + SQLite FTS5, weighted RRF) and cited, streamed answers over the Qasper papers.
@@ -112,12 +113,15 @@ def create_app(resources_factory: Callable[[], Any] | None = None, *, token: str
         resources = await run_in_threadpool(_build_safely, resources_factory or default_resources)
         s = resources.settings
         configured = token if token is not None else os.environ.get("ADVRAG_API_TOKEN", "")
-        app.state.api = ApiState(resources=resources, token=(configured or "").strip() or None)
+        app.state.api = ApiState(resources=resources, token=(configured or "").strip() or None, gate=AdmissionGate(s.retrieval_max_in_flight))
         configure_limits(s.rate_limit_requests, s.rate_limit_window_seconds, s.session_request_cap)
         yield
         service = getattr(resources, "service", None)
         if service is not None:
             await run_in_threadpool(service.flush_traces)
+        executors = getattr(resources, "executors", None)
+        if executors is not None:
+            await run_in_threadpool(executors.shutdown)
 
     app = FastAPI(title=TITLE, version=API_VERSION, description=DESCRIPTION, openapi_tags=TAGS, lifespan=lifespan)
     app.state.api = ApiState()  # not ready until the lifespan has built the resources
