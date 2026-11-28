@@ -337,3 +337,7 @@
     in `.github/pip-audit-ignore.txt` with its reason and needs the owner's approval. The chromadb ids there hold
     only while no Chroma server or HttpClient is used. `scripts/ci_fetch_model.py` downloads a model and runs ONLY in
     CI. `scripts/ci_smoke.sh` uses its own compose project and removes only that project's volume.
+    **`main` is protected** (turned on 2026-11-28 with the owner's approval): the five jobs are required checks,
+    admins included, and force pushes and deletion are off. A direct push to `main` is rejected: push a branch,
+    open a pull request, wait for the checks, then merge it. Renaming a job means updating the required checks.
+    Never relax or remove the protection without asking.

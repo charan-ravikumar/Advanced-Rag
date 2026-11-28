@@ -1350,3 +1350,12 @@ after each task, using the template below. (The older free-form diary lives in
 - **Evidence it works (test or measurement, with file path):** `tests/unit/test_ci_workflow.py`; the GitHub Actions runs of the repository (green on the branch, red on the deliberately failing pull request).
 - **Likely interview questions and strong answers:** *"What does your green badge mean?"* — "Lint, types on the core package, the fast tests, an image that builds and becomes ready on a real index, and no known vulnerability in the runtime lock apart from four listed server-side ones. It says nothing about answer quality."
 - **Honest limitations:** No slow or model tests, no x86-vs-arm matrix, no live LLM call.
+
+### Branch protection: CI is a required check on main
+- **What we did:** Protected `main` on GitHub: the five CI jobs are required status checks (tied to the GitHub Actions app), enforced for admins; force pushes and deletion are off; no review is required.
+- **Why (the problem it solves):** The pull request with the deliberately failing test was still mergeable, so a red check blocked nothing.
+- **Alternatives considered and why rejected:** Leaving admins exempt: the only committer is an admin, so nothing would be gated. Required reviews: a solo author cannot approve their own pull request. Requiring an up-to-date branch: extra runs for little gain with one author.
+- **Trade-offs / what it costs:** Every change goes through a pull request and waits for CI. A renamed job blocks merges until the required checks are updated.
+- **Evidence it works (test or measurement, with file path):** The GitHub branch protection settings, and the pull request that added this entry (blocked until its checks passed).
+- **Likely interview questions and strong answers:** *"Can broken code reach main?"* — "Not without passing the five checks. An admin could still switch the protection off, and the checks only cover what they cover."
+- **Honest limitations:** The setting lives in GitHub, not in the repository, so no test watches it.
