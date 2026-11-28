@@ -162,7 +162,7 @@ The suite is hermetic: it blocks non-loopback network access and `chromadb.Cloud
 
 ## Continuous integration
 
-Every push and pull request runs [ci.yml](.github/workflows/ci.yml): ruff, mypy on `rag_core`, the fast test subset (slow and model tests are skipped), a Docker build with a smoke test that indexes five papers and requires `GET /v1/ready` to report ready, and `pip-audit` on the runtime lock. Advisories that are ignored are listed with their reasons in [pip-audit-ignore.txt](.github/pip-audit-ignore.txt). The badge does not cover answer quality: no model is called.
+Every push and pull request runs [ci.yml](.github/workflows/ci.yml): ruff, mypy on `rag_core`, the fast test subset (slow and model tests are skipped), a Docker build with a smoke test that indexes five papers and requires `GET /v1/ready` to report ready, and `pip-audit` on the runtime lock. Advisories that are ignored are listed with their reasons in [pip-audit-ignore.txt](.github/pip-audit-ignore.txt). The badge does not cover answer quality: no model is called. CI also rebuilds [runs/index.jsonl](runs/index.jsonl), one row per saved run (code fingerprint, config hash, split, metrics), and fails if the committed file is out of date; after adding a run, run `python scripts/runs_index.py`.
 
 ## Docker
 
